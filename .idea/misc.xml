@@ -5,4 +5,5 @@
     <file type="web" url="file://$PROJECT_DIR$/dungeon" />
     <file type="web" url="file://$PROJECT_DIR$/player" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="azul-17" project-jdk-type="JavaSDK" />
 </project>
