@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dungeon.main.iml" filepath="$PROJECT_DIR$/.idea/modules/dungeon.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/player.main.iml" filepath="$PROJECT_DIR$/.idea/modules/player.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/roguemaster.iml" filepath="$PROJECT_DIR$/.idea/roguemaster.iml" />
+    </modules>
+  </component>
+</project>
