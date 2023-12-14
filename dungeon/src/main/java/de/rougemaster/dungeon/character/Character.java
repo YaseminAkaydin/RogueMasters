@@ -41,4 +41,24 @@ public abstract class Character {
     public void doNothing(){
         //TODO: implement after turnManager/fightManager is done.
     }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public int getDefense() {
+        return defense;
+    }
+
+    public Room getCurrentRoom() {
+        return currentRoom;
+    }
 }

@@ -6,16 +6,25 @@ import de.rougemaster.dungeon.item.Armor;
 import de.rougemaster.dungeon.item.Item;
 import de.rougemaster.dungeon.item.Weapon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayableCharacter extends Character {
     private int level;
     private int experience;
 
-    private List<Item> inventory;
+    private final List<Item> inventory;
 
     private Armor armorSlot;
     private Weapon weaponSlot;
+
+
+    public PlayableCharacter () {
+        //TODO: Set Stats of Character
+        inventory = new ArrayList<>();
+        armorSlot = null;
+        weaponSlot = null;
+    }
 
     /**
      * Attacks an enemy Character in a fight
@@ -28,7 +37,7 @@ public class PlayableCharacter extends Character {
         /*TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */
         int attackDamage = this.attack + weaponSlot.getWeaponDamage();
-        character.hp -= (attackDamage - character.defense);
+        character.setHp(character.getHp()-(this.attack - character.getDefense()));
     }
 
     /**
@@ -84,6 +93,8 @@ public class PlayableCharacter extends Character {
             experience -= (int)Math.pow(level, 1.5);
             level++;
         }
+
+        //TODO: Increase Stats
     }
 
     /**
