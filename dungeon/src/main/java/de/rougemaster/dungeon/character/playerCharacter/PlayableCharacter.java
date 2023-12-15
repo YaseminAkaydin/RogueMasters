@@ -37,7 +37,7 @@ public class PlayableCharacter extends Character {
         /*TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */
         int attackDamage = this.attack + weaponSlot.getWeaponDamage();
-        character.setHp(character.getHp()-(this.attack - character.getDefense()));
+        character.setHp(character.getHp()-(attackDamage - character.getDefense()));
     }
 
     /**
@@ -46,7 +46,8 @@ public class PlayableCharacter extends Character {
     public void defend() {
         //TODO: Check if character is in the same Room as PlayerCharacter
 
-        /*TODO: The Following implementation is a example and shouldn't be used for the final product.
+        /*
+        * TODO: The Following implementation is a example and shouldn't be used for the final product.
         *       There should be a FightManager to handle this. */
         this.defense *= 2;
     }
