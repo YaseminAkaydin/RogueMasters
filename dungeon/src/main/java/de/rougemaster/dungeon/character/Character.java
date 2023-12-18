@@ -3,6 +3,8 @@ package de.rougemaster.dungeon.character;
 import de.rougemaster.dungeon.dungeon.Room;
 
 public abstract class Character {
+
+    protected int maxHp;
     protected int hp;
     protected String name;
     protected int attack;
@@ -44,6 +46,10 @@ public abstract class Character {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+
+    public int getMaxHp() {
+        return maxHp;
     }
 
     public int getAttack() {
