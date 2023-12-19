@@ -1,4 +1,4 @@
-package de.rougemaster.dungeon;
+package de.rougemaster.dungeon.dungeon;
 
 import javax.lang.model.type.NullType;
 import java.util.Random;

@@ -1,4 +1,4 @@
-package de.rougemaster.dungeon;
+package de.rougemaster.dungeon.dungeon;
 
 import java.util.*;
 import java.util.stream.Collectors;

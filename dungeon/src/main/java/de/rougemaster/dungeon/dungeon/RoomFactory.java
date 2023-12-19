@@ -1,4 +1,4 @@
-package de.rougemaster.dungeon;
+package de.rougemaster.dungeon.dungeon;
 
 public class RoomFactory {
 
