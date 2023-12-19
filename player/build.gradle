@@ -22,6 +22,9 @@ repositories {
 }
 
 dependencies {
+	// https://mvnrepository.com/artifact/com.googlecode.lanterna/lanterna
+	implementation 'com.googlecode.lanterna:lanterna:3.1.1'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
