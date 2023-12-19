@@ -6,7 +6,7 @@ import de.rougemaster.dungeon.character.enemyCharacter.skeleton.SkeletonState;
 public class SkeletonDefend implements SkeletonState {
     @Override
     public SkeletonState fight(Skeleton skeleton) {
-        if(skeleton.getHp() >= (skeleton.getMaxHp()/2)){
+        if(skeleton.getHp() >= (skeleton.getMaxHp()/10)){
             return new SkeletonPrepareExplosion();
         }
         return new SkeletonPrepareBone();
