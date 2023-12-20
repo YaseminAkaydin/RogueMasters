@@ -1,13 +1,15 @@
 package de.rougemaster.dungeon;
 
-import org.springframework.boot.SpringApplication;
+import de.rougemaster.dungeon.dungeon.Dungeon;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class DungeonApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DungeonApplication.class, args);
-	}
+    public static void main(String[] args) {
+        //SpringApplication.run(DungeonApplication.class, args);
+        Dungeon dungeon = new Dungeon(10,3); // Example difficulty level
+        dungeon.printDungeonLayout(); // Print the layout
+    }
 
 }
