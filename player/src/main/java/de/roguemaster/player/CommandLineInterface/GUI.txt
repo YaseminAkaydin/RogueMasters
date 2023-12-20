@@ -1,8 +1,0 @@
-Standart Spielsicht benötigte Infos
-- Wo sind die Türen
-- Was befindet sich im Raum
-- Was für Optionen hat der Spieler
-- Raumtyp
-
-BSP: (Türnorden, 0-2 Mobs, 0-2 Item, (Optionen: Angreifen, Fliehen, Item aufheben, DoNothing), Raumtyp: Bossraum)
-
