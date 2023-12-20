@@ -2,6 +2,7 @@ package de.roguemaster.player.CLIneu;
 
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.CLIneu.View.*;
 
@@ -38,7 +39,7 @@ public class Game {
         startingLobbyView = viewBuilder.buildStartingLobbyView(terminal);
         joiningLobbyView = viewBuilder.buildJoiningLobbyView(terminal);
         leaderBoardView = viewBuilder.buildLeaderBoardView(terminal);
-        currentView = inventoryView;
+        currentView = dungeonMapView;
     }
 
     public void run() throws IOException {
@@ -119,6 +120,20 @@ public class Game {
                 inventoryView.display(); // Refresh the inventory view
             }
             // Add logic for USE_CONSUMABLE
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+            Terminal terminal = terminalFactory.createTerminal();
+
+            Game game = new Game(terminal);
+            game.run();
+
+            terminal.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
