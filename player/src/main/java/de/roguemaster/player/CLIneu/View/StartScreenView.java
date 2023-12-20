@@ -4,6 +4,10 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
 
+/**
+ * Wenn das Spiel Gestartet wird, wird diese View angezeigt.
+ * TODO: Verschönern
+ */
 public class StartScreenView implements ViewComponent {
     // Attributes for start screen options
     private Terminal terminal;

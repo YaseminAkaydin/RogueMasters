@@ -2,23 +2,22 @@ package de.roguemaster.player.CLIneu.DataForView;
 
 import java.util.List;
 
+/**
+ * Erste Dummy Version der Räume.
+ */
 public class RoomData {
-    private String roomType;
-    private String monster;
-    private List<String> items;
-    private List<String> doors;
-    private String item;
+    private String roomType; // normal, boss, treasure
+    private String monster; // Skeleton, Zombie, Boss
+    private List<String> items; // Sword, Shield, Potion, Book
+    private List<String> doors; // north, south, east, west
     private int roomID;
 
-    // Constructor, getters, and setters
 
-
-    public RoomData(String roomType, String monster, List<String> items, List<String> doors, String item, int roomID) {
+    public RoomData(String roomType, String monster, List<String> items, List<String> doors, int roomID) {
         this.roomType = roomType;
         this.monster = monster;
         this.items = items;
         this.doors = doors;
-        this.item = item;
         this.roomID = roomID;
 
     }
@@ -55,9 +54,6 @@ public class RoomData {
         this.doors = doors;
     }
 
-    public String getItem() {
-        return item;
-    }
 
     public int getRoomID() {
         return roomID;

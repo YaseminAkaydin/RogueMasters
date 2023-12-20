@@ -6,7 +6,8 @@ import java.io.IOException;
 
 /**
  *  View for the Leaderboard
- *  TODO: Get Leaderboard from Server and print Leaderboard
+ *  TODO: Get Leaderboard from Server and print Leaderboard vom Ding her ganz entspannt
+ *  TODO: LeaderboardData Klasse erstellen, wenn wir später ein Leaderboard haben und es auch erstellen und saven
  */
 public class LeaderBoardView implements ViewComponent {
     private Terminal terminal;

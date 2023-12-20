@@ -14,7 +14,6 @@ public class ViewBuilder {
                         "skeleton",
                         List.of(new String[]{"Sword", "Shield"}),
                         List.of(new String[]{"south", "west", "east", "north"}),
-                        "Sword",
                         5),new PlayerData(2,10,2,List.of(new String[]{"Sword", "Shield", "Potion", "Book"})));
     }
 

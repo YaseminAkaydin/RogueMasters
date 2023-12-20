@@ -7,6 +7,10 @@ import de.roguemaster.player.CLIneu.View.*;
 
 import java.io.IOException;
 
+/**
+ * Dummy Version des Game Main Views
+ * TODO: BIG TODO GameLoop MultiThreaded machen...
+ */
 public class Game {
     private Terminal terminal;
     private ViewComponent currentView;
@@ -17,6 +21,8 @@ public class Game {
     private StartingLobbyView startingLobbyView;
     private JoiningLobbyView joiningLobbyView;
     private LeaderBoardView leaderBoardView;
+
+    private InventoryAction inventoryAction = InventoryAction.VIEWING;
 
     private boolean inInventoryOption = false;
     private int inventoryOption = 0;
@@ -32,12 +38,13 @@ public class Game {
         startingLobbyView = viewBuilder.buildStartingLobbyView(terminal);
         joiningLobbyView = viewBuilder.buildJoiningLobbyView(terminal);
         leaderBoardView = viewBuilder.buildLeaderBoardView(terminal);
-        currentView = mainGameView;
+        currentView = inventoryView;
     }
 
     public void run() throws IOException {
         boolean running = true;
         while (running) {
+            System.out.println("Current view: " + currentView.getClass().getSimpleName());
             currentView.display();
             KeyStroke keyStroke = terminal.readInput();
 
@@ -46,9 +53,23 @@ public class Game {
                     switch (keyStroke.getCharacter()) {
                         case '1': // Start Lobby
                             currentView = startingLobbyView;
+                            currentView.display();
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            currentView = mainGameView;
                             break;
                         case '2': // Join Lobby
                             currentView = joiningLobbyView;
+                            currentView.display();
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            currentView = mainGameView;
                             break;
                         case '3': // See Leaderboard
                             currentView = leaderBoardView;
@@ -59,39 +80,45 @@ public class Game {
                     }
                 }
             } else if (currentView instanceof InventoryView) {
-                if (!inInventoryOption) {
-                    // We are viewing the inventory, waiting for the user to select an option
-                    if (keyStroke.getKeyType() == KeyType.Character) {
-                        switch (keyStroke.getCharacter()) {
-                            case '1':
-                                // Drop item option
-                                inInventoryOption = true;
-                                inventoryOption = 1;
-                                break;
-                            case '2':
-                                // Use consumable option
-                                inInventoryOption = true;
-                                inventoryOption = 2;
-                                break;
-                            case '3':
-                                // Go back to main view
-                                currentView = mainGameView;
-                                break;
-                        }
-                    }
-                } else {
-                    // Here we handle the sub-options for "Drop Item"
-                    if (keyStroke.getKeyType() == KeyType.Character && inventoryOption == 1) {
-                        // Assume '1', '2', '3', etc. are the keys for item indices in the inventory
-                        char itemIndexChar = keyStroke.getCharacter();
-                        int itemIndex = Character.getNumericValue(itemIndexChar);
-                        //dropItem(itemIndex);  // Method to handle item dropping
-                        inInventoryOption = false; // Reset the flag
-                    }
-                    // If we have other sub-options for inventory, handle them similarly here
-                }
+                InventoryView inventoryView = (InventoryView) currentView;
+                // Handle inventory options based on InventoryAction
+                handleInventoryInput(keyStroke, inventoryView);
             }
         }
     }
 
+    /**
+     * Handles the inventory input based on the current action.
+     *
+     * @param keyStroke     The keystroke from the user.
+     * @param inventoryView The inventory view to update and display.
+     * @throws IOException if there is an input/output error.
+     */
+    private void handleInventoryInput(KeyStroke keyStroke, InventoryView inventoryView) throws IOException {
+        if (keyStroke.getKeyType() == KeyType.Character) {
+            if (inventoryAction == InventoryAction.VIEWING) {
+                switch (keyStroke.getCharacter()) {
+                    case '1':
+                        inventoryAction = InventoryAction.DROP_ITEM;
+                        inventoryView.displayDropOptions();
+                        break;
+                    case '2':
+                        inventoryAction = InventoryAction.USE_CONSUMABLE;
+                        // inventoryView.displayUseConsumableOptions();
+                        break;
+                    case '3':
+                        inventoryAction = InventoryAction.VIEWING;
+                        currentView = mainGameView;
+                        break;
+                }
+            } else if (inventoryAction == InventoryAction.DROP_ITEM) {
+                char itemIndexChar = keyStroke.getCharacter();
+                int itemIndex = Character.getNumericValue(itemIndexChar) - 1;
+                inventoryView.dropItem(itemIndex);
+                inventoryAction = InventoryAction.VIEWING;
+                inventoryView.display(); // Refresh the inventory view
+            }
+            // Add logic for USE_CONSUMABLE
+        }
+    }
 }

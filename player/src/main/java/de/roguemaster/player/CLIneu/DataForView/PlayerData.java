@@ -1,9 +1,10 @@
 package de.roguemaster.player.CLIneu.DataForView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is used to store the data needed for the view.
+ * Erste Dummy Version der PlayerDaten
  * TODO: Daten anpassen an echte Daten auf server (Cemos Klassen)
  */
 public class PlayerData {
@@ -17,8 +18,9 @@ public class PlayerData {
         this.level = level;
         this.hp = hp;
         this.exp = exp;
-        this.inventoryItems = inventoryItems;
+        this.inventoryItems = new ArrayList<>(inventoryItems);
     }
+
 
     public int getLevel() {
         return level;

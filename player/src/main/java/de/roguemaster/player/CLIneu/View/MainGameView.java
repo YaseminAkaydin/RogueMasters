@@ -5,10 +5,16 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.CLIneu.DataForView.PlayerData;
 import de.roguemaster.player.CLIneu.DataForView.RoomData;
+import de.roguemaster.player.CLIneu.View.ViewComponent;
 
 import java.io.IOException;
 import java.util.Random;
 
+/**
+ * Die Hauptansicht des Spiels.
+ * TODO: Klären wo die Optionen verarbeitete werden sollen. Client nimmt items und monster aus dem raum und findet dann herraus was er machen kann als optionen
+ *
+ */
 public class MainGameView implements ViewComponent {
     // Attributes for room, options, player stats
     private Terminal terminal;
@@ -107,7 +113,7 @@ public class MainGameView implements ViewComponent {
             }
             tg.putString(optionsStartX, optionsStartY++, "2. Move");
             tg.putString(optionsStartX, optionsStartY++, "3. Do Nothing");
-            if (roomData.getItem() != null) {
+            if (!roomData.getItems().isEmpty()) {
                 tg.putString(optionsStartX, optionsStartY, "4. Pick Up Item");
             }
             // Player Stats
