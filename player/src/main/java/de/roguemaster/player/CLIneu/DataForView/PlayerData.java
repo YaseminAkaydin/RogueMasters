@@ -11,10 +11,10 @@ public class PlayerData {
     private int level;
     private int hp;
     private int exp;
-    private List<String> inventoryItems;
+    private List<ItemData> inventoryItems;
 
 
-    public PlayerData(int level, int hp, int exp, List<String> inventoryItems) {
+    public PlayerData(int level, int hp, int exp, List<ItemData> inventoryItems) {
         this.level = level;
         this.hp = hp;
         this.exp = exp;
@@ -46,10 +46,10 @@ public class PlayerData {
         this.exp = exp;
     }
 
-    public List<String> getInventoryItems() {
+    public List<ItemData> getInventoryItems() {
         return inventoryItems;
     }
-    public void setInventoryItems(List<String> inventoryItems) {
+    public void setInventoryItems(List<ItemData> inventoryItems) {
         this.inventoryItems = inventoryItems;
     }
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * Dummy Version des Game Main Views
- * TODO: BIG TODO GameLoop MultiThreaded machen...
+ * TODO: Dummy MainLoop löschen und überarbeiten + Multithreaded für inputs lesen (Alle 5 Sek senden wir daten)
  */
 public class Game {
     private Terminal terminal;
@@ -31,16 +31,17 @@ public class Game {
     public Game(Terminal terminal) {
         this.terminal = terminal;
         // Initialize views
-        ViewBuilder viewBuilder = new ViewBuilder();
-        mainGameView = viewBuilder.buildMainGameView(terminal);
-        dungeonMapView = viewBuilder.buildDungeonMapView(terminal);
-        inventoryView = viewBuilder.buildInventoryView(terminal);
-        startScreenView = viewBuilder.buildStartScreenView(terminal);
-        startingLobbyView = viewBuilder.buildStartingLobbyView(terminal);
-        joiningLobbyView = viewBuilder.buildJoiningLobbyView(terminal);
-        leaderBoardView = viewBuilder.buildLeaderBoardView(terminal);
-        currentView = dungeonMapView;
+        ViewBuilder viewBuilder = new ViewBuilder(terminal);
+        mainGameView = viewBuilder.getMainGameView();
+        dungeonMapView = viewBuilder.getDungeonMapView();
+        inventoryView = viewBuilder.getInventoryView();
+        startScreenView = viewBuilder.getStartScreenView();
+        startingLobbyView = viewBuilder.getStartingLobbyView();
+        joiningLobbyView = viewBuilder.getJoiningLobbyView();
+        leaderBoardView = viewBuilder.getLeaderBoardView();
+        currentView = mainGameView;
     }
+
 
     public void run() throws IOException {
         boolean running = true;
@@ -48,7 +49,9 @@ public class Game {
             System.out.println("Current view: " + currentView.getClass().getSimpleName());
             currentView.display();
             KeyStroke keyStroke = terminal.readInput();
-
+            if(keyStroke.getCharacter() == 'i') currentView = inventoryView;
+            if(keyStroke.getCharacter() == 's') currentView = mainGameView;
+            if(keyStroke.getCharacter() == 'm') currentView = dungeonMapView;
             if (currentView instanceof StartScreenView) {
                 if (keyStroke.getKeyType() == KeyType.Character) {
                     switch (keyStroke.getCharacter()) {

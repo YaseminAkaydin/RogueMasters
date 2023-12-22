@@ -13,7 +13,7 @@ import java.util.Random;
 /**
  * Die Hauptansicht des Spiels.
  * TODO: Klären wo die Optionen verarbeitete werden sollen. Client nimmt items und monster aus dem raum und findet dann herraus was er machen kann als optionen
- *
+ * TODO: Handlen der Spielereingaben für Optionen + neue display implementieren
  */
 public class MainGameView implements ViewComponent {
     // Attributes for room, options, player stats
@@ -117,7 +117,7 @@ public class MainGameView implements ViewComponent {
                 tg.putString(optionsStartX, optionsStartY, "4. Pick Up Item");
             }
             // Player Stats
-            displayPlayerStats(tg, playerData, roomStartX, roomStartY, roomHeight);
+            displayPlayerStats(tg, playerData);
 
 
             terminal.flush();
@@ -125,12 +125,12 @@ public class MainGameView implements ViewComponent {
             e.printStackTrace();
         }
     }
-    private void displayPlayerStats(TextGraphics tg, PlayerData playerData, int roomStartX, int roomStartY, int roomHeight) {
-        int statsStartY = roomStartY + roomHeight + 2; // Below the room
+    private void displayPlayerStats(TextGraphics tg, PlayerData playerData) throws IOException {
+        int statsStartY = terminal.getTerminalSize().getRows() - 1; // Below the room
         tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(roomStartX, statsStartY, "LEVEL: " + playerData.getLevel() +
+        tg.putString(1, statsStartY, "LEVEL: " + playerData.getLevel() +
                 " HP: " + playerData.getHp() +
                 "/10 EXP: " + playerData.getExp() +
-                "  -------  Press 'M' for Map or 'I' for Inventory");
+                "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
 }

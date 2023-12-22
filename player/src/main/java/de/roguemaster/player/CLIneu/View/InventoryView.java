@@ -3,6 +3,7 @@ package de.roguemaster.player.CLIneu.View;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
+import de.roguemaster.player.CLIneu.DataForView.ItemData;
 import de.roguemaster.player.CLIneu.DataForView.PlayerData;
 import de.roguemaster.player.CLIneu.InventoryAction;
 
@@ -12,7 +13,7 @@ import java.util.List;
 public class InventoryView implements ViewComponent {
     // Attributes for inventory items
     private Terminal terminal;
-    private List<String> inventoryItems;
+    private List<ItemData> inventoryItems;
     private PlayerData playerData;
     private InventoryAction currentAction = InventoryAction.VIEWING;
 
@@ -47,9 +48,12 @@ public class InventoryView implements ViewComponent {
             // Display the list of inventory items
             int startY = 3; // Adjust the starting Y position as needed
             for (int i = 0; i < inventoryItems.size(); i++) {
-                String itemString = (i + 1) + ". " + inventoryItems.get(i);
+                String itemString = (i + 1) + ". " +
+                        inventoryItems.get(i).getName() +
+                        ": " +
+                        inventoryItems.get(i).getDescription()+ " | Attribute: " + inventoryItems.get(i).getAttributes();
                 tg.putString(2, startY + i, itemString);
-            }
+            } // Attribute can be dmg, defense, potion or exp, depends what item it is
 
             // Display player options
             tg.setForegroundColor(TextColor.ANSI.WHITE);
@@ -89,11 +93,12 @@ public class InventoryView implements ViewComponent {
     }
 
     private void displayPlayerStats(TextGraphics tg, PlayerData playerData) throws IOException {
-        int statsStartY = terminal.getTerminalSize().getRows() - 3; // Near the bottom of the terminal
+        int statsStartY = terminal.getTerminalSize().getRows() - 1; // Near the bottom of the terminal
         tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(2, statsStartY, "Level: " + playerData.getLevel() +
+        tg.putString(1, statsStartY, "LEVEL: " + playerData.getLevel() +
                 " HP: " + playerData.getHp() +
-                "/10 EXP: " + playerData.getExp());
+                "/10 EXP: " + playerData.getExp() +
+                "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
 
     /**
@@ -104,7 +109,7 @@ public class InventoryView implements ViewComponent {
      */
     public void dropItem(int itemIndex) throws IOException {
         // Remove the item from the inventory
-        List<String> inventoryItems = playerData.getInventoryItems();
+        List<ItemData> inventoryItems = playerData.getInventoryItems();
         if (itemIndex >= 0 && itemIndex < inventoryItems.size()) {
             inventoryItems.remove(itemIndex);
         }

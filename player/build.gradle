@@ -27,6 +27,13 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	/*// https://mvnrepository.com/artifact/com.googlecode.lanterna/lanterna
+	implementation 'com.googlecode.lanterna:lanterna:3.2.0-alpha1'*/
+
+	// https://mvnrepository.com/artifact/com.googlecode.lanterna/lanterna
+	implementation 'com.googlecode.lanterna:lanterna:3.1.1'
+
+
 }
 
 tasks.named('test') {
