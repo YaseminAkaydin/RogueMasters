@@ -3,33 +3,57 @@ package de.roguemaster.player.CLIneu.View;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
+import de.roguemaster.player.CLIneu.DataForView.DungeonData;
+import de.roguemaster.player.CLIneu.DataForView.ItemData;
 import de.roguemaster.player.CLIneu.DataForView.PlayerData;
 import de.roguemaster.player.CLIneu.DataForView.RoomData;
-import de.roguemaster.player.CLIneu.View.ViewComponent;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Die Hauptansicht des Spiels.
- * TODO: Klären wo die Optionen verarbeitete werden sollen. Client nimmt items und monster aus dem raum und findet dann herraus was er machen kann als optionen
- * TODO: Handlen der Spielereingaben für Optionen + neue display implementieren
  */
 public class MainGameView implements ViewComponent {
-    // Attributes for room, options, player stats
-    private Terminal terminal;
+
+    private final Terminal terminal;
     private RoomData roomData;
-    private Random random = new Random();
+    private final Random random = new Random();
     private PlayerData playerData;
+    private Map<Integer, String> optionMappings;
+    private DungeonData dungeonData;
 
-    public MainGameView(Terminal terminal, RoomData roomData, PlayerData playerData) {
+    private static final int ROOM_WIDTH = 35;
+    private static final int ROOM_HEIGHT = 17;
+    private static final int ROOM_START_X = 2;
+    private static final int ROOM_START_Y = 2;
+    private static final int OPTIONS_START_X = ROOM_START_X + ROOM_WIDTH + 5;
+    private static final int OPTIONS_START_Y = 2;
+    private static final int STATS_Y_OFFSET = -1;
+    private static final int DOOR_OFFSET = ROOM_WIDTH / 2;
+
+    private int monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+    private int monsterY = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+    private final int[] itemX = new int[2];
+    private final int[] itemY = new int[2];
+
+    public MainGameView(Terminal terminal, DungeonData dungeonData, PlayerData playerData) {
         this.terminal = terminal;
-        this.roomData = roomData;
         this.playerData = playerData;
-    }
+        this.roomData = dungeonData.getRooms().get(playerData.getCurrentRoomID() - 1);
+        this.dungeonData = dungeonData;
+        optionMappings = new HashMap<>();
 
-    public void updateRoomData(RoomData roomData) {
-        this.roomData = roomData;
+        for (int i = 0; i < 2; i++) {
+            itemX[i] = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+            itemY[i] = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
+        }
+
+        System.out.println(roomData.toString());
+
     }
 
     @Override
@@ -37,100 +61,157 @@ public class MainGameView implements ViewComponent {
         try {
             terminal.clearScreen();
             TextGraphics tg = terminal.newTextGraphics();
-
-            // Room dimensions and position
-            int roomWidth = 35;
-            int roomHeight = 17;
-            int roomStartX = 2; // Adjust as needed
-            int roomStartY = 2; // Adjust as needed
-
-            // Draw the room
-            for (int y = roomStartY; y < roomStartY + roomHeight; y++) {
-                for (int x = roomStartX; x < roomStartX + roomWidth; x++) {
-                    if (x == roomStartX || x == roomStartX + roomWidth - 1) {
-                        tg.putString(x, y, "|");
-                    } else if (y == roomStartY || y == roomStartY + roomHeight - 1) {
-                        tg.putString(x, y, "-");
-                    } else {
-                        tg.putString(x, y, ".");
-                    }
-                }
-            }
-
-            // Player in the middle (green)
-            int playerX = roomStartX + roomWidth / 2;
-            int playerY = roomStartY + roomHeight / 2;
-            tg.setForegroundColor(TextColor.ANSI.GREEN);
-            tg.putString(playerX, playerY, "X");
-
-            // Example Monster (red)
-            int monsterX = random.nextInt(roomWidth - 2) + roomStartX + 1;
-            int monsterY = random.nextInt(roomHeight - 2) + roomStartY + 1;
-            tg.setForegroundColor(TextColor.ANSI.RED);
-            if (roomData.getMonster().equals("skeleton"))
-                tg.putString(monsterX, monsterY, "S");
-            else if (roomData.getMonster().equals("zombie"))
-                tg.putString(monsterX, monsterY, "Z"); // Replace 'Z' with actual monster type
-            else if (roomData.getMonster().equals("boss"))
-                tg.putString(monsterX, monsterY, "B"); // Replace 'B' with actual monster type
-
-            // Example Door (middle of top wall)
-            tg.setForegroundColor(TextColor.ANSI.CYAN);
-            if (roomData.getDoors().contains("north")) {
-                int doorX = roomStartX + roomWidth / 2;
-                int doorY = roomStartY;
-                tg.putString(doorX, doorY, "+");
-            }
-            if (roomData.getDoors().contains("south")) {
-                int doorX = roomStartX + roomWidth / 2;
-                int doorY = roomStartY + roomHeight - 1;
-                tg.putString(doorX, doorY, "+");
-            }
-            if (roomData.getDoors().contains("east")) {
-                int doorX = roomStartX + roomWidth - 1;
-                int doorY = roomStartY + roomHeight / 2;
-                tg.putString(doorX, doorY, "+");
-            }
-            if (roomData.getDoors().contains("west")) {
-                int doorX = roomStartX;
-                int doorY = roomStartY + roomHeight / 2;
-                tg.putString(doorX, doorY, "+");
-            }
-
-            // Example Item (yellow)
-            int itemX = random.nextInt(roomWidth - 2) + roomStartX + 1;
-            int itemY = random.nextInt(roomHeight - 2) + roomStartY + 1;
-            tg.setForegroundColor(TextColor.ANSI.YELLOW);
-            tg.putString(itemX, itemY, "I");
-
-            // Player Options
-            int optionsStartY = 2;
-            int optionsStartX = roomStartX + roomWidth + 5; // Adjust as needed
-            tg.setForegroundColor(TextColor.ANSI.WHITE);
-            tg.putString(optionsStartX, optionsStartY++, "Options:");
-            if (roomData.getMonster() != null) {
-                tg.putString(optionsStartX, optionsStartY++, "1. Attack");
-            }
-            tg.putString(optionsStartX, optionsStartY++, "2. Move");
-            tg.putString(optionsStartX, optionsStartY++, "3. Do Nothing");
-            if (!roomData.getItems().isEmpty()) {
-                tg.putString(optionsStartX, optionsStartY, "4. Pick Up Item");
-            }
-            // Player Stats
-            displayPlayerStats(tg, playerData);
-
-
+            drawRoom(tg);
+            drawPlayer(tg);
+            drawMonster(tg);
+            drawDoors(tg);
+            drawItems(tg);
+            displayOptions(tg);
+            displayPlayerStats(tg);
             terminal.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private void displayPlayerStats(TextGraphics tg, PlayerData playerData) throws IOException {
-        int statsStartY = terminal.getTerminalSize().getRows() - 1; // Below the room
+
+    private void drawRoom(TextGraphics tg) {
+        for (int y = ROOM_START_Y; y < ROOM_START_Y + ROOM_HEIGHT; y++) {
+            for (int x = ROOM_START_X; x < ROOM_START_X + ROOM_WIDTH; x++) {
+                String symbol = (x == ROOM_START_X || x == ROOM_START_X + ROOM_WIDTH - 1) ? "|" :
+                        (y == ROOM_START_Y || y == ROOM_START_Y + ROOM_HEIGHT - 1) ? "-" : ".";
+                tg.putString(x, y, symbol);
+            }
+        }
+    }
+
+    private void drawPlayer(TextGraphics tg) {
+        int playerX = ROOM_START_X + ROOM_WIDTH / 2;
+        int playerY = ROOM_START_Y + ROOM_HEIGHT / 2;
+        tg.setForegroundColor(TextColor.ANSI.GREEN);
+        tg.putString(playerX, playerY, "X");
+    }
+
+    private void drawMonster(TextGraphics tg) {
+
+        tg.setForegroundColor(TextColor.ANSI.RED);
+        if (roomData.getMonster() != null) {
+            String monsterSymbol = switch (roomData.getMonster()) {
+                case "Skeleton" -> "S";
+                case "Zombie" -> "Z";
+                case "Boss" -> "B";
+                default -> "?";
+            };
+            tg.putString(monsterX, monsterY, monsterSymbol);
+        }
+    }
+
+    private void drawDoors(TextGraphics tg) {
         tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(1, statsStartY, "LEVEL: " + playerData.getLevel() +
+        roomData.getAdjacentRooms().forEach((direction, adjacentRoomId) -> {
+
+            if (adjacentRoomId != null) {
+                int doorX = switch (direction) {
+                    case "NORTH", "SOUTH" -> ROOM_START_X + DOOR_OFFSET;
+                    case "EAST" -> ROOM_START_X + ROOM_WIDTH - 1;
+                    case "WEST" -> ROOM_START_X;
+                    default -> -1;
+                };
+                int doorY = switch (direction) {
+                    case "NORTH" -> ROOM_START_Y;
+                    case "SOUTH" -> ROOM_START_Y + ROOM_HEIGHT - 1;
+                    case "EAST", "WEST" -> ROOM_START_Y + ROOM_HEIGHT / 2;
+                    default -> -1;
+                };
+                if (doorX != -1 && doorY != -1) {
+                    tg.putString(doorX, doorY, "+");
+                }
+            }
+        });
+    }
+
+    private void drawItems(TextGraphics tg) {
+        if (!roomData.getItems().isEmpty()) {
+            tg.setForegroundColor(TextColor.ANSI.YELLOW);
+            int i = 0;
+            for (ItemData item : roomData.getItems()) {
+
+                tg.putString(itemX[i], itemY[i++], "I");
+            }
+        }
+    }
+
+    private void displayOptions(TextGraphics tg) {
+        AtomicInteger optionsStartY = new AtomicInteger(OPTIONS_START_Y);
+        AtomicInteger optionNumber = new AtomicInteger(1); // Start with option number 1
+
+        tg.setForegroundColor(TextColor.ANSI.CYAN);
+        // Display the current room ID and adjacent room IDs
+        String roomInfo = "CurrentRoomID: " + roomData.getId() +
+                "| North: " + getAdjacentRoomId("NORTH") +
+                "| South: " + getAdjacentRoomId("SOUTH") +
+                "| East: " + getAdjacentRoomId("EAST") +
+                "| West: " + getAdjacentRoomId("WEST");
+        tg.putString(ROOM_START_X, ROOM_START_Y - 1, roomInfo);
+
+        tg.setForegroundColor(TextColor.ANSI.WHITE);
+        tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), "Options:");
+
+        // Clear previous mappings
+        optionMappings.clear();
+
+        // Display 'Attack' option if a monster is present
+        if (roomData.getMonster() != null) {
+            tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), optionNumber + ". Attack");
+            optionMappings.put(optionNumber.getAndIncrement(), "Attack");
+        }
+
+        // Display movement options based on available doors
+        roomData.getAdjacentRooms().forEach((direction, adjacentRoomId) -> {
+            if (adjacentRoomId != null) {
+                String moveOptionText = optionNumber + ". Move " + direction.charAt(0); // 'N', 'S', 'E', 'W'
+                tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), moveOptionText);
+                optionMappings.put(optionNumber.getAndIncrement(), "Move " + direction);
+            }
+        });
+
+        // Display 'Do Nothing' option
+        tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), optionNumber + ". Do Nothing");
+        optionMappings.put(optionNumber.getAndIncrement(), "Do Nothing");
+
+        // Display 'Pick Up Item' option if items are present
+        if (!roomData.getItems().isEmpty()) {
+            tg.putString(OPTIONS_START_X, optionsStartY.get(), optionNumber + ". Pick Up Item");
+            optionMappings.put(optionNumber.getAndIncrement(), "Pick Up Item");
+        }
+    }
+    public Map<Integer, String> getOptionMappings() {
+        return optionMappings;
+    }
+    public void updateRoom(String direction) {
+        Integer newRoomId = roomData.getAdjacentRooms().get(direction.toUpperCase());
+        if (newRoomId != null) {
+            playerData.setCurrentRoomID(newRoomId); // Assuming PlayerData has a method setCurrentRoomID
+            roomData = dungeonData.getRooms().get(newRoomId - 1); // Update roomData to the new room
+            for (int i = 0; i < 2; i++) {
+                itemX[i] = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+                itemY[i] = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
+            }
+            monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+            monsterY = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+        }
+    }
+
+    private String getAdjacentRoomId(String direction) {
+        return roomData.getAdjacentRooms().getOrDefault(direction, -1).toString();
+    }
+
+    private void displayPlayerStats(TextGraphics tg) throws IOException {
+        int statsStartY = terminal.getTerminalSize().getRows() + STATS_Y_OFFSET;
+        tg.setForegroundColor(TextColor.ANSI.CYAN);
+        tg.putString(ROOM_START_X, statsStartY, "LEVEL: " + playerData.getLevel() +
                 " HP: " + playerData.getHp() +
                 "/10 EXP: " + playerData.getExp() +
                 "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
+
 }

@@ -1,31 +1,38 @@
 package de.roguemaster.player.CLIneu.DataForView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Erste Dummy Version der Räume.
  * TODO: An echte Rooms anpassen
+ * TODO: Beispiel Dungeon von SS Code generieren und dann diese Daten nehmen als BSP Liste
  */
 public class RoomData {
-    private String roomType; // normal, boss, treasure
+    private String roomType; // DungeonRoom, BossRoom, TreasureRoom
     private String monster; // Skeleton, Zombie, Boss
     private List<ItemData> items; // Sword, Shield, Potion, Book
-    private List<String> doors; // north, south, east, west
     private int roomID;
+    private Map<String, Integer> adjacentRooms;
 
 
-    public RoomData(String roomType, String monster, List<ItemData> items, List<String> doors, int roomID) {
+    public RoomData(String roomType, String monster,
+                    List<ItemData> items,int roomID, Map<String, Integer> adjacentRooms) {
         this.roomType = roomType;
         this.monster = monster;
         this.items = new ArrayList<>(items); // Max 2 Items, haben wir so entschieden
-        this.doors = doors;
         this.roomID = roomID;
-
+        this.adjacentRooms = new HashMap<>(adjacentRooms);
     }
 
     public String getRoomType() {
         return roomType;
+    }
+
+    public void addAdjacentRoom(String direction, int roomId) {
+        adjacentRooms.put(direction, roomId);
     }
 
     public void setRoomType(String roomType) {
@@ -48,17 +55,22 @@ public class RoomData {
         this.items = items;
     }
 
-    public List<String> getDoors() {
-        return doors;
-    }
-
-    public void setDoors(List<String> doors) {
-        this.doors = doors;
-    }
-
-
-    public int getRoomID() {
+    public int getId() {
         return roomID;
     }
 
+    public Map<String, Integer> getAdjacentRooms() {
+        return adjacentRooms;
+    }
+
+    @Override
+    public String toString() {
+        return "RoomData{" +
+                "roomType='" + roomType + '\'' +
+                ", monster='" + monster + '\'' +
+                ", items=" + items +
+                ", roomID=" + roomID +
+                ", adjacentRooms=" + adjacentRooms +
+                '}';
+    }
 }

@@ -17,23 +17,13 @@ public class InventoryView implements ViewComponent {
     private PlayerData playerData;
     private InventoryAction currentAction = InventoryAction.VIEWING;
 
-    /**
-     * Constructor for InventoryView.
-     *
-     * @param terminal   The terminal to display the inventory on.
-     * @param playerData The player data containing the inventory items.
-     */
     public InventoryView(Terminal terminal, PlayerData playerData) {
         this.terminal = terminal;
         this.playerData = playerData;
         this.inventoryItems = playerData.getInventoryItems();
 
     }
-    /**
-     * Displays the inventory view with player options and stats.
-     *
-     * @throws IOException if there is an input/output error.
-     */
+
     @Override
     public void display() {
         try {
@@ -53,8 +43,7 @@ public class InventoryView implements ViewComponent {
                         ": " +
                         inventoryItems.get(i).getDescription()+ " | Attribute: " + inventoryItems.get(i).getAttributes();
                 tg.putString(2, startY + i, itemString);
-            } // Attribute can be dmg, defense, potion or exp, depends what item it is
-
+            }
             // Display player options
             tg.setForegroundColor(TextColor.ANSI.WHITE);
             int optionsStartY = inventoryItems.size() + 4; // Below the inventory items

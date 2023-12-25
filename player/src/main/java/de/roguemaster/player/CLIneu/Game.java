@@ -4,13 +4,18 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import de.roguemaster.player.CLIneu.DataForView.DungeonData;
+import de.roguemaster.player.CLIneu.DataForView.ItemData;
+import de.roguemaster.player.CLIneu.DataForView.RoomData;
 import de.roguemaster.player.CLIneu.View.*;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Dummy Version des Game Main Views
- * TODO: Dummy MainLoop löschen und überarbeiten + Multithreaded für inputs lesen (Alle 5 Sek senden wir daten)
  */
 public class Game {
     private Terminal terminal;
@@ -22,107 +27,145 @@ public class Game {
     private StartingLobbyView startingLobbyView;
     private JoiningLobbyView joiningLobbyView;
     private LeaderBoardView leaderBoardView;
+    private ViewBuilder viewBuilder;
 
-    private InventoryAction inventoryAction = InventoryAction.VIEWING;
-
-    private boolean inInventoryOption = false;
-    private int inventoryOption = 0;
+    private AtomicBoolean running = new AtomicBoolean(true);
+    private AtomicBoolean gameStarted = new AtomicBoolean(false);
 
     public Game(Terminal terminal) {
         this.terminal = terminal;
-        // Initialize views
-        ViewBuilder viewBuilder = new ViewBuilder(terminal);
-        mainGameView = viewBuilder.getMainGameView();
-        dungeonMapView = viewBuilder.getDungeonMapView();
-        inventoryView = viewBuilder.getInventoryView();
+        this.viewBuilder = new ViewBuilder(terminal);
         startScreenView = viewBuilder.getStartScreenView();
         startingLobbyView = viewBuilder.getStartingLobbyView();
         joiningLobbyView = viewBuilder.getJoiningLobbyView();
         leaderBoardView = viewBuilder.getLeaderBoardView();
-        currentView = mainGameView;
+        currentView = startScreenView;
     }
 
+    public void run2() throws IOException {
 
-    public void run() throws IOException {
-        boolean running = true;
-        while (running) {
-            System.out.println("Current view: " + currentView.getClass().getSimpleName());
-            currentView.display();
-            KeyStroke keyStroke = terminal.readInput();
-            if(keyStroke.getCharacter() == 'i') currentView = inventoryView;
-            if(keyStroke.getCharacter() == 's') currentView = mainGameView;
-            if(keyStroke.getCharacter() == 'm') currentView = dungeonMapView;
-            if (currentView instanceof StartScreenView) {
-                if (keyStroke.getKeyType() == KeyType.Character) {
-                    switch (keyStroke.getCharacter()) {
-                        case '1': // Start Lobby
-                            currentView = startingLobbyView;
-                            currentView.display();
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            currentView = mainGameView;
-                            break;
-                        case '2': // Join Lobby
-                            currentView = joiningLobbyView;
-                            currentView.display();
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            currentView = mainGameView;
-                            break;
-                        case '3': // See Leaderboard
-                            currentView = leaderBoardView;
-                            break;
-                        case '4': // Exit
-                            running = false;
-                            break;
-                    }
+        // Seperate Thread for inputhandling
+        Thread inputThread = new Thread(this::handleInput);
+        inputThread.start();
+
+        while (running.get()) {
+            try {
+                // Display the current view
+                currentView.display();
+
+                // Init Game when starting own lobby
+                if (currentView instanceof StartingLobbyView && (viewBuilder.getDungeonData() != null)){
+                    this.dungeonMapView = viewBuilder.getDungeonMapView();
+                    this.mainGameView = viewBuilder.getMainGameView();
+                    this.inventoryView = viewBuilder.getInventoryView();
+                    gameStarted.set(true);
+                    currentView = mainGameView;
                 }
-            } else if (currentView instanceof InventoryView) {
-                InventoryView inventoryView = (InventoryView) currentView;
-                // Handle inventory options based on InventoryAction
-                handleInventoryInput(keyStroke, inventoryView);
+
+                Thread.sleep(1000);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                running.set(false);
+            }
+        }
+
+        inputThread.interrupt();
+        terminal.close();
+    }
+    private void handleInput() {
+        while (running.get()) {
+            try {
+                KeyStroke keyStroke = terminal.pollInput();
+                if (keyStroke != null) {
+                    processInput(keyStroke);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
-    /**
-     * Handles the inventory input based on the current action.
-     *
-     * @param keyStroke     The keystroke from the user.
-     * @param inventoryView The inventory view to update and display.
-     * @throws IOException if there is an input/output error.
-     */
-    private void handleInventoryInput(KeyStroke keyStroke, InventoryView inventoryView) throws IOException {
-        if (keyStroke.getKeyType() == KeyType.Character) {
-            if (inventoryAction == InventoryAction.VIEWING) {
-                switch (keyStroke.getCharacter()) {
-                    case '1':
-                        inventoryAction = InventoryAction.DROP_ITEM;
-                        inventoryView.displayDropOptions();
+    // TODO: Inventarview hinzufügen
+    private void processInput(KeyStroke keyStroke) throws IOException {
+        // Handle different inputs for each view
+        if (currentView instanceof StartScreenView) {
+            switch (keyStroke.getCharacter()) {
+                case '1':
+                    System.out.println("Creating Dungeon and switch to startingLobbyView");
+                    startingLobbyView = viewBuilder.buildStartingLobbyView(terminal);
+                    this.currentView = startingLobbyView;
+                    // Simulate receiving dungeon data from the server
+
+                    break;
+                case '2':
+                    currentView = joiningLobbyView; // TODO: mechanics hier implementeiren
+                    break;
+                case '3':
+                    currentView = leaderBoardView;
+                    break;
+                case '4':
+                    running.set(false); // Exit the game
+                    break;
+            }
+        }
+        if (currentView instanceof LeaderBoardView){
+            if (keyStroke.getCharacter() == 'b') currentView = startScreenView;
+        }
+        if (currentView instanceof MainGameView) {
+
+            Map<Integer, String> options = mainGameView.getOptionMappings();
+            char inputChar = keyStroke.getCharacter();
+            int selectedOption = Character.isDigit(inputChar) ? Character.getNumericValue(inputChar) : -1;
+
+            if (options.containsKey(selectedOption)) {
+                String action = options.get(selectedOption);
+                switch (action) {
+                    case "Attack":
+                        System.out.println("Send Attack to Server"); // TODO: RPC ATTACK
                         break;
-                    case '2':
-                        inventoryAction = InventoryAction.USE_CONSUMABLE;
-                        // inventoryView.displayUseConsumableOptions();
+                    case "Do Nothing":
+                        System.out.println("Do Nothing");
                         break;
-                    case '3':
-                        inventoryAction = InventoryAction.VIEWING;
-                        currentView = mainGameView;
+                    // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
+                    case "Move NORTH":
+                        System.out.println("Move N");
+                        mainGameView.updateRoom("NORTH"); // TODO: Move klären
+                        break;
+                    case "Move SOUTH":
+                        System.out.println("Move S");
+                        mainGameView.updateRoom("SOUTH");
+                        break;
+                    case "Move EAST":
+                        System.out.println("Move E");
+                        mainGameView.updateRoom("EAST");
+                        break;
+                    case "Move WEST":
+                        System.out.println("Move W");
+                        mainGameView.updateRoom("WEST");
+                        break;
+                    case "Pick Up Item":
+                        System.out.println("Pick up Item");
+                        break;
+                    default:
+                        System.out.println("Default: Do Nothing");
                         break;
                 }
-            } else if (inventoryAction == InventoryAction.DROP_ITEM) {
-                char itemIndexChar = keyStroke.getCharacter();
-                int itemIndex = Character.getNumericValue(itemIndexChar) - 1;
-                inventoryView.dropItem(itemIndex);
-                inventoryAction = InventoryAction.VIEWING;
-                inventoryView.display(); // Refresh the inventory view
             }
-            // Add logic for USE_CONSUMABLE
+        }
+        if (gameStarted.get()){
+            switch (keyStroke.getCharacter()){
+                case 'i':
+                    currentView = inventoryView;
+                    break;
+                case 's':
+                    currentView = mainGameView;
+                    break;
+                case 'm':
+                    currentView = dungeonMapView;
+                    break;
+            }
+
         }
     }
 
@@ -132,7 +175,7 @@ public class Game {
             Terminal terminal = terminalFactory.createTerminal();
 
             Game game = new Game(terminal);
-            game.run();
+            game.run2();
 
             terminal.close();
         } catch (IOException e) {

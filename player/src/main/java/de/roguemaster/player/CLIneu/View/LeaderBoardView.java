@@ -21,6 +21,8 @@ public class LeaderBoardView implements ViewComponent {
         try {
             terminal.clearScreen();
             terminal.setCursorPosition(0, 0);
+            terminal.putString("Press 'B' to go back");
+            terminal.setCursorPosition(0, 2);
             terminal.putString("Showing Leaderboard");
             terminal.flush();
         } catch (IOException e) {
