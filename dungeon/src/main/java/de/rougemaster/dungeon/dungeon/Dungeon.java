@@ -36,7 +36,7 @@ public class Dungeon {
             Room newRoom = (i % 5 == 0) ? roomFactory.createRoom(RoomFactory.RoomType.TREASURE) : roomFactory.createRoom(RoomFactory.RoomType.DUNGEON);
             roomList.add(newRoom);
 
-            String direction = getRandomAvailableDirection(currentRoom);
+            RoomCardinalDirection direction = getRandomAvailableDirection(currentRoom);
             connectRooms(currentRoom, newRoom, direction);
 
             currentRoom = (random.nextBoolean()) ? newRoom : getRandomExistingRoom();
@@ -48,14 +48,14 @@ public class Dungeon {
         }
     }
 
-    public static void connectRooms(Room room1, Room room2, String direction) {
-        String oppositeDirection = getOppositeDirection(direction);
+    public static void connectRooms(Room room1, Room room2, RoomCardinalDirection direction) {
+        RoomCardinalDirection oppositeDirection = getOppositeDirection(direction);
         room1.addAdjacentRoom(direction, room2);
         room2.addAdjacentRoom(oppositeDirection, room1);
     }
 
-    private String getRandomAvailableDirection(Room room) {
-        List<String> availableDirections = room.getAdjacentRooms().entrySet().stream().filter(entry -> entry.getValue() == null).map(Map.Entry::getKey).collect(Collectors.toList());
+    private RoomCardinalDirection getRandomAvailableDirection(Room room) {
+        List<RoomCardinalDirection> availableDirections = room.getAdjacentRooms().entrySet().stream().filter(entry -> entry.getValue() == null).map(Map.Entry::getKey).collect(Collectors.toList());
 
         if (availableDirections.isEmpty()) {
             return null;
@@ -64,12 +64,12 @@ public class Dungeon {
         return availableDirections.get(randomIndex);
     }
 
-    private static String getOppositeDirection(String direction) {
+    private static RoomCardinalDirection getOppositeDirection(RoomCardinalDirection direction) {
         return switch (direction) {
-            case "NORTH" -> "SOUTH";
-            case "SOUTH" -> "NORTH";
-            case "EAST" -> "WEST";
-            case "WEST" -> "EAST";
+            case North -> RoomCardinalDirection.South;
+            case South -> RoomCardinalDirection.North;
+            case East -> RoomCardinalDirection.West;
+            case West -> RoomCardinalDirection.East;
             default -> throw new IllegalArgumentException("Invalid direction");
         };
     }
@@ -82,10 +82,9 @@ public class Dungeon {
         return roomList.get(randomIndex);
     }
 
-    private String getRandomDirection() {
-        List<String> directions = Arrays.asList("NORTH", "EAST", "SOUTH", "WEST");
-        int randomIndex = random.nextInt(directions.size());
-        return directions.get(randomIndex);
+    private RoomCardinalDirection getRandomDirection() {
+        int randomIndex = random.nextInt(RoomCardinalDirection.values().length);
+        return RoomCardinalDirection.values()[randomIndex];
     }
 
     public void printDungeonLayout() {

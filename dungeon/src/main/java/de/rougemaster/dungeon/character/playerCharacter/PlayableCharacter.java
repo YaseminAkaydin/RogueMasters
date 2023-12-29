@@ -31,7 +31,11 @@ public class PlayableCharacter extends Character {
      * @param character enemy character
      */
     public void attackUsingEquipment(Character character) {
-        //TODO: Check if character is in the same Room as PlayerCharacter
+        //Check if character is in the same Room as PlayerCharacter
+        if(this.currentRoom.equals(character.getCurrentRoom())){
+            return;
+        }
+
         //TODO: Check if character is in battle with PlayerCharacter
 
         /*TODO: The Following implementation is a example and shouldn't be used for the final product.
@@ -44,8 +48,6 @@ public class PlayableCharacter extends Character {
      * Increases the defense of a character for a round in a fight
      */
     public void defend() {
-        //TODO: Check if character is in the same Room as PlayerCharacter
-
         /*
         * TODO: The Following implementation is a example and shouldn't be used for the final product.
         *       There should be a FightManager to handle this. */

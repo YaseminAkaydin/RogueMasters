@@ -18,7 +18,11 @@ public class Zombie extends EnemyCharacter {
     public void clawAttack(Character character) {
         //TODO: character could be changed to the type PlayableCharacter (useful?)
         //TODO: check if zombie and character are fighting.
-        //TODO: Check if character is in the same Room as PlayerCharacter
+
+        //Check if character is in the same Room as PlayerCharacter
+        if(this.currentRoom.equals(character.getCurrentRoom())){
+            return;
+        }
 
         /*TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */
@@ -32,7 +36,11 @@ public class Zombie extends EnemyCharacter {
     public void biteAttack(Character character){
         //TODO: character could be changed to the type PlayableCharacter (useful?)
         //TODO: check if zombie and character are fighting.
-        //TODO: Check if character is in the same Room as PlayerCharacter
+
+        //Check if character is in the same Room as PlayerCharacter
+        if(this.currentRoom.equals(character.getCurrentRoom())){
+            return;
+        }
 
         /*TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */

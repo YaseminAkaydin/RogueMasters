@@ -10,8 +10,7 @@ abstract public class Room {
     private int id;
     protected List<NullType> items;
     protected List<NullType> enemies;
-    private Map<String, Room> adjacentRooms;
-
+    private final Map<RoomCardinalDirection, Room> adjacentRooms;
 
     public Room() {
         instanceCounter++;
@@ -19,22 +18,21 @@ abstract public class Room {
         this.items = new ArrayList<>();
         this.enemies = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
-        adjacentRooms.put("NORTH", null);
-        adjacentRooms.put("EAST", null);
-        adjacentRooms.put("SOUTH", null);
-        adjacentRooms.put("WEST", null);
-
+        adjacentRooms.put(RoomCardinalDirection.North, null);
+        adjacentRooms.put(RoomCardinalDirection.South, null);
+        adjacentRooms.put(RoomCardinalDirection.East, null);
+        adjacentRooms.put(RoomCardinalDirection.West, null);
     }
 
-    public void addAdjacentRoom(String direction, Room room) {
+    public void addAdjacentRoom(RoomCardinalDirection direction, Room room) {
         adjacentRooms.put(direction, room);
     }
 
-    public Room getAdjacentRoom(String direction) {
+    public Room getAdjacentRoom(RoomCardinalDirection direction) {
         return adjacentRooms.get(direction);
     }
 
-    public Map<String, Room> getAdjacentRooms() {
+    public Map<RoomCardinalDirection, Room> getAdjacentRooms() {
         return adjacentRooms;
     }
 
@@ -43,6 +41,10 @@ abstract public class Room {
     }
 
     abstract public void generateRoom();
+
+    public boolean isRoomAdjacent(Room room){
+        return adjacentRooms.containsValue(room);
+    }
 
 
 }

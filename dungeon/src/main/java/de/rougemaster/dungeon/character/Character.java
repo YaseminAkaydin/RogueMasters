@@ -18,7 +18,9 @@ public abstract class Character {
      * @param room the room you want to move to.
      */
     public void move(Room room) {
-        currentRoom = room;
+        if(currentRoom.isRoomAdjacent(room)){
+            currentRoom = room;
+        }
     }
 
     /**
@@ -29,7 +31,6 @@ public abstract class Character {
      */
     public boolean flee(Room room){
         //TODO: Check if PlayerCharacter is in a fight.
-        //TODO: Check if Room is reachable.
         //TOOO: Stop battle.
         move(room);
 

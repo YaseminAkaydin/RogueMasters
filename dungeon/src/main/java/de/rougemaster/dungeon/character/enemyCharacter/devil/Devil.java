@@ -14,7 +14,12 @@ public class Devil extends EnemyCharacter {
     public void flameSwordAttack(Character character){
         //TODO: character could be changed to the type PlayableCharacter (useful?)
         //TODO: check if devil and character are fighting.
-        //TODO: Check if character is in the same Room as PlayerCharacter
+
+        //Check if character is in the same Room as PlayerCharacter
+        if(this.currentRoom.equals(character.getCurrentRoom())){
+            return;
+        }
+
 
         /*TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */
@@ -23,11 +28,9 @@ public class Devil extends EnemyCharacter {
     }
 
     /**
-     * Increases the defense of the Devil for a round in a fight
+     * Increases the defense of the Devil for a round in a fight.
      */
     public void defend() {
-        //TODO: Check if character is in the same Room as PlayerCharacter
-
         /*
          * TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */
@@ -38,8 +41,6 @@ public class Devil extends EnemyCharacter {
      * Increases the defense of the Devil for a round in a fight
      */
     public void SpikeShield() {
-        //TODO: Check if character is in the same Room as PlayerCharacter
-
         /*
          * TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */
@@ -55,7 +56,12 @@ public class Devil extends EnemyCharacter {
     public void playerKillerAttack(Character character){
         //TODO: character could be changed to the type PlayableCharacter (useful?)
         //TODO: check if devil and character are fighting.
-        //TODO: Check if character is in the same Room as PlayerCharacter
+
+        //Check if character is in the same Room as PlayerCharacter
+        if(this.currentRoom.equals(character.getCurrentRoom())){
+            return;
+        }
+
         //TODO: Check if Character does a move that is not nothing
         character.setHp(0);
     }
