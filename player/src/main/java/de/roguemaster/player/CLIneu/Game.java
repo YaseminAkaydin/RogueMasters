@@ -99,7 +99,8 @@ public class Game {
 
                     break;
                 case '2':
-                    currentView = joiningLobbyView; // TODO: mechanics hier implementeiren
+                    System.out.println("TBU");
+                    //currentView = joiningLobbyView; // TODO: mechanics hier implementeiren
                     break;
                 case '3':
                     currentView = leaderBoardView;

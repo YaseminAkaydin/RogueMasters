@@ -14,9 +14,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Die Hauptansicht des Spiels.
- */
+
 public class MainGameView implements ViewComponent {
 
     private final Terminal terminal;
@@ -35,8 +33,8 @@ public class MainGameView implements ViewComponent {
     private static final int STATS_Y_OFFSET = -1;
     private static final int DOOR_OFFSET = ROOM_WIDTH / 2;
 
-    private int monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
-    private int monsterY = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+    private int monsterX;
+    private int monsterY;
     private final int[] itemX = new int[2];
     private final int[] itemY = new int[2];
 
@@ -46,8 +44,10 @@ public class MainGameView implements ViewComponent {
         this.roomData = dungeonData.getRooms().get(playerData.getCurrentRoomID() - 1);
         this.dungeonData = dungeonData;
         optionMappings = new HashMap<>();
-
+        monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+        monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
         for (int i = 0; i < 2; i++) {
+
             itemX[i] = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
             itemY[i] = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
         }
@@ -197,7 +197,7 @@ public class MainGameView implements ViewComponent {
                 itemY[i] = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
             }
             monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
-            monsterY = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+            monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
         }
     }
 
