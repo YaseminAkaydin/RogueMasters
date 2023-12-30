@@ -14,8 +14,11 @@ public class Lobby {
     private final Map<Integer, Character> playerMap;
     private Game game;
 
-    public Lobby() {
+    private int lobbyId;
+
+    public Lobby(Game game) {
         playerMap = new HashMap<>();
+        this.game = game;
     }
 
     /**
@@ -89,5 +92,9 @@ public class Lobby {
      */
     public void nextTurn(GameState gameState){
         //TODO: Trigger nextTurn method in LobbyFacade with all clientIds
+    }
+
+    public void setLobbyId(int lobbyId) {
+        this.lobbyId = lobbyId;
     }
 }

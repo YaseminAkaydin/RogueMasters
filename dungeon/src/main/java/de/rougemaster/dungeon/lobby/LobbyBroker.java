@@ -86,22 +86,24 @@ public class LobbyBroker {
          * LobbyId has to be a five-digit number
          * @param lobbyId a lobby Identifier that is at least five digit long
          * @param lobby the lobby that has to be registered
+         * @return true if Lobby was registered else false
          * @throws IllegalArgumentException if Lobby is null
          */
-        public void registerLobby (int lobbyId ,Lobby lobby) throws IllegalArgumentException{
+        public boolean registerLobby (int lobbyId ,Lobby lobby) throws IllegalArgumentException{
             if(lobby == null){
                 throw new IllegalArgumentException("Lobby can't be null");
             }
 
             if(checkIfLobbyIdIsLegal(lobbyId)){
-                return;
+                return false;
             }
 
             if(checkLobbyIdExist(lobbyId)){
-                return;
+                return false;
             }
 
             lobbyMap.put(lobbyId, lobby);
+            return true;
         }
 
         /**

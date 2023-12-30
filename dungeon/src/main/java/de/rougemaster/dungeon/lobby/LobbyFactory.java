@@ -1,4 +1,25 @@
 package de.rougemaster.dungeon.lobby;
 
+import de.rougemaster.dungeon.game.Game;
+
 public class LobbyFactory {
+
+        public Lobby createLobby(LobbyCharType lobbyCharType) {
+            Game game = new Game(10,2);
+            Lobby lobby = new Lobby(game);
+
+            //Find a valid lobbyId for the lobby
+            int lobbyId = 0;
+            boolean lobbyIdValid = false;
+            do{
+                lobbyId = LobbyBroker.getLobbyBroker().getLobbyBrokerRegister().generateValidLobbyId();
+                lobbyIdValid = LobbyBroker.getLobbyBroker().getLobbyBrokerRegister().registerLobby(lobbyId, lobby);
+            }while (!lobbyIdValid);
+            lobby.setLobbyId(lobbyId);
+
+            //TODO: Send EnemyFacade request for EnemyAI
+            // EnemyAi registers itself in Lobby and Game
+
+            return lobby;
+        }
 }
