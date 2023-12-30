@@ -8,7 +8,14 @@ public class EnemyCharacterFactory {
      * @param dangerLevel the dangerLevel of the Enemy
      * @return the created enemy
      */
-    public EnemyCharacter createEnemy(String enemyTyp, int dangerLevel){
+    public EnemyCharacter createEnemy(EnemyTyp enemyTyp, int dangerLevel){
         throw new IllegalArgumentException("Not Implemented yet");
+    }
+
+    //Enum for the different enemy types
+    public enum EnemyTyp{
+        Zombie,
+        Skeleton,
+        Devil
     }
 }
