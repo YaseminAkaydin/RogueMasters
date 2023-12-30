@@ -44,10 +44,31 @@ public class LobbyBroker {
      * Registers a User to their Lobby.
      * The Lobby has to be Registered in LobbyBrokerRegister
      * @param clientId the Identifikator of the Client
-     * @param LobbyId the Identifikator of the Lobby
+     * @param lobbyId the Identifikator of the Lobby
      */
-    public void registerUser(int clientId, int LobbyId) {
+    public void registerUser(int clientId, int lobbyId) {
+        //Check if clientId and LobbyId have a valid value.
+        if(clientId<=0 && lobbyBrokerRegister.checkIfLobbyIdIsLegal(lobbyId)){
+            return;
+        }
+        //Check if Client is already registered
+        if(userMap.containsKey(clientId)){
+            return;
+        }
+        //Check if Lobby exist
+        if(!lobbyBrokerRegister.checkLobbyIdExist(lobbyId)){
+            return;
+        }
 
+        userMap.put(clientId, lobbyBrokerRegister.lobbyMap.get(lobbyId));
+    }
+
+    /**
+     * Unregisters a User from their Lobby.
+     * @param clientId the Identifikator of the Client
+     */
+    public void unregisterUser(int clientId) {
+        userMap.remove(clientId);
     }
 
     public static class LobbyBrokerRegister {
