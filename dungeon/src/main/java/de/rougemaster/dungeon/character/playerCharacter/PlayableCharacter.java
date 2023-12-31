@@ -40,7 +40,7 @@ public class PlayableCharacter extends Character {
 
         /*TODO: The Following implementation is a example and shouldn't be used for the final product.
          *       There should be a FightManager to handle this. */
-        int attackDamage = this.attack + weaponSlot.getWeaponDamage();
+        int attackDamage = this.attack + weaponSlot.getDamage();
         character.setHp(character.getHp()-(attackDamage - character.getDefense()));
     }
 
