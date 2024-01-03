@@ -5,7 +5,6 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.CLIneu.DataForView.ItemData;
 import de.roguemaster.player.CLIneu.DataForView.PlayerData;
-import de.roguemaster.player.CLIneu.InventoryAction;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +14,6 @@ public class InventoryView implements ViewComponent {
     private Terminal terminal;
     private List<ItemData> inventoryItems;
     private PlayerData playerData;
-    private InventoryAction currentAction = InventoryAction.VIEWING;
 
     public InventoryView(Terminal terminal, PlayerData playerData) {
         this.terminal = terminal;

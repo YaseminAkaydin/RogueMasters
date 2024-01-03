@@ -84,6 +84,7 @@ public class MainGameView implements ViewComponent {
         }
     }
 
+    // TODO: Draw with max. 4 Players
     private void drawPlayer(TextGraphics tg) {
         int playerX = ROOM_START_X + ROOM_WIDTH / 2;
         int playerY = ROOM_START_Y + ROOM_HEIGHT / 2;

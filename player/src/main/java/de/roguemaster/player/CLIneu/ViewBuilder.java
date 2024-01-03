@@ -29,21 +29,16 @@ public class ViewBuilder {
 
     public ViewBuilder(Terminal terminal) {
         this.terminal = terminal;
-        //this.mainGameView = buildMainGameView(terminal);
-        //this.dungeonMapView = buildDungeonMapView(terminal);
-        //this.inventoryView = buildInventoryView(terminal);
+        this.dungeonData = generateTestDungeon();
+        this.playerData = generateTestPlayerData();
+        this.dungeonMapView = buildDungeonMapView(terminal);
+        this.mainGameView = buildMainGameView(terminal);
+        this.inventoryView = buildInventoryView(terminal);
         this.startScreenView = buildStartScreenView(terminal);
-        //this.startingLobbyView = buildStartingLobbyView(terminal);
-        //this.joiningLobbyView = buildJoiningLobbyView(terminal);
+        this.startingLobbyView = buildStartingLobbyView(terminal);
+        this.joiningLobbyView = buildJoiningLobbyView(terminal);
         this.leaderBoardView = buildLeaderBoardView(terminal);
         this.currentView = startScreenView;
-    }
-
-    public ViewBuilder(Terminal terminal, String start){
-        System.out.println("Creating StartingScreenView");
-        this.terminal = terminal;
-        this.startScreenView = buildStartScreenView(terminal);
-
     }
 
     public MainGameView buildMainGameView(Terminal terminal) {
@@ -63,11 +58,6 @@ public class ViewBuilder {
         return new StartScreenView(terminal);
     }
     public StartingLobbyView buildStartingLobbyView(Terminal terminal) {
-        this.dungeonData = generateTestDungeon();
-        this.playerData = generateTestPlayerData();
-        this.dungeonMapView = buildDungeonMapView(terminal);
-        this.mainGameView = buildMainGameView(terminal);
-        this.inventoryView = buildInventoryView(terminal);
         return new StartingLobbyView(terminal);
     }
 
