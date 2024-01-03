@@ -9,16 +9,13 @@ import de.roguemaster.player.CLIneu.DataForView.PlayerData;
 import java.io.IOException;
 import java.util.List;
 
-public class InventoryView implements ViewComponent {
+public class InventoryView extends ViewComponent {
     // Attributes for inventory items
-    private Terminal terminal;
     private List<ItemData> inventoryItems;
-    private PlayerData playerData;
 
     public InventoryView(Terminal terminal, PlayerData playerData) {
-        this.terminal = terminal;
-        this.playerData = playerData;
-        this.inventoryItems = playerData.getInventoryItems();
+        super(terminal,playerData);
+        this.inventoryItems = this.playerData.getInventoryItems();
 
     }
 
@@ -88,20 +85,4 @@ public class InventoryView implements ViewComponent {
                 "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
 
-    /**
-     * Handles the action of dropping an item from the inventory.
-     *
-     * @param itemIndex The index of the item to drop.
-     * @throws IOException if there is an input/output error.
-     */
-    public void dropItem(int itemIndex) throws IOException {
-        // Remove the item from the inventory
-        List<ItemData> inventoryItems = playerData.getInventoryItems();
-        if (itemIndex >= 0 && itemIndex < inventoryItems.size()) {
-            inventoryItems.remove(itemIndex);
-        }
-
-        // Now call displayDropOptions again to refresh the inventory items
-        displayDropOptions();
-    }
 }

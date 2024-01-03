@@ -10,11 +10,10 @@ import java.io.IOException;
  * TODO: Klären von funktionalität, wenn jemand jetzt lobby joinen will, wo wird das verarbeitet?
  * TODO: verschänern
  */
-public class JoiningLobbyView implements ViewComponent {
-    private Terminal terminal;
+public class JoiningLobbyView extends ViewComponent {
 
     public JoiningLobbyView(Terminal terminal) {
-        this.terminal = terminal;
+        super(terminal);
     }
 
     @Override

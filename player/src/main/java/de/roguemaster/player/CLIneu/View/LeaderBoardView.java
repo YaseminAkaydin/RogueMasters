@@ -9,11 +9,10 @@ import java.io.IOException;
  *  TODO: Get Leaderboard from Server and print Leaderboard vom Ding her ganz entspannt
  *  TODO: LeaderboardData Klasse erstellen, wenn wir später ein Leaderboard haben und es auch erstellen und saven
  */
-public class LeaderBoardView implements ViewComponent {
-    private Terminal terminal;
+public class LeaderBoardView extends ViewComponent {
 
     public LeaderBoardView(Terminal terminal) {
-        this.terminal = terminal;
+        super(terminal);
     }
 
     @Override

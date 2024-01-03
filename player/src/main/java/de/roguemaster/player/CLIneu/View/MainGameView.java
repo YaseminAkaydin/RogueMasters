@@ -15,14 +15,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class MainGameView implements ViewComponent {
+public class MainGameView extends ViewComponent {
 
-    private final Terminal terminal;
-    private RoomData roomData;
-    private final Random random = new Random();
-    private PlayerData playerData;
     private Map<Integer, String> optionMappings;
-    private DungeonData dungeonData;
 
     private static final int ROOM_WIDTH = 35;
     private static final int ROOM_HEIGHT = 17;
@@ -39,10 +34,7 @@ public class MainGameView implements ViewComponent {
     private final int[] itemY = new int[2];
 
     public MainGameView(Terminal terminal, DungeonData dungeonData, PlayerData playerData) {
-        this.terminal = terminal;
-        this.playerData = playerData;
-        this.roomData = dungeonData.getRooms().get(playerData.getCurrentRoomID() - 1);
-        this.dungeonData = dungeonData;
+        super(terminal, dungeonData.getRooms().get(playerData.getCurrentRoomID() - 1), playerData, dungeonData);
         optionMappings = new HashMap<>();
         monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
         monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
@@ -135,7 +127,6 @@ public class MainGameView implements ViewComponent {
             tg.setForegroundColor(TextColor.ANSI.YELLOW);
             int i = 0;
             for (ItemData item : roomData.getItems()) {
-
                 tg.putString(itemX[i], itemY[i++], "I");
             }
         }

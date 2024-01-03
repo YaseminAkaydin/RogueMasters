@@ -8,12 +8,10 @@ import java.io.IOException;
  * Wenn das Spiel Gestartet wird, wird diese View angezeigt.
  * TODO: Verschönern
  */
-public class StartScreenView implements ViewComponent {
-    // Attributes for start screen options
-    private Terminal terminal;
+public class StartScreenView extends ViewComponent {
 
     public StartScreenView(Terminal terminal) {
-        this.terminal = terminal;
+        super(terminal);
     }
     @Override
     public void display() {

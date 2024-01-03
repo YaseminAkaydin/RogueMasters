@@ -3,28 +3,29 @@ package de.roguemaster.player.CLIneu.View;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.CLIneu.DataForView.DungeonData;
 import de.roguemaster.player.CLIneu.DataForView.ItemData;
 import de.roguemaster.player.CLIneu.DataForView.PlayerData;
 import de.roguemaster.player.CLIneu.DataForView.RoomData;
+import de.roguemaster.player.CLIneu.ViewBuilder;
 
 import java.io.IOException;
 import java.util.*;
 
 //TODO: Räume anders darstellen
-public class DungeonMapView implements ViewComponent {
-    private Terminal terminal;
-    private PlayerData playerData;
+public class DungeonMapView extends ViewComponent {
+
+
     private List<RoomData> rooms;
     private int playerRoomID;
 
 
     public DungeonMapView(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
-        this.terminal = terminal;
-        this.playerData = playerData;
-        this.rooms = dungeonData.getRooms();
-        this.playerRoomID = playerData.getCurrentRoomID();
+        super(terminal, playerData, dungeonData);
+        this.rooms = this.dungeonData.getRooms();
+        this.playerRoomID = this.playerData.getCurrentRoomID();
 
     }
 
@@ -35,22 +36,21 @@ public class DungeonMapView implements ViewComponent {
             terminal.clearScreen();
             TextGraphics tg = terminal.newTextGraphics();
             TerminalSize size = terminal.getTerminalSize();
-
             // Set initial positions for the first room
             int startX = size.getColumns() / 2;
-            int startY = 3; // Start a bit from the top
+            int startY = size.getRows() / 2; // Start a bit from the top
             int layerHeight = 7; // Vertical spacing between layers of rooms
 
             // Draw the first room
             drawRoom(tg, rooms.get(0), startX, startY);
 
             // Draw connected rooms
-            drawConnectedRooms(tg, rooms.get(0), startX, startY, layerHeight, new HashSet<>());
+            drawConnectedRooms(tg, rooms.get(0), startX, startY, layerHeight, new HashSet<>(), new HashMap<>());
 
             displayPlayerStats(tg); // Display player stats
             terminal.flush();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Display Error DMV: "+e);
         }
     }
 
@@ -100,33 +100,64 @@ public class DungeonMapView implements ViewComponent {
         }
     }
 
-    private void drawConnectedRooms(TextGraphics tg, RoomData room, int x, int y, int layerHeight, Set<Integer> visitedRooms) {
-        if (visitedRooms.contains(room.getId())) return;
+    private void drawConnectedRooms(TextGraphics tg, RoomData room, int x, int y, int layerHeight, Set<Integer> visitedRooms, Map<Point, Integer> drawnRooms) throws IOException {
+        if (visitedRooms.contains(room.getId()) || !isValidPosition(x, y)) return;
         visitedRooms.add(room.getId());
+        drawnRooms.put(new Point(x, y), room.getId());
+        // Adjust horizontal spacing based on number of connections
+        int horizontalSpacing = 12;
+        int verticalSpacing = 12;
 
-        int numConnections = room.getAdjacentRooms().size();
-        int horizontalSpacing = 12; // Horizontal spacing between rooms
-
-        // Starting position for the first connected room
-        int childX = x - (numConnections - 1) * horizontalSpacing / 2;
-        int childY = y + layerHeight;
-
-        for (Integer adjacentRoomId : room.getAdjacentRooms().values()) {
+        for (Map.Entry<String, Integer> entry : room.getAdjacentRooms().entrySet()) {
+            String direction = entry.getKey();
+            Integer adjacentRoomId = entry.getValue();
             RoomData childRoom = findRoomById(adjacentRoomId);
+
             if (childRoom != null && !visitedRooms.contains(childRoom.getId())) {
-                // Draw corridor from parent room to child room
-                tg.drawLine(x, y + 2, childX, childY - 2, '+');
+                Point newRoomPoint;
+                int startX, startY, endX, endY;
+                switch (direction) {
+                    case "NORTH":
+                        newRoomPoint = new Point(x, y - verticalSpacing);
+                        startX = x; startY = y - 2; // Starting from the northern wall of the room
+                        endX = newRoomPoint.x; endY = newRoomPoint.y + 2; // Ending at the southern wall of the adjacent room
+                        break;
+                    case "SOUTH":
+                        newRoomPoint = new Point(x, y + verticalSpacing);
+                        startX = x; startY = y + 2; // Starting from the southern wall
+                        endX = newRoomPoint.x; endY = newRoomPoint.y - 2; // Ending at the northern wall
+                        break;
+                    case "EAST":
+                        newRoomPoint = new Point(x + horizontalSpacing, y);
+                        startX = x + 2; startY = y; // Starting from the eastern wall
+                        endX = newRoomPoint.x - 2; endY = newRoomPoint.y; // Ending at the western wall
+                        break;
+                    case "WEST":
+                        newRoomPoint = new Point(x - horizontalSpacing, y);
+                        startX = x - 2; startY = y; // Starting from the western wall
+                        endX = newRoomPoint.x + 2; endY = newRoomPoint.y; // Ending at the eastern wall
+                        break;
+                    default:
+                        continue; // Skip if direction is unknown
+                }
 
                 // Draw the child room
-                drawRoom(tg, childRoom, childX, childY);
+                drawRoom(tg, childRoom, newRoomPoint.x, newRoomPoint.y);
+
+                // Draw the corridor
+                tg.drawLine(startX, startY, endX, endY, '+');
+
 
                 // Recursively draw the next layer of connected rooms
-                drawConnectedRooms(tg, childRoom, childX, childY, layerHeight, visitedRooms);
-
-                // Move to the position for the next connected room
-                childX += horizontalSpacing;
+                drawConnectedRooms(tg, childRoom, newRoomPoint.x, newRoomPoint.y, layerHeight, visitedRooms, drawnRooms);
             }
         }
+    }
+
+
+    private boolean isValidPosition(int x, int y) throws IOException {
+        TerminalSize size = terminal.getTerminalSize();
+        return x >= 0 && x < size.getColumns() && y >= 0 && y < size.getRows();
     }
 
     private RoomData findRoomById(int id) {
@@ -138,9 +169,87 @@ public class DungeonMapView implements ViewComponent {
         return null;
     }
 
-    public void setPlayerRoomID(int playerRoomID) {
-        this.playerRoomID = playerRoomID;
-    }
+    /*public static void main(String[] args) {
+
+        try {
+            // Initialize terminal
+            Terminal terminal = new DefaultTerminalFactory().createTerminal();
+
+            // Initialize player data and dungeon data
+            PlayerData playerData = new PlayerData(
+                    1,
+                    10,
+                    0,
+                    List.of(new ItemData(0, "Sword", "A Sword only the mighty can wield", 20),
+                            new ItemData(1, "Shield", "A Shield for weak individuals", 5),
+                            new ItemData(2, "Potion", "Potion, heal yourself ffs", 10),
+                            new ItemData(3, "Book", "Book, with a lot of pictures", 10)),
+                    2); // Assuming a constructor exists
+            DungeonData dungeonData;
+            List<RoomData> rooms = new ArrayList<>();
+
+            // Example items for the rooms
+            List<ItemData> commonItems = List.of(
+                    new ItemData(0, "Sword", "A Sword only the mighty can wield", 20),
+                    new ItemData(1, "Shield", "A Shield for weak individuals", 5)*//*,
+                new ItemData(2, "Potion", "Potion, heal yourself ffs", 10),
+                new ItemData(3, "Book", "Book, with a lot of pictures", 10)*//*
+            );
+
+            // Create rooms with types, monsters, items, IDs, and adjacent rooms
+            RoomData room1 = new RoomData("BossRoom", "Skeleton", Collections.emptyList(), 1,
+                    Map.of("EAST", 2));
+            RoomData room2 = new RoomData("DungeonRoom", "Skeleton", commonItems, 2,
+                    Map.of("NORTH", 5, "WEST", 1, "SOUTH", 3, "EAST", 4));
+            RoomData room3 = new RoomData("DungeonRoom", "Zombie", commonItems, 3,
+                    Map.of("NORTH", 2));
+            RoomData room4 = new RoomData("DungeonRoom", "Zombie", commonItems, 4,
+                    Map.of("WEST", 2));
+            RoomData room5 = new RoomData("DungeonRoom", "Zombie", commonItems, 5,
+                    Map.of("WEST", 6, "SOUTH", 2, "EAST", 8));
+            RoomData room6 = new RoomData("DungeonRoom", "Zombie", commonItems, 6,
+                    Map.of("NORTH", 7, "EAST", 5));
+            RoomData room7 = new RoomData("DungeonRoom", "Zombie", commonItems, 7,
+                    Map.of("SOUTH", 6));
+            RoomData room8 = new RoomData("TreasureRoom", "Zombie", commonItems, 8,
+                    Map.of("NORTH", 9, "WEST", 5));
+            RoomData room9 = new RoomData("DungeonRoom", "Zombie", commonItems, 9,
+                    Map.of("SOUTH", 8, "EAST", 10));
+            RoomData room10 = new RoomData("DungeonRoom", "Zombie", commonItems, 10,
+                    Map.of("WEST", 9));
+
+            // Add rooms to the list
+            rooms.add(room1);
+            rooms.add(room2);
+            rooms.add(room3);
+            rooms.add(room4);
+            rooms.add(room5);
+            rooms.add(room6);
+            rooms.add(room7);
+            rooms.add(room8);
+            rooms.add(room9);
+            rooms.add(room10);
+
+            dungeonData = new DungeonData(rooms);
+
+
+            // Initialize DungeonMapView
+            DungeonMapView dungeonMapView = new DungeonMapView(terminal, playerData, dungeonData);
+
+            // Display the dungeon map
+            boolean run = true;
+            while (run) {
+                dungeonMapView.display();
+                Thread.sleep(1000);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }*/
+
 
     private static class Point {
         int x, y;
