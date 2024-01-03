@@ -197,13 +197,5 @@ public class MainGameView extends ViewComponent {
         return roomData.getAdjacentRooms().getOrDefault(direction, -1).toString();
     }
 
-    private void displayPlayerStats(TextGraphics tg) throws IOException {
-        int statsStartY = terminal.getTerminalSize().getRows() + STATS_Y_OFFSET;
-        tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(ROOM_START_X, statsStartY, "LEVEL: " + playerData.getLevel() +
-                " HP: " + playerData.getHp() +
-                "/10 EXP: " + playerData.getExp() +
-                "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
-    }
 
 }

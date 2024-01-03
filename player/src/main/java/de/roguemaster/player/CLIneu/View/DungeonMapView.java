@@ -14,17 +14,16 @@ import de.roguemaster.player.CLIneu.ViewBuilder;
 import java.io.IOException;
 import java.util.*;
 
-//TODO: Räume anders darstellen
+
 public class DungeonMapView extends ViewComponent {
 
 
+    private Set<Corridor> corridors = new HashSet<>();
     private int playerRoomID;
-
 
     public DungeonMapView(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
         super(terminal, playerData, dungeonData);
         this.playerRoomID = this.playerData.getCurrentRoomID();
-
     }
 
     @Override
@@ -33,32 +32,89 @@ public class DungeonMapView extends ViewComponent {
         try {
             terminal.clearScreen();
             TextGraphics tg = terminal.newTextGraphics();
-            TerminalSize size = terminal.getTerminalSize();
-            // Set initial positions for the first room
-            int startX = size.getColumns() / 2;
-            int startY = size.getRows() / 2; // Start a bit from the top
-            int layerHeight = 7; // Vertical spacing between layers of rooms
+            int additionalOffset = 5; // Adjust this value as needed
 
-            // Draw the first room
-            drawRoom(tg, rooms.get(0), startX, startY);
+            // Calculate room positions
+            Map<Point, RoomData> roomPositions = new HashMap<>();
+            Set<Integer> visitedRooms = new HashSet<>();
+            int horizontalSpacing = 12;
+            int verticalSpacing = 7;
+            calculatePositionsRecursive(rooms.get(0), 0, 0, visitedRooms, roomPositions, horizontalSpacing, verticalSpacing);
 
-            // Draw connected rooms
-            drawConnectedRooms(tg, rooms.get(0), startX, startY, layerHeight, new HashSet<>(), new HashMap<>());
+            // Find the extents of the map
+            int minX = roomPositions.keySet().stream().mapToInt(p -> p.x).min().orElse(0);
+            int minY = roomPositions.keySet().stream().mapToInt(p -> p.y).min().orElse(0);
+
+            // Adjust starting position based on the extents
+            int offsetX = minX < 0 ? -minX + additionalOffset : additionalOffset;
+            int offsetY = minY < 0 ? -minY + additionalOffset : additionalOffset;
+
+            // Now draw the rooms and corridors
+            for (Map.Entry<Point, RoomData> entry : roomPositions.entrySet()) {
+                Point p = entry.getKey();
+                RoomData room = entry.getValue();
+                drawRoom(tg, room, p.x + offsetX, p.y + offsetY);
+                // Add code to draw corridors here
+            }
+            // Draw corridors
+            drawCorridors(tg, offsetX, offsetY);
 
             displayPlayerStats(tg); // Display player stats
             terminal.flush();
         } catch (IOException e) {
-            throw new RuntimeException("Display Error DMV: "+e);
+            throw new RuntimeException("Display Error DMV: " + e);
         }
     }
 
-    private void displayPlayerStats(TextGraphics tg) throws IOException {
-        int statsStartY = terminal.getTerminalSize().getRows() - 1; // Below the room
-        tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(1, statsStartY, "LEVEL: " + playerData.getLevel() +
-                " HP: " + playerData.getHp() +
-                "/10 EXP: " + playerData.getExp() +
-                "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
+    private void calculatePositionsRecursive(RoomData room, int x, int y, Set<Integer> visitedRooms, Map<Point, RoomData> roomPositions, int horizontalSpacing, int verticalSpacing) {
+        if (visitedRooms.contains(room.getId())) return;
+        visitedRooms.add(room.getId());
+        roomPositions.put(new Point(x, y), room);
+
+        for (Map.Entry<String, Integer> entry : room.getAdjacentRooms().entrySet()) {
+            String direction = entry.getKey();
+            Integer adjacentRoomId = entry.getValue();
+            RoomData childRoom = findRoomById(adjacentRoomId);
+
+            if (childRoom != null && !visitedRooms.contains(childRoom.getId())) {
+                Point newRoomPoint;
+                int startX, startY, endX, endY;
+                switch (direction) {
+                    case "NORTH":
+                        newRoomPoint = new Point(x, y - verticalSpacing);
+                        startX = x;
+                        startY = y - 2; // Starting from the northern wall of the room
+                        endX = newRoomPoint.x;
+                        endY = newRoomPoint.y + 2; // Ending at the southern wall of the adjacent room
+                        break;
+                    case "SOUTH":
+                        newRoomPoint = new Point(x, y + verticalSpacing);
+                        startX = x;
+                        startY = y + 2; // Starting from the southern wall
+                        endX = newRoomPoint.x;
+                        endY = newRoomPoint.y - 2; // Ending at the northern wall
+                        break;
+                    case "EAST":
+                        newRoomPoint = new Point(x + horizontalSpacing, y);
+                        startX = x + 2;
+                        startY = y; // Starting from the eastern wall
+                        endX = newRoomPoint.x - 2;
+                        endY = newRoomPoint.y; // Ending at the western wall
+                        break;
+                    case "WEST":
+                        newRoomPoint = new Point(x - horizontalSpacing, y);
+                        startX = x - 2;
+                        startY = y; // Starting from the western wall
+                        endX = newRoomPoint.x + 2;
+                        endY = newRoomPoint.y; // Ending at the eastern wall
+                        break;
+                    default:
+                        continue; // Skip if direction is unknown
+                }
+                corridors.add(new Corridor(new Point(startX, startY), new Point(endX, endY)));
+                calculatePositionsRecursive(childRoom, newRoomPoint.x, newRoomPoint.y, visitedRooms, roomPositions, horizontalSpacing, verticalSpacing);
+            }
+        }
     }
 
     private void drawRoom(TextGraphics tg, RoomData room, int x, int y) {
@@ -82,6 +138,14 @@ public class DungeonMapView extends ViewComponent {
         tg.setForegroundColor(TextColor.ANSI.DEFAULT);
     }
 
+    private void drawCorridors(TextGraphics tg, int offsetX, int offsetY) {
+        for (Corridor corridor : corridors) {
+            Point start = corridor.start;
+            Point end = corridor.end;
+            tg.drawLine(start.x + offsetX, start.y + offsetY, end.x + offsetX, end.y + offsetY, '+');
+        }
+    }
+
     private void setColorBasedOnRoomType(TextGraphics tg, String roomType) {
 
         // Set color based on room type
@@ -96,66 +160,6 @@ public class DungeonMapView extends ViewComponent {
                 tg.setForegroundColor(TextColor.ANSI.WHITE);
                 break;
         }
-    }
-
-    private void drawConnectedRooms(TextGraphics tg, RoomData room, int x, int y, int layerHeight, Set<Integer> visitedRooms, Map<Point, Integer> drawnRooms) throws IOException {
-        if (visitedRooms.contains(room.getId()) || !isValidPosition(x, y)) return;
-        visitedRooms.add(room.getId());
-        drawnRooms.put(new Point(x, y), room.getId());
-        // Adjust horizontal spacing based on number of connections
-        int horizontalSpacing = 12;
-        int verticalSpacing = 12;
-
-        for (Map.Entry<String, Integer> entry : room.getAdjacentRooms().entrySet()) {
-            String direction = entry.getKey();
-            Integer adjacentRoomId = entry.getValue();
-            RoomData childRoom = findRoomById(adjacentRoomId);
-
-            if (childRoom != null && !visitedRooms.contains(childRoom.getId())) {
-                Point newRoomPoint;
-                int startX, startY, endX, endY;
-                switch (direction) {
-                    case "NORTH":
-                        newRoomPoint = new Point(x, y - verticalSpacing);
-                        startX = x; startY = y - 2; // Starting from the northern wall of the room
-                        endX = newRoomPoint.x; endY = newRoomPoint.y + 2; // Ending at the southern wall of the adjacent room
-                        break;
-                    case "SOUTH":
-                        newRoomPoint = new Point(x, y + verticalSpacing);
-                        startX = x; startY = y + 2; // Starting from the southern wall
-                        endX = newRoomPoint.x; endY = newRoomPoint.y - 2; // Ending at the northern wall
-                        break;
-                    case "EAST":
-                        newRoomPoint = new Point(x + horizontalSpacing, y);
-                        startX = x + 2; startY = y; // Starting from the eastern wall
-                        endX = newRoomPoint.x - 2; endY = newRoomPoint.y; // Ending at the western wall
-                        break;
-                    case "WEST":
-                        newRoomPoint = new Point(x - horizontalSpacing, y);
-                        startX = x - 2; startY = y; // Starting from the western wall
-                        endX = newRoomPoint.x + 2; endY = newRoomPoint.y; // Ending at the eastern wall
-                        break;
-                    default:
-                        continue; // Skip if direction is unknown
-                }
-
-                // Draw the child room
-                drawRoom(tg, childRoom, newRoomPoint.x, newRoomPoint.y);
-
-                // Draw the corridor
-                tg.drawLine(startX, startY, endX, endY, '+');
-
-
-                // Recursively draw the next layer of connected rooms
-                drawConnectedRooms(tg, childRoom, newRoomPoint.x, newRoomPoint.y, layerHeight, visitedRooms, drawnRooms);
-            }
-        }
-    }
-
-
-    private boolean isValidPosition(int x, int y) throws IOException {
-        TerminalSize size = terminal.getTerminalSize();
-        return x >= 0 && x < size.getColumns() && y >= 0 && y < size.getRows();
     }
 
     private RoomData findRoomById(int id) {
@@ -269,5 +273,16 @@ public class DungeonMapView extends ViewComponent {
         public int hashCode() {
             return Objects.hash(x, y);
         }
+    }
+
+    private static class Corridor {
+        Point start;
+        Point end;
+
+        Corridor(Point start, Point end) {
+            this.start = start;
+            this.end = end;
+        }
+
     }
 }

@@ -46,41 +46,11 @@ public class InventoryView extends ViewComponent {
             tg.putString(2, optionsStartY, "3. Go back to MainView");
 
             // Display player stats
-            displayPlayerStats(tg, playerData);
+            displayPlayerStats(tg);
 
             terminal.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Displays the drop item options.
-     *
-     * @throws IOException if there is an input/output error.
-     */
-    public void displayDropOptions() throws IOException {
-        // This method will display the drop item options
-        TextGraphics tg = terminal.newTextGraphics();
-        tg.setForegroundColor(TextColor.ANSI.WHITE);
-
-        // Clear a specific area of the terminal or the entire terminal
-        // Then display the drop item options
-        int startY = 3; // Starting Y position for the list
-        for (int i = 0; i < playerData.getInventoryItems().size(); i++) {
-            String itemString = "Drop " + (i + 1) + ". " + playerData.getInventoryItems().get(i);
-            tg.putString(2, startY + i, itemString);
-        }
-        terminal.flush();
-    }
-
-    private void displayPlayerStats(TextGraphics tg, PlayerData playerData) throws IOException {
-        int statsStartY = terminal.getTerminalSize().getRows() - 1; // Near the bottom of the terminal
-        tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(1, statsStartY, "LEVEL: " + playerData.getLevel() +
-                " HP: " + playerData.getHp() +
-                "/10 EXP: " + playerData.getExp() +
-                "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
-    }
-
 }

@@ -1,18 +1,15 @@
 package de.roguemaster.player.CLIneu;
 
 import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.CLIneu.DataForView.DungeonData;
-import de.roguemaster.player.CLIneu.DataForView.ItemData;
-import de.roguemaster.player.CLIneu.DataForView.RoomData;
+
 import de.roguemaster.player.CLIneu.View.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 /**
  * Dummy Version des Game Main Views
@@ -28,6 +25,8 @@ public class Game {
     private JoiningLobbyView joiningLobbyView;
     private LeaderBoardView leaderBoardView;
     private ViewBuilder viewBuilder;
+
+    Logger logger = Logger.getLogger(getClass().getName());
 
     private AtomicBoolean running = new AtomicBoolean(true);
     private AtomicBoolean gameStarted = new AtomicBoolean(false);
@@ -54,7 +53,7 @@ public class Game {
                 currentView.display();
 
                 // Init Game when starting own lobby
-                if (currentView instanceof StartingLobbyView && (viewBuilder.getDungeonData() != null)){
+                if (currentView instanceof StartingLobbyView && (viewBuilder.getDungeonData() != null)) {
                     this.dungeonMapView = viewBuilder.getDungeonMapView();
                     this.mainGameView = viewBuilder.getMainGameView();
                     this.inventoryView = viewBuilder.getInventoryView();
@@ -73,6 +72,7 @@ public class Game {
         inputThread.interrupt();
         terminal.close();
     }
+
     private void handleInput() {
         while (running.get()) {
             try {
@@ -87,19 +87,19 @@ public class Game {
     }
 
     // TODO: Inventarview hinzufügen
-    private void processInput(KeyStroke keyStroke) throws IOException {
+    private void processInput(KeyStroke keyStroke) {
         // Handle different inputs for each view
         if (currentView instanceof StartScreenView) {
             switch (keyStroke.getCharacter()) {
                 case '1':
-                    System.out.println("Creating Dungeon and switch to startingLobbyView");
+                    logger.info("Creating Dungeon and switch to startingLobbyView");
                     startingLobbyView = viewBuilder.buildStartingLobbyView(terminal);
                     this.currentView = startingLobbyView;
                     // Simulate receiving dungeon data from the server
 
                     break;
                 case '2':
-                    System.out.println("TBU");
+                    logger.info("TBU");
                     //currentView = joiningLobbyView; // TODO: mechanics hier implementeiren
                     break;
                 case '3':
@@ -108,11 +108,11 @@ public class Game {
                 case '4':
                     running.set(false); // Exit the game
                     break;
+                default:
+                    break;
             }
         }
-        if (currentView instanceof LeaderBoardView){
-            if (keyStroke.getCharacter() == 'b') currentView = startScreenView;
-        }
+        if (currentView instanceof LeaderBoardView && (keyStroke.getCharacter() == 'b')) currentView = startScreenView;
         if (currentView instanceof MainGameView) {
 
             Map<Integer, String> options = mainGameView.getOptionMappings();
@@ -123,39 +123,39 @@ public class Game {
                 String action = options.get(selectedOption);
                 switch (action) {
                     case "Attack":
-                        System.out.println("Send Attack to Server"); // TODO: RPC ATTACK
+                        logger.info("Send Attack to Server"); // TODO: RPC ATTACK
                         break;
                     case "Do Nothing":
-                        System.out.println("Do Nothing");
+                        logger.info("Do Nothing");
                         break;
                     // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
                     case "Move NORTH":
-                        System.out.println("Move N");
+                        logger.info("Move N");
                         mainGameView.updateRoom("NORTH"); // TODO: Move klären
                         break;
                     case "Move SOUTH":
-                        System.out.println("Move S");
+                        logger.info("Move S");
                         mainGameView.updateRoom("SOUTH");
                         break;
                     case "Move EAST":
-                        System.out.println("Move E");
+                        logger.info("Move E");
                         mainGameView.updateRoom("EAST");
                         break;
                     case "Move WEST":
-                        System.out.println("Move W");
+                        logger.info("Move W");
                         mainGameView.updateRoom("WEST");
                         break;
                     case "Pick Up Item":
-                        System.out.println("Pick up Item");
+                        logger.info("Pick up Item");
                         break;
                     default:
-                        System.out.println("Default: Do Nothing");
+                        logger.info("Default: Do Nothing");
                         break;
                 }
             }
         }
-        if (gameStarted.get()){
-            switch (keyStroke.getCharacter()){
+        if (gameStarted.get()) {
+            switch (keyStroke.getCharacter()) {
                 case 'i':
                     currentView = inventoryView;
                     break;
@@ -164,6 +164,8 @@ public class Game {
                     break;
                 case 'm':
                     currentView = dungeonMapView;
+                    break;
+                default:
                     break;
             }
 
