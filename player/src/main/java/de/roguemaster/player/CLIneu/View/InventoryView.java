@@ -10,12 +10,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class InventoryView extends ViewComponent {
-    // Attributes for inventory items
-    private List<ItemData> inventoryItems;
+
 
     public InventoryView(Terminal terminal, PlayerData playerData) {
         super(terminal,playerData);
-        this.inventoryItems = this.playerData.getInventoryItems();
 
     }
 

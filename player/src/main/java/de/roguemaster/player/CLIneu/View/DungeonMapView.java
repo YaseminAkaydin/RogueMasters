@@ -18,13 +18,11 @@ import java.util.*;
 public class DungeonMapView extends ViewComponent {
 
 
-    private List<RoomData> rooms;
     private int playerRoomID;
 
 
     public DungeonMapView(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
         super(terminal, playerData, dungeonData);
-        this.rooms = this.dungeonData.getRooms();
         this.playerRoomID = this.playerData.getCurrentRoomID();
 
     }
