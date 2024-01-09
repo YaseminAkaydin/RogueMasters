@@ -31,10 +31,15 @@ public class Devil extends EnemyCharacter {
      * Increases the defense of the Devil for a round in a fight.
      */
     public void defend() {
-        /*
-         * TODO: The Following implementation is a example and shouldn't be used for the final product.
-         *       There should be a FightManager to handle this. */
         this.defense *= 2;
+    }
+
+    /**
+     * Lowers the defense of the devil for a round in a fight.
+     * WARNING: Only called by FightManager, which ensures defending is handled correctly.
+     */
+    public void stopDefending(){
+        this.defense /= 2;
     }
 
     /**

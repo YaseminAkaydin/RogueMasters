@@ -38,8 +38,7 @@ public class PlayableCharacter extends Character {
 
         //TODO: Check if character is in battle with PlayerCharacter
 
-        /*TODO: The Following implementation is a example and shouldn't be used for the final product.
-         *       There should be a FightManager to handle this. */
+
         int attackDamage = this.attack + weaponSlot.getDamage();
         character.setHp(character.getHp()-(attackDamage - character.getDefense()));
     }
@@ -48,10 +47,15 @@ public class PlayableCharacter extends Character {
      * Increases the defense of a character for a round in a fight
      */
     public void defend() {
-        /*
-        * TODO: The Following implementation is a example and shouldn't be used for the final product.
-        *       There should be a FightManager to handle this. */
         this.defense *= 2;
+    }
+
+    /**
+     * Lowers the defense of a character for a round in a fight.
+     * WARNING: Only called by FightManager, which ensures defending is handled correctly.
+     */
+    public void stopDefending(){
+        this.defense /= 2;
     }
 
 
