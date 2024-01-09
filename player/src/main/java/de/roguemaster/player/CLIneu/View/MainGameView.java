@@ -4,20 +4,18 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.CLIneu.DataForView.DungeonData;
-import de.roguemaster.player.CLIneu.DataForView.ItemData;
 import de.roguemaster.player.CLIneu.DataForView.PlayerData;
-import de.roguemaster.player.CLIneu.DataForView.RoomData;
+
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class MainGameView extends ViewComponent {
 
-    private Map<Integer, String> optionMappings;
+    private final Map<Integer, String> optionMappings;
 
     private static final int ROOM_WIDTH = 35;
     private static final int ROOM_HEIGHT = 17;
@@ -30,21 +28,18 @@ public class MainGameView extends ViewComponent {
 
     private int monsterX;
     private int monsterY;
-    private final int[] itemX = new int[2];
-    private final int[] itemY = new int[2];
+    private int itemX;
+    private int itemY;
 
     public MainGameView(Terminal terminal, DungeonData dungeonData, PlayerData playerData) {
         super(terminal, dungeonData.getRooms().get(playerData.getCurrentRoomID() - 1), playerData, dungeonData);
         optionMappings = new HashMap<>();
         monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
         monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
-        for (int i = 0; i < 2; i++) {
+        itemX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+        itemY= random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
 
-            itemX[i] = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
-            itemY[i] = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
-        }
-
-        System.out.println(roomData.toString());
+        //System.out.println(roomData.toString());
 
     }
 
@@ -123,12 +118,9 @@ public class MainGameView extends ViewComponent {
     }
 
     private void drawItems(TextGraphics tg) {
-        if (!roomData.getItems().isEmpty()) {
+        if (roomData.getItems() != null) {
             tg.setForegroundColor(TextColor.ANSI.YELLOW);
-            int i = 0;
-            for (ItemData item : roomData.getItems()) {
-                tg.putString(itemX[i], itemY[i++], "I");
-            }
+            tg.putString(itemX, itemY, "I");
         }
     }
 
@@ -171,7 +163,7 @@ public class MainGameView extends ViewComponent {
         optionMappings.put(optionNumber.getAndIncrement(), "Do Nothing");
 
         // Display 'Pick Up Item' option if items are present
-        if (!roomData.getItems().isEmpty()) {
+        if (roomData.getItems()!= null) {
             tg.putString(OPTIONS_START_X, optionsStartY.get(), optionNumber + ". Pick Up Item");
             optionMappings.put(optionNumber.getAndIncrement(), "Pick Up Item");
         }
@@ -184,10 +176,8 @@ public class MainGameView extends ViewComponent {
         if (newRoomId != null) {
             playerData.setCurrentRoomID(newRoomId); // Assuming PlayerData has a method setCurrentRoomID
             roomData = dungeonData.getRooms().get(newRoomId - 1); // Update roomData to the new room
-            for (int i = 0; i < 2; i++) {
-                itemX[i] = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
-                itemY[i] = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
-            }
+            itemX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+            itemY= random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
             monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
             monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
         }

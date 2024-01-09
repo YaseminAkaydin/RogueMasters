@@ -86,7 +86,8 @@ public class Game {
         }
     }
 
-    // TODO: Inventarview hinzufügen
+
+    // TODO: komplexität reduzieren
     private void processInput(KeyStroke keyStroke) {
         // Handle different inputs for each view
         if (currentView instanceof StartScreenView) {
@@ -100,7 +101,7 @@ public class Game {
                     break;
                 case '2':
                     logger.info("TBU");
-                    //currentView = joiningLobbyView; // TODO: mechanics hier implementeiren
+                    // currentView = joiningLobbyView; // TODO: mechanics hier implementeiren
                     break;
                 case '3':
                     currentView = leaderBoardView;
@@ -118,6 +119,10 @@ public class Game {
             Map<Integer, String> options = mainGameView.getOptionMappings();
             char inputChar = keyStroke.getCharacter();
             int selectedOption = Character.isDigit(inputChar) ? Character.getNumericValue(inputChar) : -1;
+            /**
+             * command: attack, move, pickupitem, donothig, use item
+             * target: /, r+{rID}, /, /, i{iID},
+             */
 
             if (options.containsKey(selectedOption)) {
                 String action = options.get(selectedOption);
@@ -131,7 +136,7 @@ public class Game {
                     // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
                     case "Move NORTH":
                         logger.info("Move N");
-                        mainGameView.updateRoom("NORTH"); // TODO: Move klären
+                        mainGameView.updateRoom("NORTH");
                         break;
                     case "Move SOUTH":
                         logger.info("Move S");
@@ -154,10 +159,115 @@ public class Game {
                 }
             }
         }
+
+        if (currentView instanceof InventoryView) {
+            // Ensure currentView is indeed an instance of InventoryView before casting
+            InventoryView inventoryView = (InventoryView) currentView;
+
+            Map<Integer, String> options = inventoryView.getOptionMappings();
+
+            char inputChar = keyStroke.getCharacter();
+            int selectedOption = Character.isDigit(inputChar) ? Character.getNumericValue(inputChar) : -1;
+
+            if (inventoryView.getCurrentState() == InventoryView.State.DROP_ITEM) {
+                Map<Integer, String> dropItemOptionMappings = inventoryView.getDropItemOptionMappings();
+                if (dropItemOptionMappings.containsKey(selectedOption)) {
+                    for (Map.Entry<Integer, String> entry : dropItemOptionMappings.entrySet()) {
+                        System.out.println("DROP_ITEM: " + entry.getKey() + " " + entry.getValue());
+                    }
+                    String action = dropItemOptionMappings.get(selectedOption);
+                    switch (action) {
+                        case "Drop 1":
+                            logger.info("DROP_ITEM: send drop 1 to server");
+                            break;
+                        case "Drop 2":
+                            logger.info("DROP_ITEM: send drop 2 to server");
+                            break;
+                        // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
+                        case "Drop 3":
+                            logger.info("DROP_ITEM: send drop 3 to server");
+                            break;
+                        case "Drop 4":
+                            logger.info("DROP_ITEM: send drop 4 to server");
+
+                            break;
+                        case "Go back":
+                            logger.info("Go Back");
+                            inventoryView.setCurrentState(InventoryView.State.MAIN_OPTIONS);
+                            break;
+                        default:
+                            logger.info("Default: Do Nothing DROP_ITEM");
+                            break;
+                    }
+
+                }
+
+            }
+            if (inventoryView.getCurrentState() == InventoryView.State.USE_CONSUMABLE) {
+                Map<Integer, String> useConsumableOptionMappings = inventoryView.getUseConsumableOptionMappings();
+                if (useConsumableOptionMappings.containsKey(selectedOption)) {
+                    for (Map.Entry<Integer, String> entry : useConsumableOptionMappings.entrySet()) {
+                        System.out.println("USE_CONSUMABLE: " + entry.getKey() + " " + entry.getValue());
+                    }
+                    String action = useConsumableOptionMappings.get(selectedOption);
+                    // das nehmen als "Use n" useConsumableOptionMappings.get(selectedOption);
+                    switch (action) {
+                        case "Use 1":
+                            logger.info("USE_CONSUMABLE: send use 1 to server");
+                            break;
+                        case "Use 2":
+                            logger.info("USE_CONSUMABLE: send use 2 to server");
+                            break;
+                        // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
+                        case "Use 3":
+                            logger.info("USE_CONSUMABLE: send use 3 to server");
+                            break;
+                        case "Use 4":
+                            logger.info("USE_CONSUMABLE: send use 4 to server");
+                            break;
+                        case "Go back":
+                            logger.info("Go Back");
+                            inventoryView.setCurrentState(InventoryView.State.MAIN_OPTIONS);
+                            break;
+                        default:
+                            logger.info("Default: Do Nothing USE_CONSUMABLE");
+                            break;
+                    }
+
+                }
+
+            }
+            if (inventoryView.getCurrentState() == InventoryView.State.MAIN_OPTIONS) {
+                if (options.containsKey(selectedOption)) {
+                    for (Map.Entry<Integer, String> entry : options.entrySet()) {
+                        System.out.println("MAINOPTIONS: " + entry.getKey() + " " + entry.getValue());
+                    }
+                    String action = options.get(selectedOption);
+                    switch (action) {
+                        case "Drop Item":
+                            inventoryView.setCurrentState(InventoryView.State.DROP_ITEM);
+                            logger.info("MAINOPTIONS: state = DROP_ITEM");
+                            currentView.display();
+                            break;
+                        case "Use Consumable":
+                            inventoryView.setCurrentState(InventoryView.State.USE_CONSUMABLE);
+                            logger.info("MAINOPTIONS: state = USE_CONSUMABLE");
+                            currentView.display();
+                            break;
+                        default:
+                            logger.info("Default: Do Nothing MAINOPTIONS");
+                            break;
+                    }
+                }
+            }
+
+
+        }
         if (gameStarted.get()) {
             switch (keyStroke.getCharacter()) {
                 case 'i':
                     currentView = inventoryView;
+                    inventoryView.setCurrentState(InventoryView.State.MAIN_OPTIONS);
                     break;
                 case 's':
                     currentView = mainGameView;
