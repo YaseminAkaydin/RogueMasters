@@ -24,8 +24,7 @@ public class Zombie extends EnemyCharacter {
             return;
         }
 
-        /*TODO: The Following implementation is a example and shouldn't be used for the final product.
-         *       There should be a FightManager to handle this. */
+
         character.setHp(character.getHp()-(this.attack - character.getDefense()));
     }
 
@@ -42,8 +41,6 @@ public class Zombie extends EnemyCharacter {
             return;
         }
 
-        /*TODO: The Following implementation is a example and shouldn't be used for the final product.
-         *       There should be a FightManager to handle this. */
         character.setHp(character.getHp()-(this.attack + biteBonusDamage - character.getDefense()));
     }
 
