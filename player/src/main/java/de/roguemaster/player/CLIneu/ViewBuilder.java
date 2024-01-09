@@ -6,9 +6,7 @@ import de.roguemaster.player.CLIneu.DataForView.ItemData;
 import de.roguemaster.player.CLIneu.DataForView.PlayerData;
 import de.roguemaster.player.CLIneu.DataForView.RoomData;
 import de.roguemaster.player.CLIneu.View.*;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -171,32 +169,32 @@ public class ViewBuilder {
 
         // Example items for the rooms
         List<ItemData> commonItems = List.of(
-                new ItemData(0, "Sword", "A Sword only the mighty can wield", 20),
-                new ItemData(1, "Shield", "A Shield for weak individuals", 5)/*,
-                new ItemData(2, "Potion", "Potion, heal yourself ffs", 10),
-                new ItemData(3, "Book", "Book, with a lot of pictures", 10)*/
+                new ItemData(0,"Sword","A Sword only the mighty can wield",20),
+                new ItemData(1,"Shield","A Shield for weak individuals",5),
+                new ItemData(2,"Potion","Potion, heal yourself ffs",10),
+                new ItemData(3,"Book","Book, with a lot of pictures",10)
         );
 
         // Create rooms with types, monsters, items, IDs, and adjacent rooms
-        RoomData room1 = new RoomData("BossRoom", "Skeleton", Collections.emptyList(), 1,
+        RoomData room1 = new RoomData("BossRoom", "Skeleton", null, 1,
                 Map.of("EAST", 2));
-        RoomData room2 = new RoomData("DungeonRoom", "Skeleton", commonItems, 2,
+        RoomData room2 = new RoomData("DungeonRoom", "Skeleton", commonItems.get(0), 2,
                 Map.of("NORTH", 5, "WEST", 1, "SOUTH", 3, "EAST", 4));
-        RoomData room3 = new RoomData("DungeonRoom", "Zombie", commonItems, 3,
+        RoomData room3 = new RoomData("DungeonRoom", "Zombie", null, 3,
                 Map.of("NORTH", 2));
-        RoomData room4 = new RoomData("DungeonRoom", "Zombie", commonItems, 4,
+        RoomData room4 = new RoomData("DungeonRoom", "Zombie", null, 4,
                 Map.of("WEST", 2));
-        RoomData room5 = new RoomData("DungeonRoom", "Zombie", commonItems, 5,
+        RoomData room5 = new RoomData("DungeonRoom", "Zombie", null, 5,
                 Map.of( "WEST", 6, "SOUTH", 2, "EAST", 8));
-        RoomData room6 = new RoomData("DungeonRoom", "Zombie", commonItems, 6,
+        RoomData room6 = new RoomData("DungeonRoom", "Zombie", null, 6,
                 Map.of("NORTH", 7, "EAST", 5));
-        RoomData room7 = new RoomData("DungeonRoom", "Zombie", commonItems, 7,
+        RoomData room7 = new RoomData("DungeonRoom", "Zombie", null, 7,
                 Map.of("SOUTH", 6));
-        RoomData room8 = new RoomData("TreasureRoom", "Zombie", commonItems, 8,
+        RoomData room8 = new RoomData("TreasureRoom", "Zombie", null, 8,
                 Map.of("NORTH", 9, "WEST", 5));
-        RoomData room9 = new RoomData("DungeonRoom", "Zombie", commonItems, 9,
+        RoomData room9 = new RoomData("DungeonRoom", "Zombie", null, 9,
                 Map.of("SOUTH", 8, "EAST", 10));
-        RoomData room10 = new RoomData("DungeonRoom", "Zombie", commonItems, 10,
+        RoomData room10 = new RoomData("DungeonRoom", "Zombie", null, 10,
                 Map.of("WEST", 9));
 
         // Add rooms to the list

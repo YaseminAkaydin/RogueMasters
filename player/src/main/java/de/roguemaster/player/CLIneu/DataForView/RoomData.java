@@ -1,8 +1,6 @@
 package de.roguemaster.player.CLIneu.DataForView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,16 +11,16 @@ import java.util.Map;
 public class RoomData {
     private String roomType; // DungeonRoom, BossRoom, TreasureRoom
     private String monster; // Skeleton, Zombie, Boss
-    private List<ItemData> items; // Sword, Shield, Potion, Book
-    private int roomID;
-    private Map<String, Integer> adjacentRooms;
+    private ItemData items; // Sword, Shield, Potion, Book TODO: item reduzieren
+    private final int roomID;
+    private final Map<String, Integer> adjacentRooms;
 
 
     public RoomData(String roomType, String monster,
-                    List<ItemData> items,int roomID, Map<String, Integer> adjacentRooms) {
+                    ItemData items,int roomID, Map<String, Integer> adjacentRooms) {
         this.roomType = roomType;
         this.monster = monster;
-        this.items = new ArrayList<>(items); // Max 2 Items, haben wir so entschieden
+        this.items = items; // Max 2 Items, haben wir so entschieden
         this.roomID = roomID;
         this.adjacentRooms = new HashMap<>(adjacentRooms);
     }
@@ -47,11 +45,11 @@ public class RoomData {
         this.monster = monster;
     }
 
-    public List<ItemData> getItems() {
+    public ItemData getItems() {
         return items;
     }
 
-    public void setItems(List<ItemData> items) {
+    public void setItems(ItemData items) {
         this.items = items;
     }
 
