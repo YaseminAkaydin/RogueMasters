@@ -7,6 +7,7 @@ import de.rougemaster.dungeon.game.fight.FightManager;
 import de.rougemaster.dungeon.lobby.Lobby;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class TurnManager {
 
 
 
+
     //kriegt einen Character von der Lobby sowie den GameCommand (map)
     public TurnManager(Map<Character, GameCommand> commandMap) {
         this.commandMap=commandMap;
@@ -32,6 +34,19 @@ public class TurnManager {
      */
     public Map<Character,GameCommand> startTurn(){
         Map<Character,GameCommand> copyCommandMap= commandMap;
+        List<Character> allFights= fightManager.getAllCharactersInFights();
+        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+            Character character = entry.getKey();
+            GameCommand command = entry.getValue();
+            if(allFights.contains(character)){
+                //TODO: FightCommand ausführen
+            }
+        }
+
+        for (Character character: allFights) {
+            //TODO: do Nothing eintragen
+        }
+
         return copyCommandMap;
     }
 
@@ -41,10 +56,24 @@ public class TurnManager {
      */
     public void handleCharacterInput(){
         Map<Character, GameCommand> commandMap= startTurn();
+        // Iteration durch die Map, um Charactere im gleichen Raum zu finden
+        for (Map.Entry<Character, GameCommand> entry1 : commandMap.entrySet()) {
+            Character character1 = entry1.getKey();
+            Room room1 = character1.getCurrentRoom();
+
+            for (Map.Entry<Character, GameCommand> entry2 : commandMap.entrySet()) {
+                Character character2 = entry2.getKey();
+                Room room2 = character2.getCurrentRoom();
+
+                if (room1.equals(room2) && !character1.equals(character2)) {
+                    fightManager.startFight(character1, character2);
+                }
+            }
+        }
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             Character character = entry.getKey();
             GameCommand command = entry.getValue();
-            //TODO: GameCommand.execute(command) aufrufen f端r den jeweiligen Character
+            //TODO: GameCommand.execute(command) aufrufen für den jeweiligen Character
         }
         endTurn(commandMap);
 
@@ -57,8 +86,6 @@ public class TurnManager {
      * welche Leute sich gleichzeitig in einem Raum befinden und somit sich in einem Kampf befinden.
      */
     public void endTurn(Map<Character, GameCommand> commansMap){
-        FightManager currentFightManager= new FightManager();
-        List<Character> characterFightList= new ArrayList<>();
         // Iteration durch die Map, um Charactere im gleichen Raum zu finden
         for (Map.Entry<Character, GameCommand> entry1 : commandMap.entrySet()) {
             Character character1 = entry1.getKey();
@@ -69,17 +96,13 @@ public class TurnManager {
                 Room room2 = character2.getCurrentRoom();
 
                 if (room1.equals(room2) && !character1.equals(character2)) {
-                    currentFightManager.startFight(character1, character2);
-                    characterFightList.add(character1);
-                    characterFightList.add(character2);
-                    fightList.put(currentFightManager, characterFightList);
-
+                    fightManager.startFight(character1, character2);
                 }
             }
         }
         // Iteration durch die Map, um jedem Character den GameCommand "doNothing" zuzuweisen
         for (Character character : commandMap.keySet()) {
-            //TODO: f端r jeden Character den GameCommand "doNothing" eintragen
+            //TODO: für jeden Character den GameCommand "doNothing" eintragen
         }
         //TODO: TriggerNextTurn von Game aufrufen
 
