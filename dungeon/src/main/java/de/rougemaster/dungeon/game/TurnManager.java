@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class TurnManager {
     FightManager fightManager;
@@ -44,7 +45,7 @@ public class TurnManager {
         }
 
         for (Character character: allFights) {
-            //TODO: do Nothing eintragen
+            copyCommandMap.remove(character);
         }
 
         return copyCommandMap;
@@ -65,9 +66,16 @@ public class TurnManager {
                 Character character2 = entry2.getKey();
                 Room room2 = character2.getCurrentRoom();
 
+
+                List<Character> fightingCharacters = fightManager.getAllCharactersInFights();
+                if (fightingCharacters.contains(character1) || fightingCharacters.contains(character2)){
+                    continue;
+                }
+
                 if (room1.equals(room2) && !character1.equals(character2)) {
                     fightManager.startFight(character1, character2);
                 }
+
             }
         }
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
