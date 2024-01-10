@@ -48,4 +48,25 @@ public class FightManager {
             fight.executeTurn();
         }
     }
+
+    /**
+     * Returns the fight that the specified combatant is currently engaged in.
+     * @param combatant the character whose fight is to be retrieved.
+     * @return the Fight object in which the combatant is engaged, or null if the combatant is not in a fight.
+     */
+    public Fight getFight(Character combatant) {
+        return activeCombatants.get(combatant);
+    }
+
+    /**
+     * Returns a list of all characters currently involved in fights.
+     * @return a List of Character objects who are currently in fights.
+     */
+    public List<Character> getAllCharactersInFights() {
+        List<Character> charactersInFights = new ArrayList<>();
+        for (Map.Entry<Character, Fight> entry : activeCombatants.entrySet()) {
+            charactersInFights.add(entry.getKey());
+        }
+        return charactersInFights;
+    }
 }
