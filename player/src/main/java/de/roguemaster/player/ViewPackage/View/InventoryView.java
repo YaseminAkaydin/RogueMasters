@@ -1,10 +1,10 @@
-package de.roguemaster.player.CLIneu.View;
+package de.roguemaster.player.ViewPackage.View;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.CLIneu.DataForView.ItemData;
-import de.roguemaster.player.CLIneu.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.DataForView.ItemData;
+import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,23 +19,23 @@ public class InventoryView extends ViewComponent {
         USE_CONSUMABLE
         // Add other states as needed
     }
+
     private State currentState;
 
-    private Map<Integer, String> optionMappings = new HashMap<>();
-    private Map<Integer, String> dropItemOptionMappings = new HashMap<>();
-    private Map<Integer, String> useConsumableOptionMappings = new HashMap<>();
+    private final Map<Integer, String> optionMappings = new HashMap<>();
+    private final Map<Integer, String> dropItemOptionMappings = new HashMap<>();
+    private final Map<Integer, String> useConsumableOptionMappings = new HashMap<>();
 
 
-    public InventoryView(Terminal terminal, PlayerData playerData)   {
-        super(terminal,playerData);
+    public InventoryView(Terminal terminal, PlayerData playerData) {
+        super(terminal, playerData);
         this.currentState = State.MAIN_OPTIONS;
     }
 
     @Override
     public void display() {
         try {
-            terminal.clearScreen();
-            TextGraphics tg = terminal.newTextGraphics();
+            clearAndInitializeGraphics();
             tg.setForegroundColor(TextColor.ANSI.WHITE);
 
             drawTitle(tg);
@@ -53,7 +53,6 @@ public class InventoryView extends ViewComponent {
                 // Other cases as needed
             }
 
-
             // Display player stats
             displayPlayerStats(tg);
 
@@ -62,19 +61,21 @@ public class InventoryView extends ViewComponent {
             e.printStackTrace();
         }
     }
-    private void drawTitle(TextGraphics tg){
+
+    private void drawTitle(TextGraphics tg) {
         // Display inventory title
         String title = "Inventory";
         tg.putString(2, 1, title); // Adjust the position as needed
     }
-    private void drawItemList(TextGraphics tg){
+
+    private void drawItemList(TextGraphics tg) {
         // Display the list of inventory items
         int startY = 3; // Adjust the starting Y position as needed
         for (int i = 0; i < inventoryItems.size(); i++) {
             String itemString = (i + 1) + ". " +
                     inventoryItems.get(i).getName() +
                     ": " +
-                    inventoryItems.get(i).getDescription()+ " | Attribute: " + inventoryItems.get(i).getAttributes();
+                    inventoryItems.get(i).getDescription() + " | Attribute: " + inventoryItems.get(i).getAttributes();
             tg.putString(2, startY + i, itemString);
         }
     }
@@ -85,7 +86,7 @@ public class InventoryView extends ViewComponent {
         AtomicInteger optionNumber = new AtomicInteger(1); // Start with option number 1
 
         // Example: Display 'Drop Item' only if inventory has items
-        tg.putString(2, optionsStartY.get()-1, "Options");
+        tg.putString(2, optionsStartY.get() - 1, "Options");
         if (!inventoryItems.isEmpty()) {
             String dropItemOption = optionNumber + ". Drop Item";
             tg.putString(2, optionsStartY.getAndIncrement(), dropItemOption);
@@ -102,33 +103,37 @@ public class InventoryView extends ViewComponent {
         }
 
     }
+
     private void displayDropItemOptions(TextGraphics tg) {
         AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
-        tg.putString(2, optionsStartY.get()-1, "Choose Item ID to drop");
+        tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to drop");
         for (ItemData item : inventoryItems) {
             String optionText = optionNumber.get() + ". Drop " + optionNumber.get();
             dropItemOptionMappings.put(optionNumber.get(), "Drop " + optionNumber.getAndIncrement());
             tg.putString(2, optionsStartY.getAndIncrement(), optionText);
         }
-        tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get()+". Go back");
+        tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
         dropItemOptionMappings.put(optionNumber.get(), "Go back");
     }
 
     private void displayUseConsumableOptions(TextGraphics tg) {
-        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6); // Adjust starting position as needed
+        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
-        tg.putString(2, optionsStartY.get()-1, "Choose Item ID to use");
+        tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to use");
         for (ItemData item : inventoryItems) {
             if (item.getDescription().contains("Potion") || item.getDescription().contains("Book")) {
-                String optionText = optionNumber.get() + ". Use " + optionNumber.get();
-                useConsumableOptionMappings.put(optionNumber.get(), "Use " + optionNumber.getAndIncrement());
+                String itemType = item.getDescription().contains("Potion") ? "Potion" : "Book";
+                String optionText = optionNumber.get() + ". Use " + itemType;
+                useConsumableOptionMappings.put(optionNumber.get(), "Use " + itemType);
                 tg.putString(2, optionsStartY.getAndIncrement(), optionText);
+                optionNumber.incrementAndGet();
             }
         }
-        tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get()+". Go back");
+        tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
         useConsumableOptionMappings.put(optionNumber.get(), "Go back");
     }
+
 
     public void setCurrentState(State currentState) {
         this.currentState = currentState;

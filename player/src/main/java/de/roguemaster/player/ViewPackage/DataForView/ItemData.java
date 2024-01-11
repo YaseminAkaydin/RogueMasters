@@ -1,4 +1,4 @@
-package de.roguemaster.player.CLIneu.DataForView;
+package de.roguemaster.player.ViewPackage.DataForView;
 
 public class ItemData {
     private int id;

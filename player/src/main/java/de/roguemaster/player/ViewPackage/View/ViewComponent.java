@@ -1,12 +1,12 @@
-package de.roguemaster.player.CLIneu.View;
+package de.roguemaster.player.ViewPackage.View;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.CLIneu.DataForView.DungeonData;
-import de.roguemaster.player.CLIneu.DataForView.ItemData;
-import de.roguemaster.player.CLIneu.DataForView.PlayerData;
-import de.roguemaster.player.CLIneu.DataForView.RoomData;
+import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
+import de.roguemaster.player.ViewPackage.DataForView.ItemData;
+import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.DataForView.RoomData;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +15,7 @@ import java.util.Random;
 public abstract class ViewComponent {
     // ALl
     protected final Terminal terminal;
+    protected TextGraphics tg;
 
     // MGV, IV
     protected RoomData roomData;
@@ -63,6 +64,10 @@ public abstract class ViewComponent {
                 " HP: " + playerData.getHp() +
                 "/10 EXP: " + playerData.getExp() +
                 "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
+    }
+    protected void clearAndInitializeGraphics() throws IOException {
+        terminal.clearScreen();
+        tg = terminal.newTextGraphics();
     }
 
 }

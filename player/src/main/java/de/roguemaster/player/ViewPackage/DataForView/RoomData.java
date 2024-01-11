@@ -1,17 +1,15 @@
-package de.roguemaster.player.CLIneu.DataForView;
+package de.roguemaster.player.ViewPackage.DataForView;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Erste Dummy Version der Räume.
- * TODO: An echte Rooms anpassen
- * TODO: Beispiel Dungeon von SS Code generieren und dann diese Daten nehmen als BSP Liste
  */
 public class RoomData {
     private String roomType; // DungeonRoom, BossRoom, TreasureRoom
     private String monster; // Skeleton, Zombie, Boss
-    private ItemData items; // Sword, Shield, Potion, Book TODO: item reduzieren
+    private ItemData items; // Sword, Shield, Potion, Book
     private final int roomID;
     private final Map<String, Integer> adjacentRooms;
 

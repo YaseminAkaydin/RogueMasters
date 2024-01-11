@@ -1,4 +1,4 @@
-package de.roguemaster.player.CLIneu.View;
+package de.roguemaster.player.ViewPackage.View;
 
 import com.googlecode.lanterna.terminal.Terminal;
 

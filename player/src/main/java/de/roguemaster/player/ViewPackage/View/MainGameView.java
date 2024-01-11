@@ -1,10 +1,10 @@
-package de.roguemaster.player.CLIneu.View;
+package de.roguemaster.player.ViewPackage.View;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.CLIneu.DataForView.DungeonData;
-import de.roguemaster.player.CLIneu.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
+import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
 
 
 import java.io.IOException;
@@ -46,8 +46,7 @@ public class MainGameView extends ViewComponent {
     @Override
     public void display() {
         try {
-            terminal.clearScreen();
-            TextGraphics tg = terminal.newTextGraphics();
+            clearAndInitializeGraphics();
             drawRoom(tg);
             drawPlayer(tg);
             drawMonster(tg);

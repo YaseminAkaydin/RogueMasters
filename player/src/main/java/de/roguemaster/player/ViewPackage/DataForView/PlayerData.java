@@ -1,4 +1,4 @@
-package de.roguemaster.player.CLIneu.DataForView;
+package de.roguemaster.player.ViewPackage.DataForView;
 
 import java.util.ArrayList;
 import java.util.List;

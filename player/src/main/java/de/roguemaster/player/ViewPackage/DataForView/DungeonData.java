@@ -1,11 +1,5 @@
-package de.roguemaster.player.CLIneu.DataForView;
+package de.roguemaster.player.ViewPackage.DataForView;
 
-import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.CLIneu.View.ViewComponent;
-
-import java.io.IOException;
 import java.util.List;
 
 /**
