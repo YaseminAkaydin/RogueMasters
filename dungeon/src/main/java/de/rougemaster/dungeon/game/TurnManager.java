@@ -34,6 +34,15 @@ public class TurnManager {
 
     public TurnManager() {
         this.commandMap = new HashMap<>();
+        this.fightManager= new FightManager();
+    }
+
+    public FightManager getFightManager() {
+        return fightManager;
+    }
+
+    public void setFightManager(FightManager fightManager) {
+        this.fightManager = fightManager;
     }
 
     public void executeTurn() {
@@ -53,7 +62,7 @@ public class TurnManager {
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             if (allCharactersInFights.contains(currentCharacter)) {
-                doNothingGameCommand newCommand = new doNothingGameCommand(character);
+                doNothingGameCommand newCommand = new doNothingGameCommand();
                 entry.setValue(newCommand);
             }
         }

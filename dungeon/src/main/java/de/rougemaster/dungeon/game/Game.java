@@ -62,6 +62,10 @@ public class Game {
         enemyList.add(enemy);
     }
 
+    public TurnManager getTurnManager() {
+        return turnManager;
+    }
+
     /**
      * Starts the game
      */

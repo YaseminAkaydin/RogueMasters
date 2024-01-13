@@ -1,7 +1,10 @@
 package de.rougemaster.dungeon;
 
-import de.rougemaster.dungeon.dungeon.Dungeon;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+//import de.rougemaster.dungeon.dungeon.Dungeon;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ *
 
 @SpringBootApplication
 public class DungeonApplication {
@@ -13,3 +16,4 @@ public class DungeonApplication {
     }
 
 }
+**/

@@ -24,6 +24,8 @@ public class PlayableCharacter extends Character {
         inventory = new ArrayList<>();
         armorSlot = null;
         weaponSlot = null;
+        hp= 10;
+        attack=10;
     }
 
     /**
