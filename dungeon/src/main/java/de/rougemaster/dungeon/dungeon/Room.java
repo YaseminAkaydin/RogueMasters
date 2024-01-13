@@ -1,5 +1,6 @@
 package de.rougemaster.dungeon.dungeon;
 
+import de.rougemaster.dungeon.item.Item;
 import lombok.Getter;
 
 import javax.lang.model.type.NullType;
@@ -11,7 +12,7 @@ abstract public class Room {
     static int instanceCounter = 0;
     private int id;
     @Getter
-    protected List<NullType> items;
+    protected List<Item> items;
     protected List<NullType> enemies;
     private final Map<RoomCardinalDirection, Room> adjacentRooms;
 
@@ -47,6 +48,10 @@ abstract public class Room {
 
     public boolean isRoomAdjacent(Room room){
         return adjacentRooms.containsValue(room);
+    }
+
+    public void removeItem(Item item){
+        this.items.remove(item);
     }
 
 }
