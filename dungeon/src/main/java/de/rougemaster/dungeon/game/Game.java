@@ -27,7 +27,8 @@ public class Game {
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
 
-        this.turnManager = new TurnManager(playerList, enemyList);
+
+        this.turnManager = new TurnManager();
     }
 
     /**
@@ -66,6 +67,6 @@ public class Game {
      * @param character the character that is to be set
      */
     private void setCharacterTurn(GameCommand gameCommand, Character character) {
-        //TODO: Set Character Turn in TurnManager
+        turnManager.setCharacterTurn(character, gameCommand);
     }
 }

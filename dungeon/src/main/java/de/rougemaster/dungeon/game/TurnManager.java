@@ -19,6 +19,7 @@ import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonBonesplo
 import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
+import lombok.Getter;
 
 
 import java.util.*;
@@ -26,23 +27,16 @@ import java.util.*;
 public class TurnManager {
     FightManager fightManager;
     PlayableCharacter character;
+    @Getter
     Map<Character, GameCommand> commandMap;
     Map<FightManager, List<Character>> fightList;
 
-    public Map<Character, GameCommand> getCommandMap() {
-        return commandMap;
-    }
 
-    public void setCommandMap(Map<Character, GameCommand> commandMap) {
-        this.commandMap = commandMap;
-    }
-
-    //kriegt einen Character von der Lobby sowie den GameCommand (map)
     public TurnManager() {
-        this.commandMap=new HashMap<>();
+        this.commandMap = new HashMap<>();
     }
 
-    public void executeTurn(){
+    public void executeTurn() {
         startTurn();
         handleCharacterInput();
     }
@@ -51,14 +45,14 @@ public class TurnManager {
     /**
      * Kopiert die aktuelle Command Map mit den aktuellen Commands pro Character.
      */
-    private Map<Character,GameCommand> startTurn(){
-        Map<Character,GameCommand> copyCommandMap= commandMap;
-        List<Character> allCharactersInFights= fightManager.getAllCharactersInFights();
+    private Map<Character, GameCommand> startTurn() {
+        Map<Character, GameCommand> copyCommandMap = commandMap;
+        List<Character> allCharactersInFights = fightManager.getAllCharactersInFights();
         setAllFightActions(allCharactersInFights);
         fightManager.executeAllTurns();
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
-            if(allCharactersInFights.contains(currentCharacter)){
+            if (allCharactersInFights.contains(currentCharacter)) {
                 doNothingGameCommand newCommand = new doNothingGameCommand(character);
                 entry.setValue(newCommand);
             }
@@ -67,17 +61,17 @@ public class TurnManager {
         return copyCommandMap;
     }
 
-    private void setAllFightActions(List<Character> allFighters){
+    private void setAllFightActions(List<Character> allFighters) {
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             GameCommand command = entry.getValue();
-            if(allFighters.contains(currentCharacter)){
+            if (allFighters.contains(currentCharacter)) {
                 Fight fight = fightManager.getFight(currentCharacter);
                 Character combatantOne = fight.getCombatantOne();
                 Character combatantTwo = fight.getCombatantTwo();
-                if (currentCharacter == combatantOne){
+                if (currentCharacter == combatantOne) {
                     handleFightAction(fight, combatantOne, command);
-                }else{
+                } else {
                     handleFightAction(fight, combatantTwo, command);
                 }
             }
@@ -117,8 +111,8 @@ public class TurnManager {
      * K端mmert sich um den konkreten Input des Caracters. Geht mit den konkreten Commands um, die ein Spieler/Gegener
      * eingegeben hat. Sollten sich zwei Spieler in einem Raum befinden, wird an den FightManager weitergegeben.
      */
-    private void handleCharacterInput(){
-        Map<Character, GameCommand> commandMap= startTurn();
+    private void handleCharacterInput() {
+        Map<Character, GameCommand> commandMap = startTurn();
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             GameCommand command = entry.getValue();
             command.execute();
@@ -135,7 +129,7 @@ public class TurnManager {
 
 
                 List<Character> fightingCharacters = fightManager.getAllCharactersInFights();
-                if (fightingCharacters.contains(character1) || fightingCharacters.contains(character2)){
+                if (fightingCharacters.contains(character1) || fightingCharacters.contains(character2)) {
                     continue;
                 }
 
@@ -146,19 +140,14 @@ public class TurnManager {
             }
         }
 
-        for (Map.Entry<Character,GameCommand> entry: commandMap.entrySet()) {
+        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             doNothingGameCommand newCommand = new doNothingGameCommand(character);
             entry.setValue(newCommand);
         }
-
     }
 
-
-
-
-
-
-
-
+    public void setCharacterTurn(Character character, GameCommand command) {
+        commandMap.put(character, command);
+    }
 
 }
