@@ -3,11 +3,15 @@ package de.rougemaster.dungeon.game;
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
+import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Game {
     private final List<PlayableCharacter> playerList;
@@ -36,6 +40,17 @@ public class Game {
      * @param player the player that is to be added
      */
     public void addPlayer(PlayableCharacter player) {
+
+        List<Room> allRooms = dungeon.getRoomList();
+        List<Room> nonBossRooms = allRooms.stream()
+                .filter(room -> !(room instanceof BossRoom))
+                .toList();
+
+        if (!nonBossRooms.isEmpty()) {
+            Random random = new Random();
+            Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
+            player.move(randomRoom);
+        }
         playerList.add(player);
     }
 
