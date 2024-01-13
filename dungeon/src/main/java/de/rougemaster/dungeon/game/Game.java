@@ -81,7 +81,7 @@ public class Game {
      * @param gameCommand the command that is to be executed
      * @param character the character that is to be set
      */
-    private void setCharacterTurn(GameCommand gameCommand, Character character) {
+    public void setCharacterTurn(GameCommand gameCommand, Character character) {
         turnManager.setCharacterTurn(character, gameCommand);
     }
 }
