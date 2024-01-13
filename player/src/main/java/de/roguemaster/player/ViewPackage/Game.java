@@ -43,7 +43,7 @@ public class Game {
         this.currentView = startScreenView;
     }
 
-    public void run2() throws IOException {
+    public void run() throws IOException {
 
         // Seperate Thread for inputhandling
         Thread inputThread = new Thread(this::handleInput);
@@ -100,7 +100,6 @@ public class Game {
         } else if (currentView instanceof InventoryView) {
             processInventoryViewInput((InventoryView) currentView, keyStroke);
         }
-
         if (gameStarted.get()) {
             processGlobalInput(keyStroke);
         }
@@ -146,8 +145,11 @@ public class Game {
 
         if (options.containsKey(selectedOption)) {
             String action = options.get(selectedOption);
+            //GameCommandRequest command = null;
+            //GameClient gameClient =
             switch (action) {
                 case "Attack":
+                    //GameClient GameCommandRequest.attackCommand();
                     logger.info("Send Attack to Server");
                     break;
                 case "Do Nothing":
@@ -292,8 +294,7 @@ public class Game {
             Terminal terminal = terminalFactory.createTerminal();
 
             Game game = new Game(terminal);
-            game.run2();
-
+            game.run();
             terminal.close();
         } catch (IOException e) {
             e.printStackTrace();
