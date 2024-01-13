@@ -13,3 +13,5 @@ public class doNothingGameCommand extends GameCommand {
         character.doNothing();
     }
 }
+
+
