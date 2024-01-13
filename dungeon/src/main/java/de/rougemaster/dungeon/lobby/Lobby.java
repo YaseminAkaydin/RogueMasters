@@ -4,8 +4,9 @@ import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.game.Game;
-import de.rougemaster.dungeon.game.GameCommand;
+import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.GameState;
+import de.rougemaster.dungeon.lobby.lobbyCommand.LobbyCommand;
 
 import java.util.HashMap;
 import java.util.Map;
