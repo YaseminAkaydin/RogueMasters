@@ -210,6 +210,13 @@ public class Fight {
     }
 
 
+    public void setCombatantAction(Character combatant, CombatAction action){
+        if(combatant == combatantOne){
+            setCombatantOneAction(action);
+        }else {
+            setCombatantTwoAction(action);
+        }
+    }
     /**
      * Sets the combat action of combatantOne, which will be executed in the next turn.
      *
