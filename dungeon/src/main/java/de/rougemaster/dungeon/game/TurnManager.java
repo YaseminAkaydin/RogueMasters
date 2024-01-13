@@ -5,8 +5,7 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.FightManager;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
-import de.rougemaster.dungeon.game.gameCommand.doNothingGameCommand;
-import de.rougemaster.dungeon.lobby.Lobby;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 
 
 import java.util.*;
