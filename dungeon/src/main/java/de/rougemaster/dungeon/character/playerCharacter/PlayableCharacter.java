@@ -115,7 +115,7 @@ public class PlayableCharacter extends Character {
     /**
      * Takes the Item from the room and puts it in the inventory.
      */
-    public void takeItemInRoom(){
+    public void takeItemInRoom(Item item){
         //TODO: Check if Room has a Item
         //TODO: Remove Item from Room
         //TODO: Add Item to Inventory

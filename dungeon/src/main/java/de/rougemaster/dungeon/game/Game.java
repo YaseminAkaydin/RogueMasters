@@ -27,7 +27,7 @@ public class Game {
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
 
-        this.turnManager = new TurnManager(playerList, enemyList);
+        this.turnManager = null;
     }
 
     /**

@@ -7,6 +7,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.ViewPackage.Game;
 import io.grpc.*;
+import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -18,11 +19,14 @@ public class SimpleClient {
 
     private final GameServiceGrpc.GameServiceBlockingStub blockingStub;
 
+
     public SimpleClient(Channel channel) {
         this.blockingStub = GameServiceGrpc.newBlockingStub(channel);
     }
     // TODO: Aus game.run() irgendwie ein request aus der mainloop dort erstellen
     // TODO: Synchronisation mit gameLoop
+    // TODO: PlayerDate ID hinzufügen
+    // TODO: RoomDrawing für mehrere Spieler erstellen
     public void startGame() {
         logger.info("Starting game...");
 
@@ -36,12 +40,12 @@ public class SimpleClient {
             game.run();
             terminal.close();
             try {
-                response = blockingStub.sendGameCommand(request);
+               // response = blockingStub.sendGameCommand(request);
             } catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 return;
             }
-            logger.info("RESPONSE FROM SERVER: " + response.getMessage());
+           // logger.info("RESPONSE FROM SERVER: " + response.getMessage());
         } catch (IOException e) {
             throw new RuntimeException("Terminalfactory createTerminal error MAYBE: " + e);
         }
@@ -54,11 +58,11 @@ public class SimpleClient {
      * @param args
      * @throws InterruptedException
      */
-    public static void main(String[] args) throws InterruptedException {
+    /*public static void main(String[] args) throws InterruptedException {
         // DEFAULT USER AND TARGET
         String user = "world";
         // Access a service running on the local machine on port 50051
-        String target = "localhost:50051"; //server IP
+        String target = "localhost:8811";
 
 
         // Allow passing in the user and target strings as command line arguments
@@ -92,5 +96,51 @@ public class SimpleClient {
             channel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
         }
 
+    }*/
+    public static void main(String[] args) throws InterruptedException {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8811)
+                .usePlaintext()
+                .build();
+
+        GameServiceGrpc.GameServiceStub stub = GameServiceGrpc.newStub(channel);
+
+        StreamObserver<GameCommandRequest> requestObserver = stub.sendGameCommand(new StreamObserver<GameCommandResponse>() {
+            @Override
+            public void onNext(GameCommandResponse response) {
+                // Handle the response from the server
+                System.out.println("Received game state: " + response.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // Handle error
+            }
+
+            @Override
+            public void onCompleted() {
+                // Server has completed sending messages
+                System.out.println("Stream completed.");
+            }
+        });
+
+        // Send a command to the server
+        int i = 0;
+
+        GameCommandRequest request = GameCommandRequest.newBuilder()
+                .setCommand("move")
+                .setTarget("player1")
+                .build();
+        requestObserver.onNext(request);
+
+        // Mark the end of requests
+        requestObserver.onCompleted();
+
+        // Wait for the server to shut down
+        channel.shutdown();
     }
+
+
+    /**
+     * Start Roguemasters
+     */
 }

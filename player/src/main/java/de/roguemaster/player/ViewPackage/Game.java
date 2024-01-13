@@ -145,11 +145,8 @@ public class Game {
 
         if (options.containsKey(selectedOption)) {
             String action = options.get(selectedOption);
-            //GameCommandRequest command = null;
-            //GameClient gameClient =
             switch (action) {
                 case "Attack":
-                    //GameClient GameCommandRequest.attackCommand();
                     logger.info("Send Attack to Server");
                     break;
                 case "Do Nothing":
