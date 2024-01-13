@@ -49,7 +49,7 @@ public class Game {
         if (!nonBossRooms.isEmpty()) {
             Random random = new Random();
             Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
-            player.move(randomRoom);
+            player.teleport(randomRoom);
         }
         playerList.add(player);
     }

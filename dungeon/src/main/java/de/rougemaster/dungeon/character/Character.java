@@ -14,13 +14,21 @@ public abstract class Character {
     protected Room currentRoom;
 
     /**
-     * move u to the given Room
+     * move u to the given adjacent Room
      * @param room the room you want to move to.
      */
     public void move(Room room) {
         if(currentRoom.isRoomAdjacent(room)){
             currentRoom = room;
         }
+    }
+
+    /**
+     * move u to any given Room
+     * @param room the room you want to move to.
+     */
+    public void teleport(Room room){
+        currentRoom = room;
     }
 
     /**
