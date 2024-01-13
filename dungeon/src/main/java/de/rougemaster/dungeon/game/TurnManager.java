@@ -4,6 +4,7 @@ import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.FightManager;
+import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.lobby.Lobby;
 
 import java.util.ArrayList;

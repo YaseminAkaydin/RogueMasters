@@ -1,5 +1,7 @@
 package de.rougemaster.dungeon.lobby;
 
+import de.rougemaster.dungeon.lobby.lobbyCommand.LobbyCommand;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
