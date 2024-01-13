@@ -1,0 +1,31 @@
+syntax = "proto3";
+option java_multiple_files =  true;
+package com.example.grpc;
+
+// The request message containing the game command.
+message GameCommandRequest {
+  string command = 1;
+  string target = 2;
+}
+
+// The response message containing the result of the command.
+message GameCommandResponse {
+  bool success = 1;
+  string message = 2; //GameState later
+}
+
+// The Game service definition.
+service GameService {
+  // Sends a game command to the server and receives a response.
+  rpc SendGameCommand(GameCommandRequest) returns (GameCommandResponse);
+
+  //https://pamodaaw.medium.com/handson-introduction-to-grpc-with-java-1195870027fb
+ /* // Unary
+  rpc Greet(GreetRequest) returns (GreetResponse) {};
+  // Streaming server
+  rpc GreetManyTimes(GreetManyTimesRequest) returns (stream GreetManyTimesResponse) {};
+  // Streaming client
+  rpc LongGreet(stream LongGreetRequest) returns (LongGreetResponse) {};
+  // Bidirectional streaming
+  rpc GreetAll(stream GreetAllRequest) returns (stream GreetAllResponse) {};*/
+}

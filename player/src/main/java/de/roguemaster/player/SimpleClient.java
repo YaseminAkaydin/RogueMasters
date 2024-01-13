@@ -1,0 +1,96 @@
+package de.roguemaster.player;
+
+import com.example.grpc.GameCommandRequest;
+import com.example.grpc.GameCommandResponse;
+import com.example.grpc.GameServiceGrpc;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
+import de.roguemaster.player.ViewPackage.Game;
+import io.grpc.*;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class SimpleClient {
+    private static final Logger logger = Logger.getLogger(SimpleClient.class.getName());
+
+    private final GameServiceGrpc.GameServiceBlockingStub blockingStub;
+
+    public SimpleClient(Channel channel) {
+        this.blockingStub = GameServiceGrpc.newBlockingStub(channel);
+    }
+    // TODO: Aus game.run() irgendwie ein request aus der mainloop dort erstellen
+    // TODO: Synchronisation mit gameLoop
+    public void startGame() {
+        logger.info("Starting game...");
+
+        DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+        GameCommandRequest request = GameCommandRequest.newBuilder().setCommand("startLobby").setTarget("/").build();
+        GameCommandResponse response;
+        Terminal terminal = null;
+        try {
+            terminal = terminalFactory.createTerminal();
+            Game game = new Game(terminal);
+            game.run();
+            terminal.close();
+            try {
+                response = blockingStub.sendGameCommand(request);
+            } catch (StatusRuntimeException e) {
+                logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+                return;
+            }
+            logger.info("RESPONSE FROM SERVER: " + response.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException("Terminalfactory createTerminal error MAYBE: " + e);
+        }
+        //logger.info("Response: " + response.getMessage());
+    }
+
+    /**
+     * Channel zum Server aufbauen.
+     * mitStart Game wird das Spiel gestartet.
+     * @param args
+     * @throws InterruptedException
+     */
+    public static void main(String[] args) throws InterruptedException {
+        // DEFAULT USER AND TARGET
+        String user = "world";
+        // Access a service running on the local machine on port 50051
+        String target = "localhost:50051"; //server IP
+
+
+        // Allow passing in the user and target strings as command line arguments
+        if (args.length > 0) {
+            if ("--help".equals(args[0])) {
+                System.err.println("Usage: [name [target]]");
+                System.err.println("");
+                System.err.println("  name    The name you wish to be greeted by. Defaults to " + user);
+                System.err.println("  target  The server to connect to. Defaults to " + target);
+                System.exit(1);
+            }
+            user = args[0];
+        }
+        if (args.length > 1) {
+            target = args[1];
+        }
+
+        // Create a communication channel to the server, known as a Channel. Channels are thread-safe
+        // and reusable. It is common to create channels at the beginning of your application and reuse
+        // them until the application shuts down.
+        //
+        // For the example we use plaintext insecure credentials to avoid needing TLS certificates. To
+        // use TLS, use TlsChannelCredentials instead.
+        ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create())
+                .build();
+
+        try {
+            SimpleClient client = new SimpleClient(channel);
+            client.startGame();
+        } finally {
+            channel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
+        }
+
+    }
+}
