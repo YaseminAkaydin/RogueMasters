@@ -99,14 +99,79 @@ class DungeonApplicationTests {
 		System.out.println("HP Character2: "+ character2.getHp());
 	}
 
-	/**
-	 * Es wird getestet, ob der Turnmanager alle Gamecomands von denjenigen Spielern richtig behandelt,
-	 * die sich bereits in einem Kampf befinden
-	 */
-	@Test
-	void handleCurrentFight(){
+    /**
+     * Character bewegt sich die ganze Zeit.
+     */
+    @Test
+    void Turnmanagerthread() {
+        game.addPlayer(character1);
+        game.addPlayer(character2);
+        TurnManager turnManager = game.getTurnManager();
+        FightManager fightManager = turnManager.getFightManager();
+        Random random = new Random();
+
+        //Start thread
+        TurnManagerThread turnManagerThread = new TurnManagerThread(game.getTurnManager());
+        Thread t1 = new Thread(turnManagerThread);
+        t1.start();
+        int timeCounter = 0;
+
+        while (true) {
+
+            //Random delay before action
+            int delay = random.nextInt(2000);
+            timeCounter += delay;
+            System.out.println("Pausing for " + delay + " milliseconds...");
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (timeCounter>=5000){
+                timeCounter = 0;
+                System.out.println("\nNEW TURN SHOULD EXECUTE NOW...\n");
+            }
+            //Character One move
+            Map<RoomCardinalDirection, Room> roomsForChar1 = character1.getCurrentRoom().getAdjacentRooms();
+            Room roomToMoveToForChar1 = null;
+            if (roomsForChar1.get(RoomCardinalDirection.East) != null) {
+                roomToMoveToForChar1 = roomsForChar1.get(RoomCardinalDirection.East);
+            } else if (roomsForChar1.get(RoomCardinalDirection.North) != null) {
+                roomToMoveToForChar1 = roomsForChar1.get(RoomCardinalDirection.North);
+            } else if (roomsForChar1.get(RoomCardinalDirection.South) != null) {
+                roomToMoveToForChar1 = roomsForChar1.get(RoomCardinalDirection.South);
+            } else if (roomsForChar1.get(RoomCardinalDirection.West) != null) {
+                roomToMoveToForChar1 = roomsForChar1.get(RoomCardinalDirection.West);
+            }
+
+            GameCommand moveGameCommand1 = new moveGameCommand(character1, roomToMoveToForChar1);
+            game.setCharacterTurn(moveGameCommand1, character1);
+
+            //Character Two move
+            Map<RoomCardinalDirection, Room> roomsForChar2 = character2.getCurrentRoom().getAdjacentRooms();
+            Room roomToMoveToForChar2 = null;
+            if (roomsForChar2.get(RoomCardinalDirection.East) != null) {
+                roomToMoveToForChar2 = roomsForChar2.get(RoomCardinalDirection.East);
+            } else if (roomsForChar2.get(RoomCardinalDirection.North) != null) {
+                roomToMoveToForChar2 = roomsForChar2.get(RoomCardinalDirection.North);
+            } else if (roomsForChar2.get(RoomCardinalDirection.South) != null) {
+                roomToMoveToForChar2 = roomsForChar2.get(RoomCardinalDirection.South);
+            } else if (roomsForChar2.get(RoomCardinalDirection.West) != null) {
+                roomToMoveToForChar2 = roomsForChar2.get(RoomCardinalDirection.West);
+            }
 
 
-	}
+            GameCommand moveGameCommand2 = new moveGameCommand(character2, roomToMoveToForChar2);
+            game.setCharacterTurn(moveGameCommand2, character2);
+
+
+            //Prints
+            System.out.println("\n\n\n-----CURRENT TURN-----");
+            System.out.println("ROOMS:");
+            System.out.println("Character ONE currently in Room: " + System.identityHashCode(character1.getCurrentRoom()));
+            System.out.println("Character TWO currently in Room: " + System.identityHashCode(character2.getCurrentRoom()));
+        }
+    }
 
 }
