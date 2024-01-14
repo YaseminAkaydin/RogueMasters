@@ -5,6 +5,7 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
 import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.DataForView.RoomData;
 
 
 import java.io.IOException;
@@ -38,8 +39,6 @@ public class MainGameView extends ViewComponent {
         monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
         itemX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
         itemY= random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
-
-        //System.out.println(roomData.toString());
 
     }
 
@@ -79,7 +78,6 @@ public class MainGameView extends ViewComponent {
     }
 
     private void drawMonster(TextGraphics tg) {
-
         tg.setForegroundColor(TextColor.ANSI.RED);
         if (roomData.getMonster() != null) {
             String monsterSymbol = switch (roomData.getMonster()) {
@@ -184,6 +182,13 @@ public class MainGameView extends ViewComponent {
 
     private String getAdjacentRoomId(String direction) {
         return roomData.getAdjacentRooms().getOrDefault(direction, -1).toString();
+    }
+    public int getCurrentRoomId() {
+        return roomData.getId();
+    }
+
+    public RoomData getRoomData() {
+        return roomData;
     }
 
 

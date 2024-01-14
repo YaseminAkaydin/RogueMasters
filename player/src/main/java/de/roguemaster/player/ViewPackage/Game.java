@@ -8,6 +8,7 @@ import de.roguemaster.player.ViewPackage.View.*;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
@@ -29,9 +30,12 @@ public class Game {
     private final ViewBuilder viewBuilder;
 
     Logger logger = Logger.getLogger(getClass().getName());
+    private ConcurrentLinkedQueue<Command> commandQueue = new ConcurrentLinkedQueue<>();
 
     private final AtomicBoolean running = new AtomicBoolean(true);
     private final AtomicBoolean gameStarted = new AtomicBoolean(false);
+
+    private String currentInput = "";
 
     public Game(Terminal terminal) {
         this.terminal = terminal;
@@ -93,6 +97,8 @@ public class Game {
     private void processInput(KeyStroke keyStroke) {
         if (currentView instanceof StartScreenView) {
             processStartScreenViewInput(keyStroke);
+        } else if (currentView instanceof JoiningLobbyView) {
+            processJoinLobbyViewInput(keyStroke);
         } else if (currentView instanceof LeaderBoardView) {
             processLeaderBoardViewInput(keyStroke);
         } else if (currentView instanceof MainGameView) {
@@ -105,17 +111,54 @@ public class Game {
         }
     }
 
+    private void processJoinLobbyViewInput(KeyStroke keyStroke) {
+
+        Character inputChar = keyStroke.getCharacter();
+        Command command = null;
+
+        // Überprüfen, ob eine gültige Nummernziffer eingegeben wurde
+        if (inputChar != null && Character.isDigit(inputChar)) {
+            currentInput += inputChar;
+            joiningLobbyView.setCurrentID(currentInput);
+
+            // Wenn die Länge fünf erreicht, verarbeiten
+            if (currentInput.length() == 5) {
+                processLobbyCode(currentInput);
+                currentView = startingLobbyView;
+                command = Command.joinLobby(currentInput);
+                currentInput = ""; // Zurücksetzen der Eingabe für den nächsten Versuch
+            }
+        }
+        // Add command to the queue
+        if (command != null) {
+            commandQueue.add(command);
+        }
+    }
+
+    private void processLobbyCode(String lobbyCode) {
+        // Beispiel: Umwandeln des Strings in eine Nummer und überprüfen, ob sie gültig ist
+        try {
+            int code = Integer.parseInt(lobbyCode);
+            // Weitere Logik für Lobby-Code
+        } catch (NumberFormatException e) {
+            // Ungültige Eingabe, Fehlerbehandlung
+        }
+    }
+
     private void processStartScreenViewInput(KeyStroke keyStroke) {
         if (keyStroke.getCharacter() == null) return;
+        Command command = null;
         switch (keyStroke.getCharacter()) {
             case '1':
                 logger.info("Creating Dungeon and switch to startingLobbyView");
                 this.currentView = startingLobbyView;
                 // Simulate receiving dungeon data from the server
+                //JoinLobby-CLIENT(n(sololobbystarten) ODER "LobbyCode Zahl 5stellig") --> success, lobbyID, charID
+                command = Command.startLobby();
                 break;
             case '2':
                 logger.info("TBU");
-                // currentView = joiningLobbyView; // TODO: mechanics hier implementeiren
+                currentView = joiningLobbyView; // TODO: mechanics hier implementeiren,
                 break;
             case '3':
                 currentView = leaderBoardView;
@@ -125,6 +168,10 @@ public class Game {
                 break;
             default:
                 break;
+        }
+        // Add command to the queue
+        if (command != null) {
+            commandQueue.add(command);
         }
     }
 
@@ -142,48 +189,61 @@ public class Game {
         Map<Integer, String> options = mainGameView.getOptionMappings();
         char inputChar = keyStroke.getCharacter();
         int selectedOption = Character.isDigit(inputChar) ? Character.getNumericValue(inputChar) : -1;
-
+        Command command = null;
         if (options.containsKey(selectedOption)) {
             String action = options.get(selectedOption);
             switch (action) {
                 case "Attack":
                     logger.info("Send Attack to Server");
+                    command = Command.attackCommand();
                     break;
                 case "Do Nothing":
                     logger.info("Do Nothing");
+                    command = Command.doNothingCommand();
                     break;
                 // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
                 case "Move NORTH":
                     logger.info("Move N");
                     mainGameView.updateRoom("NORTH");
+                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
                     break;
                 case "Move SOUTH":
                     logger.info("Move S");
                     mainGameView.updateRoom("SOUTH");
+                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
                     break;
                 case "Move EAST":
                     logger.info("Move E");
                     mainGameView.updateRoom("EAST");
+                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
                     break;
                 case "Move WEST":
                     logger.info("Move W");
                     mainGameView.updateRoom("WEST");
+                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
                     break;
                 case "Pick Up Item":
                     logger.info("Pick up Item");
+                    command = Command.pickupCommand(mainGameView.getRoomData().getItems().getId());
                     break;
                 default:
                     logger.info("Default: Do Nothing");
+                    command = Command.doNothingCommand();
                     break;
             }
         }
+        // Add command to the queue
+        if (command != null) {
+            commandQueue.add(command);
+        }
     }
+
 
     private void processInventoryViewInput(InventoryView inventoryView, KeyStroke keyStroke) {
         if (keyStroke.getCharacter() == null) return;
         char inputChar = keyStroke.getCharacter();
         int selectedOption = Character.isDigit(inputChar) ? Character.getNumericValue(inputChar) : -1;
-
+        Command command = null;
         if (inventoryView.getCurrentState() == InventoryView.State.DROP_ITEM) {
             Map<Integer, String> dropItemOptionMappings = inventoryView.getDropItemOptionMappings();
             if (dropItemOptionMappings.containsKey(selectedOption)) {
@@ -191,17 +251,20 @@ public class Game {
                 switch (action) {
                     case "Drop 1":
                         logger.info("DROP_ITEM: send drop 1 to server");
+                        //command = Command.dropItemCommand(); TODO: xx
                         break;
                     case "Drop 2":
                         logger.info("DROP_ITEM: send drop 2 to server");
+                        //command = Command.dropItemCommand();
                         break;
                     // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
                     case "Drop 3":
                         logger.info("DROP_ITEM: send drop 3 to server");
+                        //command = Command.dropItemCommand();
                         break;
                     case "Drop 4":
                         logger.info("DROP_ITEM: send drop 4 to server");
-
+                        //command = Command.dropItemCommand();
                         break;
                     case "Go back":
                         logger.info("Go Back");
@@ -283,6 +346,11 @@ public class Game {
             default:
                 break;
         }
+    }
+
+    // Add a method to retrieve and remove a command from the queue
+    public Command getNextCommand() {
+        return commandQueue.poll();
     }
 
     public static void main(String[] args) {
