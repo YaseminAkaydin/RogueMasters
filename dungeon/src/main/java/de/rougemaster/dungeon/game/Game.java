@@ -3,11 +3,14 @@ package de.rougemaster.dungeon.game;
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
+import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Game {
     private final List<PlayableCharacter> playerList;
@@ -27,7 +30,8 @@ public class Game {
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
 
-        this.turnManager = null;
+
+        this.turnManager = new TurnManager();
     }
 
     /**
@@ -35,6 +39,17 @@ public class Game {
      * @param player the player that is to be added
      */
     public void addPlayer(PlayableCharacter player) {
+
+        List<Room> allRooms = dungeon.getRoomList();
+        List<Room> nonBossRooms = allRooms.stream()
+                .filter(room -> !(room instanceof BossRoom))
+                .toList();
+
+        if (!nonBossRooms.isEmpty()) {
+            Random random = new Random();
+            Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
+            player.teleport(randomRoom);
+        }
         playerList.add(player);
     }
 
@@ -44,6 +59,10 @@ public class Game {
      */
     public void addEnemy(EnemyCharacter enemy) {
         enemyList.add(enemy);
+    }
+
+    public TurnManager getTurnManager() {
+        return turnManager;
     }
 
     /**
@@ -65,7 +84,32 @@ public class Game {
      * @param gameCommand the command that is to be executed
      * @param character the character that is to be set
      */
-    private void setCharacterTurn(GameCommand gameCommand, Character character) {
-        //TODO: Set Character Turn in TurnManager
+    public void setCharacterTurn(GameCommand gameCommand, Character character) {
+        turnManager.setCharacterTurn(character, gameCommand);
+    }
+
+    /**
+     * Returns the current GameState
+     * @return the current GameState
+     */
+    public GameState getGameState(){
+        return new GameState(playerList, enemyList, dungeon);
+    }
+
+    /**
+     * Removes a player from the game
+     * @param character the player that is to be removed
+     */
+    public void removeCharacter(Character character) {
+        //Check if char is in playerList or enemyList by class type
+        if(character instanceof PlayableCharacter){
+            playerList.remove(character);
+        }
+        else if(character instanceof EnemyCharacter){
+            enemyList.remove(character);
+        }
+
+        //TODO: Check if fightManager has a fight with the character stop the fight
+        //TODO: Check if turnManager has a turn with the character delete character from turnManager
     }
 }

@@ -24,6 +24,8 @@ public class PlayableCharacter extends Character {
         inventory = new ArrayList<>();
         armorSlot = null;
         weaponSlot = null;
+        hp= 10;
+        attack=10;
     }
 
     /**
@@ -116,9 +118,12 @@ public class PlayableCharacter extends Character {
      * Takes the Item from the room and puts it in the inventory.
      */
     public void takeItemInRoom(Item item){
-        //TODO: Check if Room has a Item
-        //TODO: Remove Item from Room
-        //TODO: Add Item to Inventory
+        if(currentRoom.getItems().contains(item)){
+            currentRoom.removeItem(item);
+            inventory.add(item);
+        }else{
+            //TODO: throw exception
+        }
     }
 
     /**

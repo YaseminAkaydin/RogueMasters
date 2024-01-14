@@ -1,5 +1,7 @@
 package de.rougemaster.dungeon.dungeon;
 
+import de.rougemaster.dungeon.item.Item;
+
 import javax.lang.model.type.NullType;
 import java.util.Random;
 
@@ -33,9 +35,8 @@ public class DungeonRoom extends Room {
         for (int i = 0; i < itemMaximumAmount; i++) {
             boolean createItem = random.nextInt(100) < itemSpawnChanceInPercent;
             if (createItem) {
-                //create item
-                NullType item = null;
-                items.add(item);
+                //TODO: create item here?
+                break;
             }
         }
     }

@@ -1,7 +1,5 @@
 package de.rougemaster.dungeon.lobby;
 
-import de.rougemaster.dungeon.lobby.lobbyCommand.LobbyCommand;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -35,11 +33,9 @@ public class LobbyBroker {
     /**
      * Forwards the LobbyCommand to the appropriate Lobby
      * @param clientId the id of the Client
-     * @param lobbyCommand the Command that should be sen
      */
-    public void forwardToLobby(int clientId , LobbyCommand lobbyCommand) {
-        userMap.get(clientId);
-        //TODO: use enterCommand to enter the Command in Lobby
+    public Lobby forwardToLobby(int clientId) {
+        return userMap.get(clientId);
     }
 
     /**

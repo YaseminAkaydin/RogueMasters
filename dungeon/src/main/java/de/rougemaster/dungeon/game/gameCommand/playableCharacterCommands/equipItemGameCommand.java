@@ -1,10 +1,11 @@
-package de.rougemaster.dungeon.game.gameCommand;
+package de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands;
 
 import de.rougemaster.dungeon.character.characterExceptions.InventoryItemMissingException;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.item.Item;
 
-public class equipItemGameCommand extends GameCommand{
+public class equipItemGameCommand extends GameCommand {
     PlayableCharacter player;
     Item item;
 
