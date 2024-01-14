@@ -62,7 +62,7 @@ public class TurnManager {
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             if (allCharactersInFights.contains(currentCharacter)) {
-                doNothingGameCommand newCommand = new doNothingGameCommand();
+                doNothingGameCommand newCommand = new doNothingGameCommand(currentCharacter);
                 entry.setValue(newCommand);
             }
         }

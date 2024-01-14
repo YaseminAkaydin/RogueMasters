@@ -6,29 +6,28 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.game.Game;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.GameState;
-import de.rougemaster.dungeon.lobby.lobbyCommand.LobbyCommand;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Lobby {
-    private final Map<Integer, Character> playerMap;
-    private Game game;
+    private final Map<Integer, Character> characterMap;
+    private final Game game;
 
     private int lobbyId;
 
     public Lobby(Game game) {
-        playerMap = new HashMap<>();
+        characterMap = new HashMap<>();
         this.game = game;
     }
 
     /**
      * Translates LobbyCommand to GameCommand
-     * @param lobbyCommand The LobbyCommand that is to be translated
+     * @param lobbyMessage The lobby message that is to be translated
      * @return The Translated Game command
      */
-    private GameCommand translateCommand(LobbyCommand lobbyCommand){
-        if(lobbyCommand == null){
+    private GameCommand translateCommand(LobbyMessage lobbyMessage){
+        if(lobbyMessage == null){
             throw new IllegalArgumentException("LobbyCommand can't be null.");
         }
         //TODO: Translate LobbyCommand to GameCommand
@@ -38,13 +37,12 @@ public class Lobby {
     /**
      * Enters a LobbyCommand into the Game. The Command is executed by the Game.
      * @param clientId the ClientID of the User
-     * @param lobbyCommand The Lobby command that is to be entered.
+     * @param lobbyMessage The Lobby command that is to be entered.
      */
-    private void enterCommand(int clientId, LobbyCommand lobbyCommand){
-        //TODO: Macht vielleicht mehr Sinn in Game zu machen.
-        Character clientCharacter = playerMap.get(clientId);
-        GameCommand clientGameCommand = translateCommand(lobbyCommand);
-        //TODO: Game.setCharacterTurn(clientGameCommand, Character);
+    public void enterCommand(int clientId, LobbyMessage lobbyMessage){
+        Character clientCharacter = characterMap.get(clientId);
+        GameCommand clientGameCommand = translateCommand(lobbyMessage);
+        game.setCharacterTurn(clientGameCommand, clientCharacter);
     }
 
     /**
@@ -59,7 +57,7 @@ public class Lobby {
         }
 
         //Check if Client is already registered
-        if(playerMap.containsKey(clientId)){
+        if(characterMap.containsKey(clientId)){
             return;
         }
 
@@ -81,7 +79,7 @@ public class Lobby {
      */
     public void leaveClientLobby(int clientId){
         //Check if clientId is in lobby.
-        if(!playerMap.containsKey(clientId)){
+        if(!characterMap.containsKey(clientId)){
             return;
         }
         //TODO: Remove Character from Game
@@ -93,9 +91,17 @@ public class Lobby {
      */
     public void nextTurn(GameState gameState){
         //TODO: Trigger nextTurn method in LobbyFacade with all clientIds
+        GameState gameStateCopy = game.getGameState();
+        for (Integer clientId: characterMap.keySet()) {
+            LobbyFacade.getInstance().sendNextTurn(clientId, gameStateCopy);
+        }
     }
 
     public void setLobbyId(int lobbyId) {
         this.lobbyId = lobbyId;
+    }
+
+    public int getLobbyId() {
+        return lobbyId;
     }
 }

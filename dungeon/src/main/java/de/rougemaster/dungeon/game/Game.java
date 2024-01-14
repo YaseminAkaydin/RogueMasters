@@ -11,7 +11,6 @@ import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class Game {
     private final List<PlayableCharacter> playerList;
@@ -87,5 +86,30 @@ public class Game {
      */
     public void setCharacterTurn(GameCommand gameCommand, Character character) {
         turnManager.setCharacterTurn(character, gameCommand);
+    }
+
+    /**
+     * Returns the current GameState
+     * @return the current GameState
+     */
+    public GameState getGameState(){
+        return new GameState(playerList, enemyList, dungeon);
+    }
+
+    /**
+     * Removes a player from the game
+     * @param character the player that is to be removed
+     */
+    public void removeCharacter(Character character) {
+        //Check if char is in playerList or enemyList by class type
+        if(character instanceof PlayableCharacter){
+            playerList.remove(character);
+        }
+        else if(character instanceof EnemyCharacter){
+            enemyList.remove(character);
+        }
+
+        //TODO: Check if fightManager has a fight with the character stop the fight
+        //TODO: Check if turnManager has a turn with the character delete character from turnManager
     }
 }

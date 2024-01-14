@@ -4,7 +4,7 @@ import de.rougemaster.dungeon.game.Game;
 
 public class LobbyFactory {
 
-        public Lobby createLobby(LobbyCharType lobbyCharType) {
+        public Lobby createLobby() {
             Game game = new Game(10,2);
             Lobby lobby = new Lobby(game);
 
