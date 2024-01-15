@@ -42,7 +42,7 @@ public class SimpleClientALT {
             game.run();
             terminal.close();
             try {
-                // response = blockingStub.sendGameCommand(request);
+                /*response = blockingStub.sendGameCommand(request);*/
             } catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 return;

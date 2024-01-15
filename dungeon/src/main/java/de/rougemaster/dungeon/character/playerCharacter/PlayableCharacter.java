@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayableCharacter extends Character {
+    private static int idCounter;
     private int level;
     private int experience;
 

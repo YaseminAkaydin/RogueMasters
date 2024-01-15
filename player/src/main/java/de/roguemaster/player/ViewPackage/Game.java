@@ -353,6 +353,10 @@ public class Game {
         return commandQueue.poll();
     }
 
+    public boolean isGameStarted() {
+        return gameStarted.get();
+    }
+
     public static void main(String[] args) {
         try {
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();

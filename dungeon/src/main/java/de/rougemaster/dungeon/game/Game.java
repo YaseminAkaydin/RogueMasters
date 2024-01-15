@@ -10,6 +10,7 @@ import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class Game {
@@ -93,7 +94,7 @@ public class Game {
      * @return the current GameState
      */
     public GameState getGameState(){
-        return new GameState(playerList, enemyList, dungeon);
+        return new GameState(playerList, enemyList, dungeon.getRoomList().stream().map(Room::getRoomMessage).toList());
     }
 
     /**

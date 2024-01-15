@@ -31,6 +31,12 @@ dependencies {
 	testImplementation "junit:junit:4.13.2"
 	testImplementation "org.mockito:mockito-core:3.4.0"
 
+	// Testing
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+
+	// JSON
+	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+
 
 }
 

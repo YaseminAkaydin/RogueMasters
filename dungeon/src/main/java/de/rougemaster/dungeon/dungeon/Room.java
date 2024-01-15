@@ -11,9 +11,8 @@ abstract public class Room {
 
     static int instanceCounter = 0;
     private int id;
-    @Getter
     protected List<Item> items;
-    protected List<NullType> enemies;
+    protected List<Character> enemies;
     private final Map<RoomCardinalDirection, Room> adjacentRooms;
 
     public Room() {
@@ -46,12 +45,27 @@ abstract public class Room {
 
     abstract public void generateRoom();
 
-    public boolean isRoomAdjacent(Room room){
+    public boolean isRoomAdjacent(Room room) {
         return adjacentRooms.containsValue(room);
     }
 
-    public void removeItem(Item item){
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void removeItem(Item item) {
         this.items.remove(item);
     }
 
+    public RoomMessage getRoomMessage() {
+        return new RoomMessage(
+                this.id,
+                this.items,
+                this.enemies,
+                this.adjacentRooms.get(RoomCardinalDirection.North) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.North).id,
+                this.adjacentRooms.get(RoomCardinalDirection.South) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.South).id,
+                this.adjacentRooms.get(RoomCardinalDirection.West) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.West).id,
+                this.adjacentRooms.get(RoomCardinalDirection.East) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.East).id
+        );
+    }
 }

@@ -1,13 +1,22 @@
 package de.rougemaster.dungeon;
 
 import com.example.grpc.*;
+import com.google.gson.reflect.TypeToken;
+import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Dungeon;
+import de.rougemaster.dungeon.dungeon.Room;
+import de.rougemaster.dungeon.game.GameState;
+import de.rougemaster.dungeon.lobby.JSONManager;
+import de.rougemaster.dungeon.lobby.LobbyFacade;
+import de.rougemaster.dungeon.lobby.LobbyMessage;
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
 import io.grpc.Server;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,7 +29,11 @@ public class DungeonApplication {
 
     private void start() throws IOException {
         int port = 8811;
-        this.server = Grpc.newServerBuilderForPort(port, InsecureServerCredentials.create()).addService(new GameServiceImpl()).build().start();
+        this.server = Grpc.newServerBuilderForPort(port, InsecureServerCredentials.create())
+                .addService(new GameServiceImpl())
+                .addService(new ManageServiceImpl())
+                .build()
+                .start();
         logger.info("Server started, listening on " + port);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -56,7 +69,7 @@ public class DungeonApplication {
         server.blockUntilShutdown();
     }
 
-    static class GameServiceImpl extends GameServiceGrpc.GameServiceImplBase{
+    static class GameServiceImpl extends GameServiceGrpc.GameServiceImplBase {
         private final CopyOnWriteArrayList<StreamObserver<GameCommandResponse>> clients = new CopyOnWriteArrayList<>();
         private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -73,13 +86,8 @@ public class DungeonApplication {
                 public void onNext(GameCommandRequest request) {
                     // Handle the incoming message from the client
                     // For example, update the game state based on the command
-                    System.out.println("Received command: " + request.getCommand());
+                    System.out.println("Received command: " + request.getCommand() + " " + request.getTarget());
 
-                    // Send a response back
-                    GameCommandResponse response = GameCommandResponse.newBuilder()
-                            .setMessage("{ Room: { id: 10, connectionMap: {}}, Player: {id: 2, name: HossoDerBabo, attack: 1000}}")
-                            .build();
-                    responseObserver.onNext(response);
                 }
 
                 @Override
@@ -97,8 +105,10 @@ public class DungeonApplication {
                 }
             };
         }
+
         private void startGameStateUpdates() {
             scheduler.scheduleAtFixedRate(() -> {
+                if (clients.isEmpty()) return;
                 GameCommandResponse response = buildGameStateResponse();
                 for (StreamObserver<GameCommandResponse> client : clients) {
                     try {
@@ -112,12 +122,42 @@ public class DungeonApplication {
 
         private GameCommandResponse buildGameStateResponse() {
             // Build response based on game state
-            return GameCommandResponse.newBuilder().setMessage("GameStateUpdate").build();
+            GameState gameState = new GameState(
+                    List.of(new PlayableCharacter())
+                    ,List.of()
+                    ,new Dungeon(10, 2).getRoomList()
+                    .stream()
+                    .map((Room::getRoomMessage))
+                    .toList());
+            String message = new JSONManager<GameState>(new TypeToken<>(){}).write(gameState);
+            return GameCommandResponse.newBuilder().setMessage(message).build();
         }
 
     }
     // Dungeon: { Room: { id: 10, connectionMap: {}}, Player: {id: 2, name: HossoDerBabo, attack: 1000}}
-    
+
+    static class ManageServiceImpl extends ManageServiceGrpc.ManageServiceImplBase {
+        static int clientID = 0;
+
+        @Override
+        public void joinLobby(JoinLobbyRequest request, StreamObserver<JoinLobbyResponse> responseObserver) {
+            int lobbyID = request.getLobbyID();
+            boolean success = true; // or some logic to determine if joining was successful
+            int characterID = clientID++; // Implement this method to generate a character ID
+            System.out.println("Lobby joined: " + lobbyID + " " + success + " " + characterID);
+            // Build the response
+            JoinLobbyResponse response = JoinLobbyResponse.newBuilder()
+                    .setSuccess(success)
+                    .setLobbyID(lobbyID)
+                    .setCharacterID(characterID)
+                    .build();
+
+            // Send the response back to the client
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+
+    }
 
 
 }

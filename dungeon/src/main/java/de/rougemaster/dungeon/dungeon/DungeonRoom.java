@@ -27,7 +27,7 @@ public class DungeonRoom extends Room {
             if (createItem) {
                 //create enemy character
                 NullType enemy = null;
-                enemies.add(enemy);
+                //enemies.add(enemy);
             }
         }
 

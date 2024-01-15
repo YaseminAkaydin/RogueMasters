@@ -30,7 +30,9 @@ public class LobbyFacade {
 
     int joinLobby(int clientId, int lobbyId){
         if(lobbyId == 0){
-            return lobbyFactory.createLobby().getLobbyId();
+            int actualLobbyId = lobbyFactory.createLobby().getLobbyId();
+            lobbyBroker.registerUser(clientId, lobbyId);
+            return actualLobbyId;
         }
         else if(lobbyBroker.getLobbyBrokerRegister().checkLobbyIdExist(lobbyId)){
             lobbyBroker.registerUser(clientId, lobbyId);
@@ -57,6 +59,8 @@ public class LobbyFacade {
      * @param gameState the GameState that should to be sent
      */
     void sendNextTurn(int clientId, GameState gameState){
+        //Stub.startGameStateUpdates();
         //TODO: Send NextTurn to Client via ServerStub
+
     }
 }

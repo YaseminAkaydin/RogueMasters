@@ -30,7 +30,7 @@ public class Lobby {
         if(lobbyMessage == null){
             throw new IllegalArgumentException("LobbyCommand can't be null.");
         }
-        //TODO: Translate LobbyCommand to GameCommand
+        //TODO: Translate LobbyMessage to GameCommand
         return null;
     }
 
@@ -70,6 +70,7 @@ public class Lobby {
 
             default -> throw new IllegalArgumentException("LobbyCharType is not valid.");
         };
+
         //TODO: Add Character to Game
     }
 

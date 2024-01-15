@@ -1,14 +1,11 @@
 package de.rougemaster.dungeon.dungeon;
 
-import lombok.Getter;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Dungeon {
 
     private final int dungeonDifficulty;
-    @Getter
     private List<Room> roomList;
     private String map;
     private Random random = new Random();
@@ -104,6 +101,10 @@ public class Dungeon {
                 }
             });
         }
+    }
+
+    public List<Room> getRoomList() {
+        return roomList;
     }
 
     public int getDungeonDifficulty() {

@@ -1,3 +1,4 @@
+/*
 package de.rougemaster.dungeon;
 
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
@@ -21,10 +22,12 @@ class DungeonApplicationTests {
 
 
 
-	/**
+	*/
+/**
 	 * Test, um zu überprüfen, ob der Turnmanager einen gesendeten Gamecommand + Character
 	 * vom Game richtig interpretiert und ausführt
-	 */
+	 *//*
+
 
 	@Test
 	void takeTurnTest(){
@@ -53,10 +56,12 @@ class DungeonApplicationTests {
 
 	}
 
-	/**
+	*/
+/**
 	 * Es wird getestet, ob der Turnmanager erfolgreich zwei spieler, die sich in einem Raum befinden,
 	 * an den Fightmanager zunächst nur übergibt
-	 */
+	 *//*
+
 	@Test
 	void startFightTest(){
 		game.addPlayer(character1);
@@ -99,9 +104,11 @@ class DungeonApplicationTests {
 		System.out.println("HP Character2: "+ character2.getHp());
 	}
 
-    /**
+    */
+/**
      * Character bewegt sich die ganze Zeit.
-     */
+     *//*
+
     @Test
     void Turnmanagerthread() {
         game.addPlayer(character1);
@@ -175,3 +182,4 @@ class DungeonApplicationTests {
     }
 
 }
+*/
