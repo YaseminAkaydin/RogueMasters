@@ -19,4 +19,8 @@ public abstract class EnemyCharacter extends Character {
         int amountOfExperience = (int) Math.pow(baseExpDropAmount, 1.5);
         character.gainExperience(amountOfExperience);
     }
+
+    public int getDangerLevel() {
+        return dangerLevel;
+    }
 }

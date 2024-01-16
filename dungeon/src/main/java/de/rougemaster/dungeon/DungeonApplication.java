@@ -2,6 +2,7 @@ package de.rougemaster.dungeon;
 
 import com.example.grpc.*;
 import com.google.gson.reflect.TypeToken;
+import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.Room;
@@ -9,6 +10,7 @@ import de.rougemaster.dungeon.game.GameState;
 import de.rougemaster.dungeon.lobby.JSONManager;
 import de.rougemaster.dungeon.lobby.LobbyFacade;
 import de.rougemaster.dungeon.lobby.LobbyMessage;
+import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
 import io.grpc.Server;
@@ -87,7 +89,6 @@ public class DungeonApplication {
                     // Handle the incoming message from the client
                     // For example, update the game state based on the command
                     System.out.println("Received command: " + request.getCommand() + " " + request.getTarget());
-
                 }
 
                 @Override
@@ -114,6 +115,7 @@ public class DungeonApplication {
                     try {
                         client.onNext(response);
                     } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
                         clients.remove(client);
                     }
                 }
@@ -123,11 +125,11 @@ public class DungeonApplication {
         private GameCommandResponse buildGameStateResponse() {
             // Build response based on game state
             GameState gameState = new GameState(
-                    List.of(new PlayableCharacter())
-                    ,List.of()
+                    List.of(new PlayableCharacter(),new PlayableCharacter(),new PlayableCharacter(),new PlayableCharacter())
+                    ,List.of(new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, 2))
                     ,new Dungeon(10, 2).getRoomList()
                     .stream()
-                    .map((Room::getRoomMessage))
+                    .map(RoomMessage::new)
                     .toList());
             String message = new JSONManager<GameState>(new TypeToken<>(){}).write(gameState);
             return GameCommandResponse.newBuilder().setMessage(message).build();
@@ -156,8 +158,5 @@ public class DungeonApplication {
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
-
     }
-
-
 }

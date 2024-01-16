@@ -11,6 +11,41 @@ public class Zombie extends EnemyCharacter {
 
     private ZombieState state;
 
+    public Zombie(int dangerLvl){
+        if(dangerLvl <= 0) {
+            dangerLvl = 1;
+        }
+        if(dangerLvl > 8) {
+            dangerLvl = 8;
+        }
+
+        if(dangerLvl < 5){
+            this.attack= 2;
+            this.defense=3;
+            this.maxHp=3;
+            this.hp=3;
+            for(int i = dangerLvl; i>1; i--){
+                attack += 3;
+                defense += 4;
+                maxHp +=  4;
+                hp += 4;
+            }
+        }
+
+        if(dangerLvl > 5){
+            this.attack= 14;
+            this.defense=19;
+            this.maxHp=19;
+            this.hp=19;
+            for(int i = dangerLvl; i>1; i--){
+                attack += 5;
+                defense += 5;
+                maxHp +=  6;
+                hp += 6;
+            }
+        }
+    }
+
     /**
      * Zombie does a "claw"-attack against a character.
      * @param character enemy character

@@ -76,4 +76,12 @@ public abstract class Character {
     public Room getCurrentRoom() {
         return currentRoom;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

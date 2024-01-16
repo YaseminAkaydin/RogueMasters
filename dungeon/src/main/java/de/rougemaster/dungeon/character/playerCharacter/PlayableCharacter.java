@@ -119,8 +119,8 @@ public class PlayableCharacter extends Character {
      * Takes the Item from the room and puts it in the inventory.
      */
     public void takeItemInRoom(Item item){
-        if(currentRoom.getItems().contains(item)){
-            currentRoom.removeItem(item);
+        if(currentRoom.getItem() != null){
+            currentRoom.removeItem();
             inventory.add(item);
         }else{
             //TODO: throw exception
@@ -147,5 +147,21 @@ public class PlayableCharacter extends Character {
         else{
             throw new IllegalArgumentException("Item is equipable but not a weapon or a piece of armor");
         }
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public int getMaxExperience(){
+        return (int)Math.pow(level, 1.5);
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
     }
 }

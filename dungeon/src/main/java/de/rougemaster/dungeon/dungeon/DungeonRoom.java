@@ -10,7 +10,7 @@ public class DungeonRoom extends Room {
     private float enemySpawnChanceInPercent = 0.3f;
     private int enemyMaximumAmount = 1;
     private float itemSpawnChanceInPercent = 0.2f;
-    private int itemMaximumAmount = 2;
+    private int itemMaximumAmount = 1;
 
 
     public DungeonRoom() {

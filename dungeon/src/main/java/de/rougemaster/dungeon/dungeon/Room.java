@@ -1,9 +1,8 @@
 package de.rougemaster.dungeon.dungeon;
 
+import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.item.Item;
-import lombok.Getter;
 
-import javax.lang.model.type.NullType;
 import java.util.*;
 //TODO: Import Items und EnemyCharacter (durch NullType ersetzen), prüfen ob Typen von Klassenvariablen korrekt sind, Kommentare
 
@@ -11,15 +10,15 @@ abstract public class Room {
 
     static int instanceCounter = 0;
     private int id;
-    protected List<Item> items;
-    protected List<Character> enemies;
+    protected Item item;
+    protected List<Character> characters;
     private final Map<RoomCardinalDirection, Room> adjacentRooms;
 
     public Room() {
         instanceCounter++;
         this.id = instanceCounter;
-        this.items = new ArrayList<>();
-        this.enemies = new ArrayList<>();
+        this.item = ItemFactory.createItem();
+        this.characters = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
         adjacentRooms.put(RoomCardinalDirection.North, null);
         adjacentRooms.put(RoomCardinalDirection.South, null);
@@ -49,23 +48,13 @@ abstract public class Room {
         return adjacentRooms.containsValue(room);
     }
 
-    public List<Item> getItems() {
-        return items;
+    public Item getItem() {
+        return item;
     }
 
-    public void removeItem(Item item) {
-        this.items.remove(item);
-    }
+    public void removeItem() {this.item = null;}
 
-    public RoomMessage getRoomMessage() {
-        return new RoomMessage(
-                this.id,
-                this.items,
-                this.enemies,
-                this.adjacentRooms.get(RoomCardinalDirection.North) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.North).id,
-                this.adjacentRooms.get(RoomCardinalDirection.South) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.South).id,
-                this.adjacentRooms.get(RoomCardinalDirection.West) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.West).id,
-                this.adjacentRooms.get(RoomCardinalDirection.East) == null ? -1 : this.adjacentRooms.get(RoomCardinalDirection.East).id
-        );
+    public List<Character> getCharacters() {
+        return characters;
     }
 }

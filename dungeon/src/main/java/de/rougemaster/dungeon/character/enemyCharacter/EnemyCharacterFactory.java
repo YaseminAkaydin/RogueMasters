@@ -1,5 +1,9 @@
 package de.rougemaster.dungeon.character.enemyCharacter;
 
+import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
+import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
+import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
+
 public class EnemyCharacterFactory {
 
     /**
@@ -9,6 +13,14 @@ public class EnemyCharacterFactory {
      * @return the created enemy
      */
     public EnemyCharacter createEnemy(EnemyTyp enemyTyp, int dangerLevel){
+        switch (enemyTyp){
+            case Zombie:
+                return new Zombie(dangerLevel);
+            case Skeleton:
+                return new Skeleton();
+            case Devil:
+                return new Devil();
+        }
         throw new IllegalArgumentException("Not Implemented yet");
     }
 

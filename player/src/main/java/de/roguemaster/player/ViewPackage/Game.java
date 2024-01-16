@@ -4,13 +4,17 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
+
+import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
 import de.roguemaster.player.ViewPackage.View.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
+
 
 /**
  * EIGENE TESTUMGEBUNG FÜR DUMMY MAINLOOP
@@ -36,6 +40,7 @@ public class Game {
     private final AtomicBoolean gameStarted = new AtomicBoolean(false);
 
     private String currentInput = "";
+
 
     public Game(Terminal terminal) {
         this.terminal = terminal;
@@ -355,6 +360,20 @@ public class Game {
 
     public boolean isGameStarted() {
         return gameStarted.get();
+    }
+
+    /**
+     * Update der Daten für den ViewBuilder mit den Incoming daten nach dem vorgegebenen Format
+     * @param gameState
+     */
+    public void updateGameState(String gameState) {
+        System.out.println("Thread UpdateGameState started...");
+        // Item: id, typ, name, description, itemAttribute
+        // enemie: id, name, dangerLevel, maxHp, hp, id
+        // playerliste max 4 player: level, experience, maxExperience, inventory, maxHp, hp, attack, defense, id
+        // roomList: n räume: id, ein item, ein enemie, 4 adjazente räume SOUTH x ID
+
+        System.out.println("Thread UpdateGameState finished...");
     }
 
     public static void main(String[] args) {

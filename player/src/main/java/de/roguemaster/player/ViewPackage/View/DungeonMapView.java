@@ -20,12 +20,12 @@ public class DungeonMapView extends ViewComponent {
 
     public DungeonMapView(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
         super(terminal, playerData, dungeonData);
-        this.playerRoomID = this.playerData.getCurrentRoomID();
+        this.playerRoomID = dungeonData.getCurrentRoomId(playerData.getId());
     }
 
     @Override
     public void display() {
-        this.playerRoomID = playerData.getCurrentRoomID();
+        this.playerRoomID = dungeonData.getCurrentRoomId(playerData.getId());
         try {
             clearAndInitializeGraphics();
             Map<Point, RoomData> roomPositions = calculateRoomPositions();
@@ -117,7 +117,7 @@ public class DungeonMapView extends ViewComponent {
     }
 
     private void drawRoom(TextGraphics tg, RoomData room, int x, int y) {
-        if (room.getId() == playerRoomID) tg.setForegroundColor(TextColor.ANSI.CYAN);
+        if (room.getId() == dungeonData.getCurrentRoomId(playerData.getId())) tg.setForegroundColor(TextColor.ANSI.CYAN);
         else setColorBasedOnRoomType(tg, room.getRoomType());
 
 

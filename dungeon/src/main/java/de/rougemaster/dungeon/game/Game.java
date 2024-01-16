@@ -7,6 +7,7 @@ import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
+import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class Game {
      * @return the current GameState
      */
     public GameState getGameState(){
-        return new GameState(playerList, enemyList, dungeon.getRoomList().stream().map(Room::getRoomMessage).toList());
+        return new GameState(playerList, enemyList, dungeon.getRoomList().stream().map(RoomMessage::new).toList());
     }
 
     /**

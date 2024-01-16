@@ -1,6 +1,8 @@
 package de.roguemaster.player.ViewPackage.DataForView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -8,20 +10,32 @@ import java.util.Map;
  */
 public class RoomData {
     private String roomType; // DungeonRoom, BossRoom, TreasureRoom
-    private String monster; // Skeleton, Zombie, Boss
+    private List<PlayerData> characters; // Monster, Spieler
+    private MonsterData monster; // Skeleton, Zombie, Boss
     private ItemData items; // Sword, Shield, Potion, Book
     private final int roomID;
     private final Map<String, Integer> adjacentRooms;
 
 
-    public RoomData(String roomType, String monster,
-                    ItemData items,int roomID, Map<String, Integer> adjacentRooms) {
+    public RoomData(String roomType, MonsterData monster,
+                    ItemData items,int roomID, Map<String, Integer> adjacentRooms, List<PlayerData> characters) {
         this.roomType = roomType;
         this.monster = monster;
+        this.characters = characters;
         this.items = items; // Max 2 Items, haben wir so entschieden
         this.roomID = roomID;
         this.adjacentRooms = new HashMap<>(adjacentRooms);
     }
+    public RoomData(String roomType, MonsterData monster,
+                    ItemData items,int roomID, Map<String, Integer> adjacentRooms) {
+        this.roomType = roomType;
+        this.monster = monster;
+        this.characters = new ArrayList<>();
+        this.items = items; // Max 2 Items, haben wir so entschieden
+        this.roomID = roomID;
+        this.adjacentRooms = new HashMap<>(adjacentRooms);
+    }
+
 
     public String getRoomType() {
         return roomType;
@@ -35,11 +49,15 @@ public class RoomData {
         this.roomType = roomType;
     }
 
-    public String getMonster() {
+    public List<PlayerData> getCharacters() {
+        return characters;
+    }
+
+    public MonsterData getMonster() {
         return monster;
     }
 
-    public void setMonster(String monster) {
+    public void setMonster(MonsterData monster) {
         this.monster = monster;
     }
 
@@ -59,14 +77,4 @@ public class RoomData {
         return adjacentRooms;
     }
 
-    @Override
-    public String toString() {
-        return "RoomData{" +
-                "roomType='" + roomType + '\'' +
-                ", monster='" + monster + '\'' +
-                ", items=" + items +
-                ", roomID=" + roomID +
-                ", adjacentRooms=" + adjacentRooms +
-                '}';
-    }
 }

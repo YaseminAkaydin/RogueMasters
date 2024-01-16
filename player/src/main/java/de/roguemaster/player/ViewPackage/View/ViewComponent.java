@@ -35,7 +35,7 @@ public abstract class ViewComponent {
         this.playerData = playerData;
         this.dungeonData = dungeonData;
         this.rooms = dungeonData.getRooms();
-        this.inventoryItems = playerData.getInventoryItems();
+        this.inventoryItems = playerData.getInventory();
 
     }
     // For DMV
@@ -44,14 +44,14 @@ public abstract class ViewComponent {
         this.playerData = playerData;
         this.dungeonData = dungeonData;
         this.rooms = dungeonData.getRooms();
-        this.inventoryItems = playerData.getInventoryItems();
+        this.inventoryItems = playerData.getInventory();
 
     }
     // For IV
     protected ViewComponent(Terminal terminal, PlayerData playerData){
         this.terminal = terminal;
         this.playerData = playerData;
-        this.inventoryItems = playerData.getInventoryItems();
+        this.inventoryItems = playerData.getInventory();
     }
     protected ViewComponent(Terminal terminal){
         this.terminal = terminal;
@@ -62,7 +62,7 @@ public abstract class ViewComponent {
         tg.setForegroundColor(TextColor.ANSI.CYAN);
         tg.putString(1, statsStartY, "LEVEL: " + playerData.getLevel() +
                 " HP: " + playerData.getHp() +
-                "/10 EXP: " + playerData.getExp() +
+                "/10 EXP: " + playerData.getExperience() +
                 "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
     protected void clearAndInitializeGraphics() throws IOException {

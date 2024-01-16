@@ -57,6 +57,13 @@ public class SimpleClient {
                     public void onNext(GameCommandResponse response) {
                         // Handle incoming game state
                         System.out.println("GS: " + response.getMessage());
+                        new Thread(() -> {
+                            try {
+                                game.updateGameState(response.getMessage());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
                     }
 
                     @Override

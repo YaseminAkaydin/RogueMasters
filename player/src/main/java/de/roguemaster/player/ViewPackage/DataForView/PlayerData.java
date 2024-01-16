@@ -8,26 +8,19 @@ import java.util.List;
  */
 public class PlayerData {
     private int level;
+    private int experience;
+    private List<ItemData> inventory;
+    private int maxHp;
     private int hp;
-    private int exp;
-    private List<ItemData> inventoryItems;
-    private int currentRoomID;
+    private int id;
 
-
-    public PlayerData(int level, int hp, int exp, List<ItemData> inventoryItems, int currentRoomID) {
+    public PlayerData(int level, int hp, int experience, List<ItemData> inventory, int maxHp, int id) {
         this.level = level;
         this.hp = hp;
-        this.exp = exp;
-        this.inventoryItems = new ArrayList<>(inventoryItems);
-        this.currentRoomID = currentRoomID;
-    }
-
-    public int getCurrentRoomID() {
-        return currentRoomID;
-    }
-
-    public void setCurrentRoomID(int currentRoomID) {
-        this.currentRoomID = currentRoomID;
+        this.experience = experience;
+        this.inventory = new ArrayList<>(inventory);
+        this.maxHp = maxHp;
+        this.id = id;
     }
 
     public int getLevel() {
@@ -42,23 +35,20 @@ public class PlayerData {
         return hp;
     }
 
-    public void setHp(int hp) {
-        this.hp = hp;
+    public int getExperience() {
+        return experience;
     }
 
-    public int getExp() {
-        return exp;
+    public List<ItemData> getInventory() {
+        return inventory;
     }
 
-    public void setExp(int exp) {
-        this.exp = exp;
+    public int getMaxHp() {
+        return maxHp;
     }
 
-    public List<ItemData> getInventoryItems() {
-        return inventoryItems;
-    }
-    public void setInventoryItems(List<ItemData> inventoryItems) {
-        this.inventoryItems = inventoryItems;
+    public int getId() {
+        return id;
     }
 }
 

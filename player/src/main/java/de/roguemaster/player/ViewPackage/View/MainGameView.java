@@ -33,12 +33,12 @@ public class MainGameView extends ViewComponent {
     private int itemY;
 
     public MainGameView(Terminal terminal, DungeonData dungeonData, PlayerData playerData) {
-        super(terminal, dungeonData.getRooms().get(playerData.getCurrentRoomID() - 1), playerData, dungeonData);
+        super(terminal, dungeonData.getRooms().get(dungeonData.getCurrentRoomId(playerData.getId()) - 1), playerData, dungeonData);
         optionMappings = new HashMap<>();
         monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
         monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
         itemX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
-        itemY= random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
+        itemY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
 
     }
 
@@ -47,8 +47,10 @@ public class MainGameView extends ViewComponent {
         try {
             clearAndInitializeGraphics();
             drawRoom(tg);
-            drawPlayer(tg);
+            drawLocalPlayer(tg);
+            drawPlayers(tg);
             drawMonster(tg);
+            drawMonserInfo(tg);
             drawDoors(tg);
             drawItems(tg);
             displayOptions(tg);
@@ -57,6 +59,31 @@ public class MainGameView extends ViewComponent {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void drawPlayers(TextGraphics tg) {
+        tg.setForegroundColor(TextColor.ANSI.GREEN);
+        int i = 1;
+        for (PlayerData player : roomData.getCharacters()) {
+            if(player.getId() == playerData.getId()){
+                continue;
+            }
+            int playerX = (ROOM_START_X + i ) + ROOM_WIDTH / 2;
+            int playerY = (ROOM_START_Y + i ) + ROOM_HEIGHT / 2;
+            tg.putString(playerX, playerY, "X");
+            i++;
+        }
+    }
+
+    private void drawMonserInfo(TextGraphics tg) throws IOException {
+        int statsStartY = terminal.getTerminalSize().getRows() - 3; // Below the room
+        tg.setForegroundColor(TextColor.ANSI.RED);
+        // print NAME HP: hp/MaxHP, Danger-Level: dangerLevel
+        tg.putString(1, statsStartY, "MONSTER INFO: " + roomData.getMonster().getName() +
+                "- " + roomData.getMonster().getHp() +
+                "/" + roomData.getMonster().getMaxHp() +
+                "HP - Danger-Level: " + roomData.getMonster().getDangerLevel());
+
     }
 
     private void drawRoom(TextGraphics tg) {
@@ -70,7 +97,7 @@ public class MainGameView extends ViewComponent {
     }
 
     // TODO: Draw with max. 4 Players
-    private void drawPlayer(TextGraphics tg) {
+    private void drawLocalPlayer(TextGraphics tg) {
         int playerX = ROOM_START_X + ROOM_WIDTH / 2;
         int playerY = ROOM_START_Y + ROOM_HEIGHT / 2;
         tg.setForegroundColor(TextColor.ANSI.GREEN);
@@ -80,7 +107,7 @@ public class MainGameView extends ViewComponent {
     private void drawMonster(TextGraphics tg) {
         tg.setForegroundColor(TextColor.ANSI.RED);
         if (roomData.getMonster() != null) {
-            String monsterSymbol = switch (roomData.getMonster()) {
+            String monsterSymbol = switch (roomData.getMonster().getName()) {
                 case "Skeleton" -> "S";
                 case "Zombie" -> "Z";
                 case "Boss" -> "B";
@@ -160,21 +187,25 @@ public class MainGameView extends ViewComponent {
         optionMappings.put(optionNumber.getAndIncrement(), "Do Nothing");
 
         // Display 'Pick Up Item' option if items are present
-        if (roomData.getItems()!= null) {
+        if (roomData.getItems() != null) {
             tg.putString(OPTIONS_START_X, optionsStartY.get(), optionNumber + ". Pick Up Item");
             optionMappings.put(optionNumber.getAndIncrement(), "Pick Up Item");
         }
     }
+
     public Map<Integer, String> getOptionMappings() {
         return optionMappings;
     }
+
     public void updateRoom(String direction) {
+
         Integer newRoomId = roomData.getAdjacentRooms().get(direction.toUpperCase());
+        RoomData roomData1 = dungeonData.getRooms().get(newRoomId - 1);
         if (newRoomId != null) {
-            playerData.setCurrentRoomID(newRoomId); // Assuming PlayerData has a method setCurrentRoomID
+            dungeonData.updatePlayerRoom(playerData.getId(), roomData1);
             roomData = dungeonData.getRooms().get(newRoomId - 1); // Update roomData to the new room
             itemX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
-            itemY= random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
+            itemY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
             monsterX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
             monsterY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
         }
@@ -183,6 +214,7 @@ public class MainGameView extends ViewComponent {
     private String getAdjacentRoomId(String direction) {
         return roomData.getAdjacentRooms().getOrDefault(direction, -1).toString();
     }
+
     public int getCurrentRoomId() {
         return roomData.getId();
     }

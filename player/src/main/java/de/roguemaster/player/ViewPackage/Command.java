@@ -27,7 +27,7 @@ public class Command {
 
     // Factory methods for different game actions
     public static Command attackCommand() {
-        return new Command("attack");
+        return new Command("attackUsingEquipment");
     }
     public static Command moveCommand(int roomId) {
         return new Command("move", "r" + roomId);
