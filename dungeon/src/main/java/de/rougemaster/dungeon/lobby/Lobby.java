@@ -1,11 +1,19 @@
 package de.rougemaster.dungeon.lobby;
+import de.rougemaster.dungeon.character.Character;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
+import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.Game;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.fleeGameCommand;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.moveGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.GameState;
+import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.*;
+import de.rougemaster.dungeon.item.Item;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +37,46 @@ public class Lobby {
     private GameCommand translateCommand(LobbyMessage lobbyMessage){
         if(lobbyMessage == null){
             throw new IllegalArgumentException("LobbyCommand can't be null.");
+        }
+
+        Room room;
+        Item item;
+        if (lobbyMessage.getTarget().startsWith("r")) {
+            int id = Integer.parseInt(lobbyMessage.getTarget().substring(1));
+            room = game
+                    .getDungeon()
+                    .getRoomList()
+                    .stream()
+                    .filter(room1 -> room1.getId() == id)
+                    .toList().get(0);
+        }
+
+        //erstmal für playable Character
+        if(character instanceof PlayableCharacter){
+            switch (lobbyMessage.getCommand()){
+                case ("move"):
+                    return new moveGameCommand(character, character.getCurrentRoom());
+                case("doNothing"):
+                    return new doNothingGameCommand(character);
+                case("flee"):
+                    return new fleeGameCommand(character,room);
+                case("attackUsingEquipment"):
+                   return new attackUsingEquipmentCommand();
+                case("defend"):
+                    return new defendingPlayerCommand();
+                case("equipItem"):
+                    return new equipItemGameCommand();
+                case("inspectRoom"):
+                    return new inspectRoomGameCommand();
+                case("takeItem"):
+                    return new takeItemInRoomGameCommand();
+                case("useItem"):
+                    return new useItemGameCommand();
+                case("useItemInFight"):
+                    return new inspectRoomGameCommand();
+            }
+        }else if(character instanceof Zombie){
+
         }
         //TODO: Translate LobbyCommand to GameCommand
         return null;

@@ -7,6 +7,7 @@ import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
+import de.rougemaster.dungeon.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Random;
 public class Game {
     private final List<PlayableCharacter> playerList;
     private final List<EnemyCharacter> enemyList;
-
+    private final List<Item> itemList;
     private final Dungeon dungeon;
 
     private final TurnManager turnManager;
@@ -29,6 +30,7 @@ public class Game {
         this.playerList = new ArrayList<>();
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
+        this.itemList= new ArrayList<>();
 
 
         this.turnManager = new TurnManager();
@@ -95,6 +97,10 @@ public class Game {
     public GameState getGameState(){
         return new GameState(playerList, enemyList, dungeon);
     }
+    public Dungeon getDungeon() {
+        return dungeon;
+    }
+
 
     /**
      * Removes a player from the game
