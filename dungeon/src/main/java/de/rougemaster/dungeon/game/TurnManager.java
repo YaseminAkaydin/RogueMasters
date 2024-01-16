@@ -150,7 +150,7 @@ public class TurnManager {
         }
 
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
-            doNothingGameCommand newCommand = new doNothingGameCommand(character);
+            doNothingGameCommand newCommand = new doNothingGameCommand(entry.getKey());
             entry.setValue(newCommand);
         }
     }

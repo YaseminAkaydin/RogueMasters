@@ -10,7 +10,7 @@ import de.rougemaster.dungeon.item.Item;
 public class useItemGameCommand extends GameCommand {
     PlayableCharacter character;
     Item item;
-    useItemGameCommand(PlayableCharacter character, Item item) {
+    public useItemGameCommand(PlayableCharacter character, Item item) {
         this.character = character;
         this.item= item;
 

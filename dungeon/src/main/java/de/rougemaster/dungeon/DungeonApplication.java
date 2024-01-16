@@ -16,6 +16,7 @@ public class DungeonApplication {
         LobbyFacade lobbyFacade = LobbyFacade.getInstance();
         System.out.println("Server started!");
 
+
         // Thread serverThread = new Thread(() -> { /* Server logic */ });
         // serverThread.start();
 

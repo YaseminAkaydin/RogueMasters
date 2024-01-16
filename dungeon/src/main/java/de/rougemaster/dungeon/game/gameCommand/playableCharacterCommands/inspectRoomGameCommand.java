@@ -8,7 +8,7 @@ import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 public class inspectRoomGameCommand extends GameCommand {
     PlayableCharacter character;
     Room room;
-    inspectRoomGameCommand(PlayableCharacter character, Room room) {
+    public inspectRoomGameCommand(PlayableCharacter character, Room room) {
         this.character = character;
         this.room = room;
     }

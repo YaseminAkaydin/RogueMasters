@@ -3,7 +3,6 @@ package de.rougemaster.dungeon.dungeon;
 import de.rougemaster.dungeon.item.Item;
 import lombok.Getter;
 
-import javax.lang.model.type.NullType;
 import java.util.*;
 //TODO: Import Items und EnemyCharacter (durch NullType ersetzen), prüfen ob Typen von Klassenvariablen korrekt sind, Kommentare
 
@@ -13,14 +12,14 @@ abstract public class Room {
     private int id;
     @Getter
     protected List<Item> items;
-    protected List<NullType> enemies;
+    protected List<Character> characters;
     private final Map<RoomCardinalDirection, Room> adjacentRooms;
 
     public Room() {
         instanceCounter++;
         this.id = instanceCounter;
         this.items = new ArrayList<>();
-        this.enemies = new ArrayList<>();
+        this.characters = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
         adjacentRooms.put(RoomCardinalDirection.North, null);
         adjacentRooms.put(RoomCardinalDirection.South, null);
@@ -54,4 +53,15 @@ abstract public class Room {
         this.items.remove(item);
     }
 
+    public static int getInstanceCounter() {
+        return instanceCounter;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public List<Character> getCharacters() {
+        return characters;
+    }
 }
