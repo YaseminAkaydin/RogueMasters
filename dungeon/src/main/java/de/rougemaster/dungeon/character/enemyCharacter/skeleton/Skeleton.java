@@ -14,15 +14,6 @@ public class Skeleton extends EnemyCharacter {
      * @param character enemy character
      */
     public void swordAttack(Character character){
-        //TODO: character could be changed to the type PlayableCharacter (useful?)
-        //TODO: check if skeleton and character are fighting.
-
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
-
-
         character.setHp(character.getHp()-(this.attack - character.getDefense()));
     }
 
@@ -46,16 +37,6 @@ public class Skeleton extends EnemyCharacter {
      * @param character enemy character
      */
     public void boneAttack(Character character){
-        //TODO: character could be changed to the type PlayableCharacter (useful?)
-        //TODO: check if skeleton and character are fighting.
-
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
-
-
-
         character.setHp(character.getHp()-(this.attack + boneAttackBonusDamage - character.getDefense()));
     }
 
@@ -64,15 +45,6 @@ public class Skeleton extends EnemyCharacter {
      * @param character enemy character
      */
     public void bonesplosionAttack(Character character){
-        //TODO: character could be changed to the type PlayableCharacter (useful?)
-        //TODO: check if skeleton and character are fighting.
-
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
-
-
         character.setHp(character.getHp()-((int)(this.attack * 2.5) - character.getDefense()));
     }
 
