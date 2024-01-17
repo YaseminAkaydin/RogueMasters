@@ -5,8 +5,12 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 
 public abstract class EnemyCharacter extends Character {
     protected int killCount;
-    protected static int baseExpDropAmount;
+    protected int baseExpDropAmount;
     protected int dangerLevel;
+
+    public EnemyCharacter(int baseExpDropAmount){
+        baseExpDropAmount = baseExpDropAmount;
+    }
 
     /**
      * Drops the given Amount of exp to the given PlayerCharacter.

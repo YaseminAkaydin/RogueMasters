@@ -6,8 +6,13 @@ import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 public class Skeleton extends EnemyCharacter {
 
     SkeletonState state;
+    private static final int baseExpDropAmount = 20;
 
     private static final int boneAttackBonusDamage = 5;
+
+    public Skeleton(int baseExpDropAmount) {
+        super(baseExpDropAmount);
+    }
 
     /**
      * Skeleton does a "sword"-attack against a character.

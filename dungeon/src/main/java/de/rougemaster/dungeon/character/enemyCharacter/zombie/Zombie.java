@@ -5,13 +5,14 @@ import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 
 public class Zombie extends EnemyCharacter {
 
-    //TODO: I dont know if this kind of inheritance works. (Check EnemyCharacter dropExperience)
+
     private static final int baseExpDropAmount = 10;
     private static final int biteBonusDamage = 5;
 
     private ZombieState state;
 
     public Zombie(int dangerLvl){
+        super(baseExpDropAmount);
         if(dangerLvl <= 0) {
             dangerLvl = 1;
         }

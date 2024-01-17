@@ -7,6 +7,10 @@ public class Devil extends EnemyCharacter {
 
     private DevilState state;
 
+    public Devil(int baseExpDropAmount) {
+        super(0);
+    }
+
     /**
      * Devil does a "sword"-attack against a character.
      * @param character enemy character
