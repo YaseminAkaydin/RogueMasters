@@ -9,4 +9,12 @@ public class LobbyMessage {
         this.command = command;
         this.target = target;
     }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public String getTarget() {
+        return target;
+    }
 }

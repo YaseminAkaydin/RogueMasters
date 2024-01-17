@@ -1,11 +1,30 @@
 package de.rougemaster.dungeon.lobby;
+import de.rougemaster.dungeon.character.Character;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
+import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
+import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.Game;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.fleeGameCommand;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.moveGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.GameState;
+import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilDefendCommand;
+import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilFlameSwordAttackCommand;
+import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilPlayerKillerAttackCommand;
+import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilSpikeShieldCommand;
+import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.*;
+import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.defendingSkeletonCommand;
+import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonBoneAttackCommand;
+import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonBonesplosionAttackCommand;
+import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonSwordAttackCommand;
+import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCommand;
+import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
+import de.rougemaster.dungeon.item.Item;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,12 +45,81 @@ public class Lobby {
      * @param lobbyMessage The lobby message that is to be translated
      * @return The Translated Game command
      */
-    private GameCommand translateCommand(LobbyMessage lobbyMessage){
-        if(lobbyMessage == null){
+    private GameCommand translateCommand(Character character, LobbyMessage lobbyMessage) {
+        if (lobbyMessage == null) {
             throw new IllegalArgumentException("LobbyCommand can't be null.");
         }
-        //TODO: Translate LobbyMessage to GameCommand
-        return null;
+
+        Room room= null;
+        Item item= null;
+        int id = Integer.parseInt(lobbyMessage.getTarget().substring(1));
+        if (lobbyMessage.getTarget().startsWith("r")) {
+            room = game
+                    .getDungeon()
+                    .getRoomList()
+                    .stream()
+                    .filter(room1 -> room1.getId() == id)
+                    .toList().get(0);
+        } else {
+            Room roomOfCharacter = character.getCurrentRoom();
+            item = roomOfCharacter.getItems().stream().filter(item1 -> item1.getId() == id).toList().get(0);
+            //TODO: item ist keine Liste mehr
+        }
+
+        if (character instanceof PlayableCharacter) {
+            PlayableCharacter playableCharacter = (PlayableCharacter) character;
+            switch (lobbyMessage.getCommand()) {
+                case ("move"):
+                    return new moveGameCommand(character, character.getCurrentRoom());
+                case ("doNothing"):
+                    return new doNothingGameCommand(character);
+                case ("flee"):
+                    return new fleeGameCommand(character, room);
+                case ("attackUsingEquipment"):
+                    return new attackUsingEquipmentCommand();
+                case ("defend"):
+                    return new defendingPlayerCommand();
+                case ("equipItem"):
+                    return new equipItemGameCommand(playableCharacter, item);
+                case ("takeItem"):
+                    return new takeItemInRoomGameCommand(playableCharacter, item);
+                case ("useItem"):
+                    return new useItemGameCommand(playableCharacter, item);
+                case ("useItemInFight"):
+                    return new inspectRoomGameCommand(playableCharacter, room);
+            }
+        } else if (character instanceof Zombie) {
+            Zombie zombie = (Zombie) character;
+            switch (lobbyMessage.getCommand()) {
+                case ("clawAttack"):
+                    return new zombieClawAttackCommand();
+                case ("biteAttack"):
+                    return new zombieBiteAttackCommand();
+            }
+        } else if (character instanceof Skeleton) {
+            switch (lobbyMessage.getCommand()) {
+                case ("defend"):
+                    return new defendingSkeletonCommand();
+                case ("boneAttack"):
+                    return new skeletonBoneAttackCommand();
+                case ("bonesPlosion"):
+                    return new skeletonBonesplosionAttackCommand();
+                case ("swordAttack"):
+                    return new skeletonSwordAttackCommand();
+            }
+        } else {
+            switch (lobbyMessage.getCommand()) {
+                case ("defend"):
+                    return new devilDefendCommand();
+                case ("flameSwordAttack"):
+                    return new devilFlameSwordAttackCommand();
+                case ("playerKillerAttack"):
+                    return new devilPlayerKillerAttackCommand();
+                case ("spikeShield"):
+                    return new devilSpikeShieldCommand();
+            }
+        }
+        return new doNothingGameCommand(character);
     }
 
     /**
@@ -41,7 +129,7 @@ public class Lobby {
      */
     public void enterCommand(int clientId, LobbyMessage lobbyMessage){
         Character clientCharacter = characterMap.get(clientId);
-        GameCommand clientGameCommand = translateCommand(lobbyMessage);
+        GameCommand clientGameCommand = translateCommand(clientCharacter,lobbyMessage);
         game.setCharacterTurn(clientGameCommand, clientCharacter);
     }
 
@@ -70,7 +158,6 @@ public class Lobby {
 
             default -> throw new IllegalArgumentException("LobbyCharType is not valid.");
         };
-
         //TODO: Add Character to Game
     }
 

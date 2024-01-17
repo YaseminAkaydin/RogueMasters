@@ -1,7 +1,5 @@
 package de.rougemaster.dungeon.dungeon;
 
-import de.rougemaster.dungeon.item.Item;
-
 import javax.lang.model.type.NullType;
 import java.util.Random;
 
@@ -20,16 +18,6 @@ public class DungeonRoom extends Room {
     @Override
     public void generateRoom() {
         Random random = new Random();
-
-        // ENEMIES
-        for (int i = 0; i < enemyMaximumAmount; i++) {
-            boolean createItem = random.nextInt(100) < enemySpawnChanceInPercent;
-            if (createItem) {
-                //create enemy character
-                NullType enemy = null;
-                //enemies.add(enemy);
-            }
-        }
 
         // ITEMS
         for (int i = 0; i < itemMaximumAmount; i++) {

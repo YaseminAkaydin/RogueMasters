@@ -57,4 +57,7 @@ abstract public class Room {
     public List<Character> getCharacters() {
         return characters;
     }
+    public static int getInstanceCounter() {
+        return instanceCounter;
+    }
 }

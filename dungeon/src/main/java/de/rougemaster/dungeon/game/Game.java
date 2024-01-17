@@ -2,11 +2,13 @@ package de.rougemaster.dungeon.game;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
+import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
+import de.rougemaster.dungeon.item.Item;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ import java.util.Random;
 public class Game {
     private final List<PlayableCharacter> playerList;
     private final List<EnemyCharacter> enemyList;
-
     private final Dungeon dungeon;
 
     private final TurnManager turnManager;
@@ -47,19 +48,48 @@ public class Game {
                 .filter(room -> !(room instanceof BossRoom))
                 .toList();
 
+        //kein Random room OHNE GEGENER DRIN
         if (!nonBossRooms.isEmpty()) {
             Random random = new Random();
-            Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
-            player.teleport(randomRoom);
+            boolean done= true;
+            while (done){
+                Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
+                if(randomRoom.getCharacters().isEmpty()){
+                    player.teleport(randomRoom);
+                    done=false;
+                }
+            }
         }
         playerList.add(player);
     }
 
     /**
-     * Adds an enemy to the game
+     * Adds an enemy to the game, puts him into a room, except boss -> bossroom
      * @param enemy the enemy that is to be added
      */
     public void addEnemy(EnemyCharacter enemy) {
+
+        List<Room> allRooms = dungeon.getRoomList();
+        List<Room> nonBossRooms = allRooms.stream()
+                .filter(room -> !(room instanceof BossRoom))
+                .toList();
+        BossRoom bossRoom= (BossRoom) allRooms.stream().filter(room -> room instanceof BossRoom).toList().get(0);
+
+        if(enemy instanceof Devil){
+            enemy.teleport(bossRoom);
+        } else {
+            if (!nonBossRooms.isEmpty()) {
+                Random random = new Random();
+                boolean done= true;
+                while (done){
+                    Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
+                    if(randomRoom.getCharacters().isEmpty()){
+                        enemy.teleport(randomRoom);
+                        done=false;
+                    }
+                }
+            }
+        }
         enemyList.add(enemy);
     }
 
@@ -97,6 +127,10 @@ public class Game {
     public GameState getGameState(){
         return new GameState(playerList, enemyList, dungeon.getRoomList().stream().map(RoomMessage::new).toList());
     }
+    public Dungeon getDungeon() {
+        return dungeon;
+    }
+
 
     /**
      * Removes a player from the game

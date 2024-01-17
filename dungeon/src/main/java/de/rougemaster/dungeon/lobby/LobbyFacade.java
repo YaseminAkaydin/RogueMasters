@@ -28,7 +28,7 @@ public class LobbyFacade {
         return instance;
     }
 
-    int joinLobby(int clientId, int lobbyId){
+    public int joinLobby(int clientId, int lobbyId){
         if(lobbyId == 0){
             int actualLobbyId = lobbyFactory.createLobby().getLobbyId();
             lobbyBroker.registerUser(clientId, lobbyId);
@@ -48,7 +48,7 @@ public class LobbyFacade {
      * @param clientId the id of the Client
      * @param lobbyMessage the Message that should to be sent
      */
-    void setGameCommand(int clientId, LobbyMessage lobbyMessage){
+    public void setGameCommand(int clientId, LobbyMessage lobbyMessage){
         Lobby lobby = lobbyBroker.forwardToLobby(clientId);
         lobby.enterCommand(clientId, lobbyMessage);
     }
@@ -58,9 +58,8 @@ public class LobbyFacade {
      * @param clientId the id of the Client
      * @param gameState the GameState that should to be sent
      */
-    void sendNextTurn(int clientId, GameState gameState){
+    public void sendNextTurn(int clientId, GameState gameState){
         //Stub.startGameStateUpdates();
         //TODO: Send NextTurn to Client via ServerStub
-
     }
 }
