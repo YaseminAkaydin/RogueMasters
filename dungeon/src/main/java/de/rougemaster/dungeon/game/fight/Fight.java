@@ -93,6 +93,7 @@ public class Fight {
 
         switch (action) {
             case DO_NOTHING:
+                player.doNothing();
                 break;
             case ATTACK:
                 player.attackUsingEquipment(enemy);
@@ -125,6 +126,7 @@ public class Fight {
 
         switch (action) {
             case DO_NOTHING:
+                skeleton.doNothing();
                 break;
             case SKELETON_SWORD_ATTACK:
                 if (player != null) {
@@ -162,6 +164,7 @@ public class Fight {
 
         switch (action) {
             case DO_NOTHING:
+                zombie.doNothing();
                 break;
             case ZOMBIE_CLAW_ATTACK:
                 if (player != null) {
@@ -187,6 +190,7 @@ public class Fight {
 
         switch (action) {
             case DO_NOTHING:
+                devil.doNothing();
                 break;
             case DEVIL_FLAME_SWORD_ATTACK:
                 if (player != null) {
