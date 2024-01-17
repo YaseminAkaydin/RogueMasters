@@ -6,14 +6,12 @@ import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
-import lombok.Getter;
+
 
 import java.util.function.Consumer;
 
 public class Fight {
-    @Getter
     private final Character combatantOne;
-    @Getter
     private final Character combatantTwo;
     private final Consumer<CombatAction> combatantOneExecutor;
     private final Consumer<CombatAction> combatantTwoExecutor;
@@ -246,4 +244,11 @@ public class Fight {
         this.combatantTwoAction = combatantTwoAction;
     }
 
+    public Character getCombatantOne() {
+        return combatantOne;
+    }
+
+    public Character getCombatantTwo() {
+        return combatantTwo;
+    }
 }
