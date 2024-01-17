@@ -9,7 +9,7 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import lombok.Getter;
 
 import java.util.function.Consumer;
-//TODO: test if it works
+
 public class Fight {
     @Getter
     private final Character combatantOne;
@@ -194,10 +194,16 @@ public class Fight {
                 break;
             case DEVIL_SPIKE_SHIELD:
                 devil.SpikeShield();
+                if (player == combatantOne && combatantOneAction == CombatAction.ATTACK){
+                    //TODO: how much damage?
+                    player.setHp(player.getHp()-3);
+                }
                 break;
             case DEVIL_PLAYER_KILLER_ATTACK:
                 if (player != null) {
-                    devil.playerKillerAttack(player);
+                    if((player == combatantOne && combatantOneAction!=CombatAction.DO_NOTHING) || (player == combatantTwo && combatantTwoAction!=CombatAction.DO_NOTHING)){
+                        devil.playerKillerAttack(player);
+                    }
                 }
                 break;
             case DEFEND:
