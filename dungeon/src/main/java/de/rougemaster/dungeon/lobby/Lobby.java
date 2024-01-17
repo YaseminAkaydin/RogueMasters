@@ -1,29 +1,19 @@
 package de.rougemaster.dungeon.lobby;
 import de.rougemaster.dungeon.character.Character;
 
-import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.Game;
-import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
-import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.fleeGameCommand;
-import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.moveGameCommand;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.GameState;
-import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilDefendCommand;
-import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilFlameSwordAttackCommand;
-import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilPlayerKillerAttackCommand;
-import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilSpikeShieldCommand;
+import de.rougemaster.dungeon.game.gameCommand.devilCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.*;
-import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.defendingSkeletonCommand;
-import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonBoneAttackCommand;
-import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonBonesplosionAttackCommand;
-import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonSwordAttackCommand;
-import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCommand;
-import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
+import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.*;
+import de.rougemaster.dungeon.game.gameCommand.zombieCommands.*;
 import de.rougemaster.dungeon.item.Item;
 
 import java.util.HashMap;
@@ -187,11 +177,26 @@ public class Lobby {
         }
     }
 
+    /**
+     * Creates a new Character and adds it to the Game
+     * @param clientID the id of the client
+     * @return the id of the character
+     */
+    public int createCharacter(int clientID){
+        PlayableCharacter playableCharacter = game.addPlayer();
+        characterMap.put(clientID, playableCharacter);
+        return playableCharacter.getId();
+    }
+
     public void setLobbyId(int lobbyId) {
         this.lobbyId = lobbyId;
     }
 
     public int getLobbyId() {
         return lobbyId;
+    }
+
+    public GameState getGameState() {
+        return game.getGameState();
     }
 }

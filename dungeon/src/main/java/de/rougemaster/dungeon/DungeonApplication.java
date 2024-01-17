@@ -5,11 +5,10 @@ import com.google.gson.reflect.TypeToken;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Dungeon;
-import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.GameState;
 import de.rougemaster.dungeon.lobby.JSONManager;
 import de.rougemaster.dungeon.lobby.LobbyFacade;
-import de.rougemaster.dungeon.lobby.LobbyMessage;
+import de.rougemaster.dungeon.lobby.messageData.JoinLobbyResponseMessage;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
@@ -17,7 +16,6 @@ import io.grpc.Server;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -164,11 +162,8 @@ public class DungeonApplication {
 
 
     static class ManageServiceImpl extends ManageServiceGrpc.ManageServiceImplBase {
-        static int clientID = 0;
         private LobbyFacade lobbyFacade;
-        private int characterID;
-        private int lobbyID;
-        private boolean success;
+        private JoinLobbyResponseMessage lobbyResponseMessage;
 
         public ManageServiceImpl(LobbyFacade lobbyFacade) {
             this.lobbyFacade = lobbyFacade;
@@ -179,21 +174,17 @@ public class DungeonApplication {
             System.out.println("Received joinLobby request: " + request.getLobbyID());
 
             try {
-                characterID = clientID++;
-                lobbyID = lobbyFacade.joinLobby(characterID, request.getLobbyID());
-                success = lobbyID > 9999;
+                lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID());
             } catch (Throwable e) {
                 e.printStackTrace();
             }
 
-
             // Bei Erfolg, success = true, lobbyID = LobbyID, characterID = CharacterID
             JoinLobbyResponse response = JoinLobbyResponse.newBuilder()
-                    .setSuccess(success)
-                    .setLobbyID(lobbyID)
-                    .setCharacterID(characterID)
+                    .setSuccess(lobbyResponseMessage.isSuccess())
+                    .setLobbyID(lobbyResponseMessage.getLobbyId())
+                    .setCharacterID(lobbyResponseMessage.getCharacterId())
                     .build();
-
 
             // Send the response back to the client
             responseObserver.onNext(response);

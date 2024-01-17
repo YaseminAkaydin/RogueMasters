@@ -8,12 +8,10 @@ import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
-import de.rougemaster.dungeon.item.Item;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class Game {
@@ -39,14 +37,15 @@ public class Game {
 
     /**
      * Adds a player to the game
-     * @param player the player that is to be added
      */
-    public void addPlayer(PlayableCharacter player) {
+    public PlayableCharacter addPlayer() {
+        PlayableCharacter player = new PlayableCharacter();
 
         List<Room> allRooms = dungeon.getRoomList();
         List<Room> nonBossRooms = allRooms.stream()
                 .filter(room -> !(room instanceof BossRoom))
                 .toList();
+
 
         //kein Random room OHNE GEGENER DRIN
         if (!nonBossRooms.isEmpty()) {
@@ -60,7 +59,9 @@ public class Game {
                 }
             }
         }
+
         playerList.add(player);
+        return player;
     }
 
     /**

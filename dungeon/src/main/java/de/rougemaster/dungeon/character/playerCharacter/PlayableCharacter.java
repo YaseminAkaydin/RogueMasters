@@ -3,6 +3,7 @@ package de.rougemaster.dungeon.character.playerCharacter;
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.characterExceptions.InventoryItemMissingException;
 import de.rougemaster.dungeon.item.Armor;
+import de.rougemaster.dungeon.item.Book;
 import de.rougemaster.dungeon.item.Item;
 import de.rougemaster.dungeon.item.Weapon;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayableCharacter extends Character {
-    private static int idCounter;
+    private static int idCounter = 0;
     private int level;
     private int experience;
 
@@ -20,9 +21,11 @@ public class PlayableCharacter extends Character {
     private Weapon weaponSlot;
 
 
+
     public PlayableCharacter () {
         //TODO: Set Stats of Character
-        inventory = new ArrayList<>();
+        id= idCounter++;
+        inventory = List.of(new Book(0, "Book", "A book that gives you 10 EXP", 10), new Weapon(1, "Sword", "A sword that gives you 10 Attack", 10), new Armor(2, "Shield", "A shield that gives you 10 Defense", 10));
         armorSlot = null;
         weaponSlot = null;
         hp= 10;

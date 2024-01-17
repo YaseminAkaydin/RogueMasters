@@ -16,6 +16,7 @@ message GameCommandResponse {
 message JoinLobbyRequest {
   int32 lobbyID = 1; // 0 = "Start Lobby", fünstelligezahl = "Join Lobby"
 }
+
 message JoinLobbyResponse {
   bool success = 1; // true wenn ok false wenn nicht
   int32 lobbyID = 2; // bei Join Lobby fünstelligezahl back
