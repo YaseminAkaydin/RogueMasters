@@ -29,7 +29,7 @@ public abstract class ViewComponent {
     public abstract void display();
 
     // For MGV
-    protected ViewComponent(Terminal terminal, RoomData roomData, PlayerData playerData, DungeonData dungeonData){
+    protected ViewComponent(Terminal terminal, RoomData roomData, PlayerData playerData, DungeonData dungeonData) {
         this.terminal = terminal;
         this.roomData = roomData;
         this.playerData = playerData;
@@ -38,8 +38,9 @@ public abstract class ViewComponent {
         this.inventoryItems = playerData.getInventory();
 
     }
+
     // For DMV
-    protected ViewComponent(Terminal terminal, PlayerData playerData, DungeonData dungeonData){
+    protected ViewComponent(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
         this.terminal = terminal;
         this.playerData = playerData;
         this.dungeonData = dungeonData;
@@ -47,24 +48,29 @@ public abstract class ViewComponent {
         this.inventoryItems = playerData.getInventory();
 
     }
+
     // For IV
-    protected ViewComponent(Terminal terminal, PlayerData playerData){
+    protected ViewComponent(Terminal terminal, PlayerData playerData) {
         this.terminal = terminal;
         this.playerData = playerData;
         this.inventoryItems = playerData.getInventory();
     }
-    protected ViewComponent(Terminal terminal){
+
+    protected ViewComponent(Terminal terminal) {
         this.terminal = terminal;
     }
 
     protected void displayPlayerStats(TextGraphics tg) throws IOException {
         int statsStartY = terminal.getTerminalSize().getRows() - 1; // Below the room
         tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(1, statsStartY, "LEVEL: " + playerData.getLevel() +
-                " HP: " + playerData.getHp() +
-                "/10 EXP: " + playerData.getExperience() +
+        tg.putString(1, statsStartY,
+                "LEVEL: " + playerData.getLevel() +
+                " - " + playerData.getHp() +
+                "/" + playerData.getMaxHp() +
+                " - EXP: " + playerData.getExperience() +
                 "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
+
     protected void clearAndInitializeGraphics() throws IOException {
         terminal.clearScreen();
         tg = terminal.newTextGraphics();

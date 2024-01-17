@@ -1,15 +1,17 @@
 package de.roguemaster.player.ViewPackage;
 
+import com.google.gson.reflect.TypeToken;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 
-import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
+import de.roguemaster.player.DataContainer;
+import de.roguemaster.player.JSONManager;
+import de.roguemaster.player.GameState;
 import de.roguemaster.player.ViewPackage.View.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -367,13 +369,19 @@ public class Game {
      * @param gameState
      */
     public void updateGameState(String gameState) {
-        System.out.println("Thread UpdateGameState started...");
+        logger.info("Thread UpdateGameState started...");
         // Item: id, typ, name, description, itemAttribute
         // enemie: id, name, dangerLevel, maxHp, hp, id
         // playerliste max 4 player: level, experience, maxExperience, inventory, maxHp, hp, attack, defense, id
         // roomList: n räume: id, ein item, ein enemie, 4 adjazente räume SOUTH x ID
 
-        System.out.println("Thread UpdateGameState finished...");
+
+        JSONManager<GameState> jsonManager =new JSONManager<>(new TypeToken<DataContainer<GameState>>(){});
+        // Use read to get the data out of the EXAMPLE JSON
+        GameState gameState1 = jsonManager.read(gameState);
+
+        logger.info("Thread UpdateGameState finished...");
+
     }
 
     public static void main(String[] args) {

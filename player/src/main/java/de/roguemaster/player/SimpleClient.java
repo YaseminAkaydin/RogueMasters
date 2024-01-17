@@ -49,6 +49,7 @@ public class SimpleClient {
         // Loop for checking commands and sending them to the server
         while (!gameThread.isInterrupted()) {
             Command command = game.getNextCommand();
+
             // only initiliate requestObserver if game.gameStarted == true and requestObserver == null
             if (requestObserver == null && game.isGameStarted()) {
                 logger.info("Starting gameState updater...");

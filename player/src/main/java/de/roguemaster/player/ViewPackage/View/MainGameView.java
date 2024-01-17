@@ -200,8 +200,8 @@ public class MainGameView extends ViewComponent {
     public void updateRoom(String direction) {
 
         Integer newRoomId = roomData.getAdjacentRooms().get(direction.toUpperCase());
-        RoomData roomData1 = dungeonData.getRooms().get(newRoomId - 1);
         if (newRoomId != null) {
+            RoomData roomData1 = dungeonData.getRooms().get(newRoomId - 1);
             dungeonData.updatePlayerRoom(playerData.getId(), roomData1);
             roomData = dungeonData.getRooms().get(newRoomId - 1); // Update roomData to the new room
             itemX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;

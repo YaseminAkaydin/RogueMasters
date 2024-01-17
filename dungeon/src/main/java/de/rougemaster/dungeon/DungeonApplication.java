@@ -133,10 +133,11 @@ public class DungeonApplication {
                     .toList());
             String message = new JSONManager<GameState>(new TypeToken<>(){}).write(gameState);
             return GameCommandResponse.newBuilder().setMessage(message).build();
+            // TODO: 1. Vier verschiedene PlayerCharacter mit
         }
 
     }
-    // Dungeon: { Room: { id: 10, connectionMap: {}}, Player: {id: 2, name: HossoDerBabo, attack: 1000}}
+
 
     static class ManageServiceImpl extends ManageServiceGrpc.ManageServiceImplBase {
         static int clientID = 0;

@@ -1,4 +1,8 @@
-package de.roguemaster.player.ViewPackage.DataForView;
+package de.roguemaster.player;
+
+import de.roguemaster.player.ViewPackage.DataForView.MonsterData;
+import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.DataForView.RoomData;
 
 import java.util.List;
 
