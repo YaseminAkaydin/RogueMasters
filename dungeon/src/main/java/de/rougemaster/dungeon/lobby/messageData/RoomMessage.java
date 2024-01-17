@@ -16,7 +16,7 @@ import java.util.Map;
 public class RoomMessage {
     private int id;
     private Item item;
-    private EnemyMessage enemies;
+    private EnemyMessage enemy;
     private List<PlayerMessage> players;
     private final Map<RoomCardinalDirection, Integer> adjacentRooms;
 
@@ -36,7 +36,7 @@ public class RoomMessage {
     public RoomMessage(int id, Item item, EnemyMessage enemies, List<PlayerMessage> players, int roomNorth, int roomSouth, int roomWest, int roomEast) {
         this.id = id;
         this.item = item;
-        this.enemies = enemies;
+        this.enemy = enemies;
         this.players = players;
         this.adjacentRooms = new HashMap<>();
         adjacentRooms.put(RoomCardinalDirection.North, roomNorth);
@@ -64,4 +64,15 @@ public class RoomMessage {
         return null;
     }
 
+    public void setEnemy(EnemyCharacter enemy){
+        this.enemy = new EnemyMessage(enemy);
+    }
+
+    public void addPlayer(PlayableCharacter playableCharacter){
+        players.add(new PlayerMessage(playableCharacter));
+    }
+
+    public int getId() {
+        return id;
+    }
 }

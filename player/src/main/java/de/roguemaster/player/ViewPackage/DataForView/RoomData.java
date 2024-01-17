@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class RoomData {
     private String roomType; // DungeonRoom, BossRoom, TreasureRoom
-    private List<PlayerData> characters; // Monster, Spieler
+    private List<PlayerData> characters; // Spieler
     private MonsterData monster; // Skeleton, Zombie, Boss
     private ItemData items; // Sword, Shield, Potion, Book
     private final int roomID;

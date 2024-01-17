@@ -21,8 +21,8 @@ public class LobbyFacade {
     //private static final Map<StreamObserver<MessageResponse>, int> ConnectionToClients
 
 
-    //private constructor // TODO: cemo der war privat ich hab den public gemacht damit ich in server instanzieren kann
-    public LobbyFacade() {
+    //private constructor
+    private LobbyFacade() {
         lobbyFactory = new LobbyFactory();
         lobbyBroker = LobbyBroker.getLobbyBroker();
     }

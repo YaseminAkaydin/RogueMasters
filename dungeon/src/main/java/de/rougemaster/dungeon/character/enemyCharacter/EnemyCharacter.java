@@ -2,6 +2,7 @@ package de.rougemaster.dungeon.character.enemyCharacter;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.dungeon.Room;
 
 public abstract class EnemyCharacter extends Character {
     protected int killCount;

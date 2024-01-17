@@ -2,12 +2,14 @@ package de.rougemaster.dungeon;
 
 import com.example.grpc.*;
 import com.google.gson.reflect.TypeToken;
+import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.game.GameState;
 import de.rougemaster.dungeon.lobby.JSONManager;
 import de.rougemaster.dungeon.lobby.LobbyFacade;
+import de.rougemaster.dungeon.lobby.messageData.GameStateMessage;
 import de.rougemaster.dungeon.lobby.messageData.JoinLobbyResponseMessage;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 import io.grpc.Grpc;
@@ -31,7 +33,7 @@ public class DungeonApplication {
 
     private void start() throws IOException {
         int port = 8811;
-        lobbyFacade = new LobbyFacade();
+        lobbyFacade = LobbyFacade.getInstance();
         this.server = Grpc.newServerBuilderForPort(port, InsecureServerCredentials.create())
                 .addService(new GameServiceImpl(lobbyFacade))
                 .addService(new ManageServiceImpl(lobbyFacade))
@@ -81,8 +83,8 @@ public class DungeonApplication {
         private LobbyFacade lobbyFacade;
 
         public GameServiceImpl(LobbyFacade lobbyFacade) {
-            startGameStateUpdates(); // startet direkt beim erstellen des servers den loop zum updaten
             this.lobbyFacade = lobbyFacade;
+            startGameStateUpdates(); // startet direkt beim erstellen des servers den loop zum updaten
 
         }
 
@@ -142,20 +144,26 @@ public class DungeonApplication {
 
         private GameCommandResponse buildGameStateResponse() {
             // Build response based on game state
+            Dungeon dungeon = new Dungeon(10, 2);
+
+            PlayableCharacter p =new PlayableCharacter();
+            p.teleport(dungeon.getRoomList().get(0));
+
+            EnemyCharacter zombie = new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, 2);
+            zombie.teleport(dungeon.getRoomList().get(0));
+
             GameState gameState = new GameState(
-                    List.of(new PlayableCharacter(),
-                            new PlayableCharacter(),
-                            new PlayableCharacter(),
-                            new PlayableCharacter())
-                    , List.of(new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, 2))
-                    , new Dungeon(10, 2).getRoomList()
+                    List.of(p)
+                    , List.of(zombie)
+                    , dungeon.getRoomList()
                     .stream()
                     .map(RoomMessage::new)
                     .toList());
-            String message = new JSONManager<GameState>(new TypeToken<>() {
-            }).write(gameState);
+            GameStateMessage gameStateMessage = new GameStateMessage(gameState);
+            String message = new JSONManager<GameStateMessage>(new TypeToken<>() {
+            }).write(gameStateMessage);
             return GameCommandResponse.newBuilder().setMessage(message).build();
-            // TODO: 1. Vier verschiedene PlayerCharacter mit
+
         }
 
     }

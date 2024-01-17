@@ -1,5 +1,7 @@
 package de.rougemaster.dungeon.dungeon;
 
+import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
+
 import java.util.*;
 import java.util.stream.Collectors;
 

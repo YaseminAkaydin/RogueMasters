@@ -10,7 +10,9 @@ import de.roguemaster.player.ViewPackage.DataForView.RoomData;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -62,14 +64,14 @@ public class MainGameView extends ViewComponent {
     }
 
     private void drawPlayers(TextGraphics tg) {
-        tg.setForegroundColor(TextColor.ANSI.GREEN);
+        tg.setForegroundColor(TextColor.ANSI.WHITE_BRIGHT);
         int i = 1;
         for (PlayerData player : roomData.getCharacters()) {
             if(player.getId() == playerData.getId()){
                 continue;
             }
-            int playerX = (ROOM_START_X + i ) + ROOM_WIDTH / 2;
-            int playerY = (ROOM_START_Y + i ) + ROOM_HEIGHT / 2;
+            int playerX = random.nextInt(ROOM_WIDTH - 2) + ROOM_START_X + 1;
+            int playerY = random.nextInt(ROOM_HEIGHT - 2) + ROOM_START_Y + 1;
             tg.putString(playerX, playerY, "X");
             i++;
         }

@@ -60,4 +60,5 @@ abstract public class Room {
     public static int getInstanceCounter() {
         return instanceCounter;
     }
+    //
 }
