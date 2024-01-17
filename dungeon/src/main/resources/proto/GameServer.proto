@@ -17,9 +17,10 @@ message JoinLobbyRequest {
   int32 lobbyID = 1; // 0 = "Start Lobby", fünstelligezahl = "Join Lobby"
 }
 message JoinLobbyResponse {
-  bool success = 1;
+  bool success = 1; // true wenn ok false wenn nicht
   int32 lobbyID = 2; // bei Join Lobby fünstelligezahl back
-  int32 characterID = 3; // Eigene CharID, server sided Player.PlayerID
+  int32 characterID = 3; // Eigene CharID
+  int32 userID = 4; // UserID fürs joinen
 }
 
 // The Game service definition.

@@ -2,8 +2,9 @@ package de.rougemaster.dungeon.character;
 
 import de.rougemaster.dungeon.dungeon.Room;
 
-public abstract class Character {
+import java.util.Random;
 
+public abstract class Character {
     protected int maxHp;
     protected int hp;
     protected String name;
@@ -38,10 +39,10 @@ public abstract class Character {
      * @return if fleeing was successful.
      */
     public boolean flee(Room room){
-        //TODO: Check if PlayerCharacter is in a fight.
-        //TOOO: Stop battle.
-        move(room);
-
+        if(new Random().nextBoolean()){
+            move(room);
+            return true;
+        }
         return false;
     }
 

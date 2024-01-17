@@ -14,8 +14,8 @@ public class LobbyFacade {
     //private static final Map<StreamObserver<MessageResponse>, int> ConnectionToClients
 
 
-    //private constructor
-    private LobbyFacade() {
+    //private constructor // TODO: cemo der war privat ich hab den public gemacht damit ich in server instanzieren kann
+    public LobbyFacade() {
         lobbyFactory = new LobbyFactory();
         lobbyBroker = LobbyBroker.getLobbyBroker();
     }
@@ -32,6 +32,7 @@ public class LobbyFacade {
         if(lobbyId == 0){
             int actualLobbyId = lobbyFactory.createLobby().getLobbyId();
             lobbyBroker.registerUser(clientId, lobbyId);
+
             return actualLobbyId;
         }
         else if(lobbyBroker.getLobbyBrokerRegister().checkLobbyIdExist(lobbyId)){

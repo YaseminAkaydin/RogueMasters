@@ -57,9 +57,8 @@ public class SimpleClient {
             }
         }
     }
-
+    // Erstellen den Stream erst NUR wenn wir auch in einem game starten
     private void checkGameStarted() {
-        // Erstellen den Stream nur wenn wir auch ein game starten
         if (requestObserver == null && game.isGameStarted()) {
             System.out.println("Creating stream to server");
             requestObserver = asyncStub.sendGameCommand(new StreamObserver<GameCommandResponse>() {
@@ -96,9 +95,11 @@ public class SimpleClient {
 
         if (Objects.equals(command.getCommand(), "0") || command.getCommand().length() == 5) {
             JoinLobbyRequest joinLobbyRequest = convertToJoinLobbyRequest(command);
-            System.out.println("JoinLobbyRequest: " + command.getCommand() + " " + command.getTarget());
+            System.out.println("JoinLobbyRequest sent: " + command.getCommand() + " " + command.getTarget());
             JoinLobbyResponse response = blockingStub.joinLobby(joinLobbyRequest);
-
+            if (response.getSuccess()) {
+                game.setSuccessJoinLobby(true);
+            }
             System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
         } else {
             // Create a gamecommand
@@ -166,7 +167,7 @@ public class SimpleClient {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            System.out.println("Shutting down Client...");
+                System.out.println("Shutting down Client...");
             asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
             blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
         }

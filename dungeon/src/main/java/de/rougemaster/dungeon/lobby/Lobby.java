@@ -62,7 +62,9 @@ public class Lobby {
                     .toList().get(0);
         } else {
             Room roomOfCharacter = character.getCurrentRoom();
-            item = roomOfCharacter.getItems().stream().filter(item1 -> item1.getId() == id).toList().get(0);
+
+
+            item = roomOfCharacter.getItem();//.stream().filter(item1 -> item1.getId() == id).toList().get(0);
             //TODO: item ist keine Liste mehr
         }
 

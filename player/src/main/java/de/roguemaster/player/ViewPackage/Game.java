@@ -44,6 +44,7 @@ public class Game {
     private final AtomicBoolean gameStarted = new AtomicBoolean(false);
 
     private String currentInput = "";
+    private boolean successJoinLobby = false;
 
 
     public Game(Terminal terminal) {
@@ -128,6 +129,8 @@ public class Game {
         }
     }
 
+    // TODO: Wenn Antwort von server success = false dann nochmal versuchen,
+    // TODO: sonst warten bis der gamestateUpdat vollbracht wird
     private void processJoinLobbyViewInput(KeyStroke keyStroke) {
 
         Character inputChar = keyStroke.getCharacter();
@@ -141,14 +144,19 @@ public class Game {
             // Wenn die Länge fünf erreicht, verarbeiten
             if (currentInput.length() == 5) {
                 processLobbyCode(currentInput);
-                currentView = startingLobbyView;
                 command = Command.joinLobby(currentInput);
+
                 currentInput = ""; // Zurücksetzen der Eingabe für den nächsten Versuch
             }
         }
         // Add command to the queue
         if (command != null) {
+            logger.info("Command added to queue");
             commandQueue.add(command);
+        }
+        if (successJoinLobby){
+            logger.info("Command was good, game start");
+            currentView = startingLobbyView;
         }
     }
 
@@ -394,6 +402,10 @@ public class Game {
 
         System.out.println("Thread UpdateGameState finished...");
 
+    }
+
+    public void setSuccessJoinLobby(boolean successJoinLobby) {
+        this.successJoinLobby = successJoinLobby;
     }
 
     public static void main(String[] args) {

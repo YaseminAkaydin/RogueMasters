@@ -16,7 +16,8 @@ public class LobbyBroker {
 
     private LobbyBroker (){
         this.lobbyBrokerRegister = new LobbyBrokerRegister();
-        lobbyBroker = this;
+        this.lobbyBroker = this;
+        this.userMap = new HashMap<>();
     }
 
     public LobbyBrokerRegister getLobbyBrokerRegister() {
@@ -92,7 +93,7 @@ public class LobbyBroker {
                 throw new IllegalArgumentException("Lobby can't be null");
             }
 
-            if(checkIfLobbyIdIsLegal(lobbyId)){
+            if(!checkIfLobbyIdIsLegal(lobbyId)){
                 return false;
             }
 
@@ -136,7 +137,7 @@ public class LobbyBroker {
         }
 
         private boolean checkIfLobbyIdIsLegal(int lobbyId){
-            return lobbyId > lowestAllowedLobbyId && lobbyId < highestAllowedLobbyId;
+            return (lobbyId > lowestAllowedLobbyId) && (lobbyId < highestAllowedLobbyId);
         }
     }
 }

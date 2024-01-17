@@ -71,7 +71,7 @@ public class TurnManager {
     }
 
     private void setAllFightActions(List<Character> allFighters) {
-        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+        /*for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             GameCommand command = entry.getValue();
             if (allFighters.contains(currentCharacter)) {
@@ -84,7 +84,7 @@ public class TurnManager {
                     handleFightAction(fight, combatantTwo, command);
                 }
             }
-        }
+        }*/
     }
 
     private void handleFightAction(Fight fight, Character combatant, GameCommand command) {
