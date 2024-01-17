@@ -137,7 +137,7 @@ public class DungeonApplication {
                     logger.log(Level.SEVERE, "Throwable caught in startGameStateUpdate", t);
 
                 }
-            }, 0, 3, TimeUnit.SECONDS);
+            }, 0, 6, TimeUnit.SECONDS);
         }
 
         private GameCommandResponse buildGameStateResponse() {
@@ -159,7 +159,6 @@ public class DungeonApplication {
         }
 
     }
-
 
     static class ManageServiceImpl extends ManageServiceGrpc.ManageServiceImplBase {
         private LobbyFacade lobbyFacade;

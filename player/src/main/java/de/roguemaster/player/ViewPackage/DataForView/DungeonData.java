@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  * DungeonData, only contains List of Rooms at first
  */
 public class DungeonData {
-    private final List<RoomData> rooms;
+    private List<RoomData> rooms;
     private HashMap<RoomData, List<PlayerData>> playerRoomMap; // which player is in which room, in one room can be multiple players, but one player can only be in one room
 
     public DungeonData(List<RoomData> rooms) {
@@ -94,8 +94,7 @@ public class DungeonData {
         }
     }
 
-
-
-
-
+    public void setRooms(List<RoomData> rooms) {
+        this.rooms = rooms;
+    }
 }

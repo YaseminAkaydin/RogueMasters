@@ -24,7 +24,7 @@ public class StartingLobbyView extends ViewComponent {
         try {
             terminal.clearScreen();
             terminal.setCursorPosition(0, 0);
-            terminal.putString("Successfully started Lobby");
+            terminal.putString("Loading the Game...");
             terminal.flush();
         } catch (IOException e) {
             e.printStackTrace();

@@ -41,7 +41,7 @@ public class SimpleClient {
         while (game.getRunning()) {
             Command command = game.getNextCommand();
 
-            checkGameStarted();
+            //checkGameStarted();
 
             if (command != null) {
                 checkAndSendCommands(command);
@@ -59,13 +59,12 @@ public class SimpleClient {
     }
     // Erstellen den Stream erst NUR wenn wir auch in einem game starten
     private void checkGameStarted() {
-        if (requestObserver == null && game.isGameStarted()) {
+        if (requestObserver == null && game.getRunning()) {
             System.out.println("Creating stream to server");
             requestObserver = asyncStub.sendGameCommand(new StreamObserver<GameCommandResponse>() {
                 @Override
                 public void onNext(GameCommandResponse response) {
                     // Handle incoming game state
-                    System.out.println("GS: " + response.getMessage());
                     new Thread(() -> {
                         try {
                             game.updateGameState(response.getMessage());
@@ -99,8 +98,10 @@ public class SimpleClient {
             JoinLobbyResponse response = blockingStub.joinLobby(joinLobbyRequest);
             if (response.getSuccess()) {
                 game.setSuccessJoinLobby(true);
+                System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
+                game.setLocalPlayerID(response.getCharacterID());
+                checkGameStarted();
             }
-            System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
         } else {
             // Create a gamecommand
             GameCommandRequest request = convertToGameCommandRequest(command);
