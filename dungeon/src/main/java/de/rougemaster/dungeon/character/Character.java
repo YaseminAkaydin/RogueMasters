@@ -38,8 +38,6 @@ public abstract class Character {
      * @return if fleeing was successful.
      */
     public boolean flee(Room room){
-        //TODO: Check if PlayerCharacter is in a fight.
-        //TOOO: Stop battle.
         move(room);
 
         return false;

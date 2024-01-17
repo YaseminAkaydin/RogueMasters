@@ -89,6 +89,7 @@ public class Fight {
      */
     private void executePlayerAction(PlayableCharacter player, CombatAction action) {
         Character enemy = (combatantOne == player) ? combatantTwo : combatantOne;
+        //TODO: Implement fleeing
 
         switch (action) {
             case DO_NOTHING:
