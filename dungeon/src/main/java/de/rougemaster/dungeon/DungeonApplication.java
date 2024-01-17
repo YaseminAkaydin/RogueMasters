@@ -77,7 +77,7 @@ public class DungeonApplication {
         private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         GameServiceImpl() {
-            startGameStateUpdates();
+            startGameStateUpdates(); // startet direkt beim erstellen des servers den loop zum updaten
         }
 
         @Override
@@ -113,12 +113,12 @@ public class DungeonApplication {
         }
 
         private void startGameStateUpdates() {
+            GameCommandResponse response = buildGameStateResponse();
             scheduler.scheduleAtFixedRate(() -> {
                 try {
                     System.out.println("Sending game state update");
                     if (clients.isEmpty()) return; // No clients connected, nothing to do
 
-                    GameCommandResponse response = buildGameStateResponse();
                     for (StreamObserver<GameCommandResponse> client : clients) {
 
                         System.out.println("Sending game state update to client");
