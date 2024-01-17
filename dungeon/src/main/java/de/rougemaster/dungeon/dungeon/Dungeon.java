@@ -32,7 +32,7 @@ public class Dungeon {
         // Current room starts from the nextRoom
         Room currentRoom = nextRoom;
 
-        for (int i = 2; i < depth; i++) {
+        for (int i = 2; i < depth-1; i++) {
             Room newRoom = (i % 5 == 0) ? roomFactory.createRoom(RoomFactory.RoomType.TREASURE) : roomFactory.createRoom(RoomFactory.RoomType.DUNGEON);
             roomList.add(newRoom);
 
@@ -65,6 +65,10 @@ public class Dungeon {
     }
 
     private static RoomCardinalDirection getOppositeDirection(RoomCardinalDirection direction) {
+        if (direction == null){
+            System.out.println("WTF"); //TODO: fixen, direction darf nicht null geben das führt zum error beim dungeon createn
+        }
+
         return switch (direction) {
             case North -> RoomCardinalDirection.South;
             case South -> RoomCardinalDirection.North;

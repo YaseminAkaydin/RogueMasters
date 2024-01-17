@@ -23,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DungeonApplication {
@@ -82,6 +83,7 @@ public class DungeonApplication {
         @Override
         public StreamObserver<GameCommandRequest> sendGameCommand(StreamObserver<GameCommandResponse> responseObserver) {
             clients.add(responseObserver);
+            System.out.println("Client connected, total clients: " + clients.size());
 
             return new StreamObserver<GameCommandRequest>() {
                 @Override
@@ -89,18 +91,21 @@ public class DungeonApplication {
                     // Handle the incoming message from the client
                     // For example, update the game state based on the command
                     System.out.println("Received command: " + request.getCommand() + " " + request.getTarget());
+
+                    // TODO: GameCommand nehmen und irgendeine Aktion ausführen SERVER SIDED
                 }
 
                 @Override
                 public void onError(Throwable t) {
                     // Handle error
-                    logger.info("Error: " + t.getMessage());
+                    logger.info("Error Server sendGameCommand: " + t.getMessage());
                     clients.remove(responseObserver);
                 }
 
                 @Override
                 public void onCompleted() {
                     // Complete the response stream
+                    logger.info("Completed Server sendGameCommand, removing client");
                     clients.remove(responseObserver);
                     responseObserver.onCompleted();
                 }
@@ -109,29 +114,38 @@ public class DungeonApplication {
 
         private void startGameStateUpdates() {
             scheduler.scheduleAtFixedRate(() -> {
-                if (clients.isEmpty()) return;
-                GameCommandResponse response = buildGameStateResponse();
-                for (StreamObserver<GameCommandResponse> client : clients) {
-                    try {
-                        client.onNext(response);
-                    } catch (Exception e) {
-                        System.out.println("Error: " + e.getMessage());
-                        clients.remove(client);
+                try {
+                    System.out.println("Sending game state update");
+                    if (clients.isEmpty()) return; // No clients connected, nothing to do
+
+                    GameCommandResponse response = buildGameStateResponse();
+                    for (StreamObserver<GameCommandResponse> client : clients) {
+
+                        System.out.println("Sending game state update to client");
+                        client.onNext(response); // Damit Rufen wir onNext von SimpleClient.java auf
+
                     }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Exception in startGameStateUpdate", e);
+
+                } catch (Throwable t) {
+                    logger.log(Level.SEVERE, "Throwable caught in startGameStateUpdate", t);
+
                 }
-            }, 0, 5, TimeUnit.SECONDS);
+            }, 0, 3, TimeUnit.SECONDS);
         }
 
         private GameCommandResponse buildGameStateResponse() {
             // Build response based on game state
             GameState gameState = new GameState(
-                    List.of(new PlayableCharacter(),new PlayableCharacter(),new PlayableCharacter(),new PlayableCharacter())
-                    ,List.of(new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, 2))
-                    ,new Dungeon(10, 2).getRoomList()
+                    List.of(new PlayableCharacter(), new PlayableCharacter(), new PlayableCharacter(), new PlayableCharacter())
+                    , List.of(new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, 2))
+                    , new Dungeon(10, 2).getRoomList()
                     .stream()
                     .map(RoomMessage::new)
                     .toList());
-            String message = new JSONManager<GameState>(new TypeToken<>(){}).write(gameState);
+            String message = new JSONManager<GameState>(new TypeToken<>() {
+            }).write(gameState);
             return GameCommandResponse.newBuilder().setMessage(message).build();
             // TODO: 1. Vier verschiedene PlayerCharacter mit
         }
@@ -145,8 +159,8 @@ public class DungeonApplication {
         @Override
         public void joinLobby(JoinLobbyRequest request, StreamObserver<JoinLobbyResponse> responseObserver) {
             int lobbyID = request.getLobbyID();
-            boolean success = true; // or some logic to determine if joining was successful
-            int characterID = clientID++; // Implement this method to generate a character ID
+            boolean success = true; //
+            int characterID = clientID++; // TODO: ClientID auf playerID anpassen oder so?
             System.out.println("Lobby joined: " + lobbyID + " " + success + " " + characterID);
             // Build the response
             JoinLobbyResponse response = JoinLobbyResponse.newBuilder()

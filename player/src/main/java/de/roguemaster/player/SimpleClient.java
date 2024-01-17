@@ -34,7 +34,98 @@ public class SimpleClient {
     }
 
     public void startGame() {
-        // Start the game in a new thread
+        // Start the g ame in a new thread
+        startGameAsThread();
+
+        // Start the ClientLoop
+        while (game.getRunning()) {
+            Command command = game.getNextCommand();
+
+            checkGameStarted();
+
+            if (command != null) {
+                checkAndSendCommands(command);
+            }
+            try {
+                //Thread.sleep(0); // Sleep for a short duration
+            } finally {
+                if (requestObserver != null && !game.getRunning()) {
+                    System.out.println("Client shutting down, sending complete");
+                    stopGame();
+                    requestObserver.onCompleted(); // Complete the request stream
+                }
+            }
+        }
+    }
+
+    private void checkGameStarted() {
+        // Erstellen den Stream nur wenn wir auch ein game starten
+        if (requestObserver == null && game.isGameStarted()) {
+            System.out.println("Creating stream to server");
+            requestObserver = asyncStub.sendGameCommand(new StreamObserver<GameCommandResponse>() {
+                @Override
+                public void onNext(GameCommandResponse response) {
+                    // Handle incoming game state
+                    System.out.println("GS: " + response.getMessage());
+                    new Thread(() -> {
+                        try {
+                            game.updateGameState(response.getMessage());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    logger.warning("RPC failed: " + t.getMessage());
+
+                }
+
+                @Override
+                public void onCompleted() {
+                    // Server has completed sending messages
+                    logger.info("Server has completed sending messages");
+                }
+            });
+        }
+    }
+
+    // Method to check if the command is a joinlobby or a gamecommand and send it to the server
+    private void checkAndSendCommands(Command command) {
+
+        if (Objects.equals(command.getCommand(), "0") || command.getCommand().length() == 5) {
+            JoinLobbyRequest joinLobbyRequest = convertToJoinLobbyRequest(command);
+            System.out.println("JoinLobbyRequest: " + command.getCommand() + " " + command.getTarget());
+            JoinLobbyResponse response = blockingStub.joinLobby(joinLobbyRequest);
+
+            System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
+        } else {
+            // Create a gamecommand
+            GameCommandRequest request = convertToGameCommandRequest(command);
+            System.out.println("GameCommandRequest to server: " + command.getCommand() + " " + command.getTarget());
+            requestObserver.onNext(request);
+        }
+    }
+
+
+    // Method to convert a Command to a JoinLobbyRequest
+    private JoinLobbyRequest convertToJoinLobbyRequest(Command command) {
+        return JoinLobbyRequest.newBuilder().
+                setLobbyID(Integer.parseInt(command.getCommand())).
+                build();
+    }
+
+    // Method to convert a Command to a GameCommandRequest
+    private GameCommandRequest convertToGameCommandRequest(Command command) {
+        return GameCommandRequest.newBuilder().
+                setCommand(command.getCommand()).
+                setTarget(command.getTarget()).
+                build();
+    }
+
+    // Method to start the game in a new thread
+    public void startGameAsThread() {
         gameThread = new Thread(() -> {
             try {
                 game.run();
@@ -43,77 +134,6 @@ public class SimpleClient {
             }
         });
         gameThread.start();
-
-
-
-        // Loop for checking commands and sending them to the server
-        while (!gameThread.isInterrupted()) {
-            Command command = game.getNextCommand();
-
-            // only initiliate requestObserver if game.gameStarted == true and requestObserver == null
-            if (requestObserver == null && game.isGameStarted()) {
-                logger.info("Starting gameState updater...");
-                requestObserver = asyncStub.sendGameCommand(new StreamObserver<GameCommandResponse>() {
-                    @Override
-                    public void onNext(GameCommandResponse response) {
-                        // Handle incoming game state
-                        System.out.println("GS: " + response.getMessage());
-                        new Thread(() -> {
-                            try {
-                                game.updateGameState(response.getMessage());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }).start();
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        logger.warning("RPC failed: " + t.getMessage());
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        // Server has completed sending messages
-                    }
-                });
-            }
-
-            if (command != null) {
-                System.out.println("Sent to server: " + command.getCommand() + " " + command.getTarget());
-
-                // IF we want to start a lobby or join a lobby
-                if (Objects.equals(command.getCommand(), "0") || command.getCommand().length() == 5) {
-                    JoinLobbyRequest joinLobbyRequest = JoinLobbyRequest
-                            .newBuilder()
-                            .setLobbyID(Integer.parseInt(command.getCommand()))
-                            .build();
-                    JoinLobbyResponse response = blockingStub.joinLobby(joinLobbyRequest);
-
-                    System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
-                } else {
-                    // Create a gamecommand
-                    GameCommandRequest request = convertToGameCommandRequest(command);
-                    requestObserver.onNext(request);
-                }
-            }
-            try {
-                Thread.sleep(100); // Sleep for a short duration
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Restore interrupted status
-                break; // Exit the loop if interrupted
-            } /*finally {
-                requestObserver.onCompleted(); // Complete the request stream
-            }*/
-        }
-    }
-
-
-    private GameCommandRequest convertToGameCommandRequest(Command command) {
-        return GameCommandRequest.newBuilder().
-                setCommand(command.getCommand()).
-                setTarget(command.getTarget()).
-                build();
     }
 
     // Method to stop the game
@@ -146,6 +166,7 @@ public class SimpleClient {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            System.out.println("Shutting down Client...");
             asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
             blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
         }

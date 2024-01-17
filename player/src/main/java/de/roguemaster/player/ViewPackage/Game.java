@@ -2,6 +2,7 @@ package de.roguemaster.player.ViewPackage;
 
 import com.google.gson.reflect.TypeToken;
 import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
@@ -12,6 +13,7 @@ import de.roguemaster.player.GameState;
 import de.roguemaster.player.ViewPackage.View.*;
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -74,7 +76,7 @@ public class Game {
                     currentView = mainGameView;
                 }
 
-                Thread.sleep(1000);
+                Thread.sleep(100);
 
             } catch (InterruptedException e) {
                 logger.log(java.util.logging.Level.SEVERE, "Interrupted while sleeping", e);
@@ -91,6 +93,14 @@ public class Game {
         while (running.get()) {
             try {
                 KeyStroke keyStroke = terminal.pollInput();
+                // IF user presses ESC, exit the game
+                if (keyStroke != null && keyStroke.getKeyType() == KeyType.Escape) {
+                    System.out.println("ESCAPE PRESSED");
+                    running.set(false);
+                    gameStarted.set(false);
+                    // stop the thread for handling input
+                    Thread.currentThread().interrupt();
+                }
                 if (keyStroke != null) {
                     processInput(keyStroke);
                 }
@@ -157,14 +167,12 @@ public class Game {
         Command command = null;
         switch (keyStroke.getCharacter()) {
             case '1':
-                logger.info("Creating Dungeon and switch to startingLobbyView");
                 this.currentView = startingLobbyView;
                 // Simulate receiving dungeon data from the server
                 //JoinLobby-CLIENT(n(sololobbystarten) ODER "LobbyCode Zahl 5stellig") --> success, lobbyID, charID
                 command = Command.startLobby();
                 break;
             case '2':
-                logger.info("TBU");
                 currentView = joiningLobbyView; // TODO: mechanics hier implementeiren,
                 break;
             case '3':
@@ -364,12 +372,16 @@ public class Game {
         return gameStarted.get();
     }
 
+    public boolean getRunning() {
+        return running.get();
+    }
+
     /**
      * Update der Daten für den ViewBuilder mit den Incoming daten nach dem vorgegebenen Format
      * @param gameState
      */
     public void updateGameState(String gameState) {
-        logger.info("Thread UpdateGameState started...");
+        System.out.println("Thread UpdateGameState started...");
         // Item: id, typ, name, description, itemAttribute
         // enemie: id, name, dangerLevel, maxHp, hp, id
         // playerliste max 4 player: level, experience, maxExperience, inventory, maxHp, hp, attack, defense, id
@@ -380,7 +392,7 @@ public class Game {
         // Use read to get the data out of the EXAMPLE JSON
         GameState gameState1 = jsonManager.read(gameState);
 
-        logger.info("Thread UpdateGameState finished...");
+        System.out.println("Thread UpdateGameState finished...");
 
     }
 
