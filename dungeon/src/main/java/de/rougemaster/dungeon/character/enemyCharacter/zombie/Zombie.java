@@ -34,7 +34,7 @@ public class Zombie extends EnemyCharacter {
             }
         }
 
-        if(dangerLvl > 5){
+        if(dangerLvl >= 5){
             this.attack= 14;
             this.defense=19;
             this.maxHp=19;

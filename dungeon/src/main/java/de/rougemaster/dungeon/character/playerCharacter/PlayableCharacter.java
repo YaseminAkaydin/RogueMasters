@@ -38,7 +38,10 @@ public class PlayableCharacter extends Character {
      */
     public void attackUsingEquipment(Character character) {
         int attackDamage = weaponSlot == null ? this.attack : this.attack + weaponSlot.getDamage();
-        character.setHp(character.getHp()-(attackDamage - character.getDefense()));
+        int netDamage = attackDamage - character.getDefense();
+        if (netDamage > 0) {
+            character.setHp(character.getHp() - netDamage);
+        }
     }
 
     /**
