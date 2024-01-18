@@ -19,7 +19,7 @@ import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonBonesplo
 import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
-import lombok.Getter;
+
 
 
 import java.util.*;
@@ -27,7 +27,7 @@ import java.util.*;
 public class TurnManager {
     FightManager fightManager;
     PlayableCharacter character;
-    @Getter
+
     Map<Character, GameCommand> commandMap;
     Map<FightManager, List<Character>> fightList;
 

@@ -17,7 +17,6 @@ abstract public class Room {
     public Room() {
         instanceCounter++;
         this.id = instanceCounter;
-        this.item = ItemFactory.createItem();
         this.characters = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
         adjacentRooms.put(RoomCardinalDirection.North, null);
