@@ -392,7 +392,11 @@ public class Game {
         // Use read to get the data out of the EXAMPLE JSON
         this.gameState = jsonManager.read(gameState);
         this.gameState.setLocalPlayerID(localPlayerID);
+        viewBuilder.initGame(this.gameState);
         this.gameState.initGameState();
+        this.dungeonMapView = viewBuilder.getDungeonMapView();
+        this.mainGameView = viewBuilder.getMainGameView();
+        this.inventoryView = viewBuilder.getInventoryView();
         //System.out.println(this.gameState.toString());
 
         //System.out.println("Thread UpdateGameState finished...");
