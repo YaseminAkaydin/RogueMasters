@@ -3,7 +3,7 @@ package de.rougemaster.dungeon.dungeon;
 import javax.lang.model.type.NullType;
 import java.util.Random;
 
-//TODO: generateRoom?
+
 public class DungeonRoom extends Room {
     private float enemySpawnChanceInPercent = 0.3f;
     private int enemyMaximumAmount = 1;

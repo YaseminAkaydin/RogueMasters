@@ -20,6 +20,7 @@ public class Game {
     private final Dungeon dungeon;
 
     private final TurnManager turnManager;
+    private final TurnManagerThread turnManagerThread;
 
     /**
      * Creates a new Game
@@ -33,6 +34,7 @@ public class Game {
 
 
         this.turnManager = new TurnManager();
+        this.turnManagerThread = new TurnManagerThread(turnManager);
     }
 
     /**
@@ -102,6 +104,7 @@ public class Game {
      * Starts the game
      */
     private void startGame() {
+        turnManagerThread.run();
         //TODO: Start Game in TurnManager
     }
 

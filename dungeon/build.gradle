@@ -15,8 +15,7 @@ def protocVersion = protobufVersion
 
 dependencies {
 
-	compileOnly 'org.projectlombok:lombok:1.18.30'
-	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
 
 	// gRPC
 	implementation "io.grpc:grpc-protobuf:${grpcVersion}"

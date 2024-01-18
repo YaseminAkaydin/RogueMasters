@@ -5,6 +5,7 @@ import de.rougemaster.dungeon.dungeon.Room;
 import java.util.Random;
 
 public abstract class Character {
+
     protected int maxHp;
     protected int hp;
     protected String name;
