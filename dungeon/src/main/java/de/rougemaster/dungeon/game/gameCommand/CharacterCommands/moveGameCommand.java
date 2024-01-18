@@ -11,7 +11,7 @@ public class moveGameCommand extends GameCommand {
         this.character = character;
         this.room = room;
     }
-    public void execute() {
+    public void execute() {System.out.println("hi");
         character.move(room);
 
     }

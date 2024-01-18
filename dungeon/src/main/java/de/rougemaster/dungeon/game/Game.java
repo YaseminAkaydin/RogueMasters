@@ -23,7 +23,7 @@ public class Game {
     private final Dungeon dungeon;
 
     private final TurnManager turnManager;
-    private final TurnManagerThread turnManagerThread;
+    private LobbyThread turnManagerThread;
 
     /**
      * Creates a new Game
@@ -35,9 +35,8 @@ public class Game {
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
 
-
         this.turnManager = new TurnManager();
-        this.turnManagerThread = new TurnManagerThread(turnManager);
+        this.turnManagerThread = null;
     }
 
     /**
@@ -168,6 +167,10 @@ public class Game {
             enemyList.remove(character);
 
         }
+    }
+
+    public void createTurnManagerThread (LobbyThread turnManagerThread) {
+        this.turnManagerThread = turnManagerThread;
     }
 
 

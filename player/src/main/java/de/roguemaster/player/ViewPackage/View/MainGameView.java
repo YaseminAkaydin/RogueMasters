@@ -57,6 +57,7 @@ public class MainGameView extends ViewComponent {
             clearAndInitializeGraphics();
             drawRoom(tg);
             drawLocalPlayer(tg);
+            /*System.out.println(gameState.getCurrentRoomId());*/
             drawPlayers(tg);
             drawMonster(tg);
             drawMonserInfo(tg);

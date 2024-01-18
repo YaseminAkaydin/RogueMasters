@@ -34,12 +34,22 @@ public class GameState {
     }
     public void initGameState(){
 
+
         this.playerRoomMap = new HashMap<>();
         initPlayerRoomMap();
 
-        this.roomData = roomList.get(getCurrentRoomId()-1);
+        this.roomData = findRoomById(getCurrentRoomId());
         this.playerData = getLocalPlayer();
         this.inventoryItems = playerData.getInventory();
+    }
+    private RoomData findRoomById(int roomId) {
+        for (RoomData room : roomList) {
+            if (room.getId() == roomId) {
+                return room;
+            }
+        }
+        System.out.println("Room with id " + roomId + " not found.");
+        return null; // oder werfen Sie eine Exception, falls die roomId nicht gefunden wurde
     }
 
     /**
@@ -61,6 +71,7 @@ public class GameState {
 
             for (PlayerData player : players) {
                 if (player.getId() == localPlayerID) { // Assuming PlayerData has a getUserId() method that returns the player's userID
+                    //System.out.println("Current Room ID: " + room.getId());
                     return room.getId(); // Assuming RoomData has a getRoomId() method
                 }
             }

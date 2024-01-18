@@ -1,4 +1,4 @@
-package de.roguemaster.player;
+package de.roguemaster.player.cs;
 
 public class DataContainer<T> {
     private T data = null;

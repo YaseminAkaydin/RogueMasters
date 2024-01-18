@@ -1,12 +1,15 @@
 package de.rougemaster.dungeon.lobby;
 
+import com.example.grpc.GameCommandResponse;
+import com.google.gson.reflect.TypeToken;
+import de.rougemaster.dungeon.DungeonApplication;
 import de.rougemaster.dungeon.game.GameState;
 import de.rougemaster.dungeon.lobby.messageData.GameStateMessage;
 import de.rougemaster.dungeon.lobby.messageData.JoinLobbyResponseMessage;
+import io.grpc.Server;
+import io.grpc.stub.StreamObserver;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 //Singleton Pattern
 public class LobbyFacade {
@@ -17,7 +20,10 @@ public class LobbyFacade {
 
     private List<Integer> clientIds = new ArrayList<>();
 
-    //private static final Map<int, StreamObserver<MessageResponse>> clientsToConnection
+    Server server;
+    private DungeonApplication.GameServiceImpl gameService;
+
+    private static Map<Integer, StreamObserver<GameCommandResponse>> clientsToConnection = new HashMap<>();
     //private static final Map<StreamObserver<MessageResponse>, int> ConnectionToClients
 
     //private constructor
@@ -66,12 +72,26 @@ public class LobbyFacade {
 
     /**
      * Sends the GameState to the Client
-     * @param clientId the id of the Client
+     * @param clientIds the id of the Client
      * @param gameState the GameState that should to be sent
      */
-    public void sendNextTurn(int clientId, GameState gameState){
+    public void sendNextTurn(Set<Integer> clientIds, GameState gameState){
+        GameStateMessage gameStateMessage = new GameStateMessage(gameState);
+        String message = new JSONManager<GameStateMessage>(new TypeToken<>() {
+        }).write(gameStateMessage);
+
+        for(Integer clientId: clientIds) {
+            if(clientsToConnection.containsKey(clientId)){
+                System.out.println("Sending to Client: " + clientId);
+                clientsToConnection.get(clientId).onNext(GameCommandResponse.newBuilder().setMessage(message).build());
+            }
+        }
         //Stub.startGameStateUpdates();
         //TODO: Send NextTurn to Client via ServerStub
+    }
+
+    public boolean isClientIdExisting (int clientId) {
+        return lobbyBroker.isUserRegisterd(clientId);
     }
 
     private int createClientId(){
@@ -85,5 +105,18 @@ public class LobbyFacade {
 
     public GameStateMessage getGameStateMessage(int clientId){
         return new GameStateMessage(lobbyBroker.forwardToLobby(clientId).getGameState());
+    }
+
+    public void setServer (Server server) {
+        this.server = server;
+    }
+
+    public void setGameService(DungeonApplication.GameServiceImpl gameService) {
+        this.gameService = gameService;
+
+    }
+
+    public void setClientsToConnection(Map<Integer, StreamObserver<GameCommandResponse>> clientsToConnection) {
+        LobbyFacade.clientsToConnection = clientsToConnection;
     }
 }

@@ -44,6 +44,9 @@ public class Command {
     public static Command startLobby( ) {
         return new Command("0");
     }
+    public static Command initialize( ) {
+        return new Command("initialize");
+    }
     public static Command joinLobby(String lobbyCode) {
         return new Command(lobbyCode);
     }

@@ -1,4 +1,4 @@
-package de.roguemaster.player;
+package de.roguemaster.player.cs;
 
 import com.example.grpc.*;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -21,6 +21,7 @@ public class SimpleClient {
 
     private final Game game;
     private Thread gameThread;
+    private int userID; // Id der Clients zum befehle verarbeiten
 
     private final GameServiceGrpc.GameServiceStub asyncStub; // Async stub, for commands and 5sekGamestate from server
     private final ManageServiceGrpc.ManageServiceBlockingStub blockingStub; // For joining lobbies/creating lobbies
@@ -77,7 +78,6 @@ public class SimpleClient {
                 @Override
                 public void onError(Throwable t) {
                     logger.warning("RPC failed: " + t.getMessage());
-
                 }
 
                 @Override
@@ -100,7 +100,9 @@ public class SimpleClient {
                 game.setSuccessJoinLobby(true);
                 System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
                 game.setLocalPlayerID(response.getCharacterID());
+                this.userID = response.getUserID();
                 checkGameStarted();
+                requestObserver.onNext(convertToGameCommandRequest(new Command("initialize"))); //init direkt nach dem erstellen des streams mitsenden für Init
             }
         } else {
             // Create a gamecommand
@@ -123,6 +125,7 @@ public class SimpleClient {
         return GameCommandRequest.newBuilder().
                 setCommand(command.getCommand()).
                 setTarget(command.getTarget()).
+                setUserId(userID).
                 build();
     }
 

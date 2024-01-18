@@ -17,7 +17,7 @@ public abstract class ViewComponent {
     protected final Random random = new Random();
 
 
-    protected static GameState gameState;
+    protected GameState gameState;
 
     public abstract void display();
 

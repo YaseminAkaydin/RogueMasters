@@ -7,6 +7,7 @@ import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.Game;
+import de.rougemaster.dungeon.game.LobbyThread;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.GameState;
@@ -17,17 +18,22 @@ import de.rougemaster.dungeon.game.gameCommand.zombieCommands.*;
 import de.rougemaster.dungeon.item.Item;
 
 import java.util.HashMap;
+
 import java.util.Map;
+import java.util.Set;
 
 public class Lobby {
     private final Map<Integer, Character> characterMap;
     private final Game game;
 
     private int lobbyId;
+    private LobbyThread lobbyThread;
 
     public Lobby(Game game) {
         characterMap = new HashMap<>();
         this.game = game;
+        this.lobbyThread = new LobbyThread(this);
+        new Thread(lobbyThread).start();
     }
 
     /**
@@ -57,7 +63,7 @@ public class Lobby {
 
         if (character instanceof PlayableCharacter) {
             switch (lobbyMessage.getCommand()) {
-                case "move" -> {return new moveGameCommand(character, character.getCurrentRoom());}
+                case "move" -> {return new moveGameCommand(character, room);}
                 case "doNothing" -> {return new doNothingGameCommand(character);}
                 case "flee" -> {return new fleeGameCommand(character, room);}
                 case "attackUsingEquipment" -> {return new attackUsingEquipmentCommand();}
@@ -122,15 +128,15 @@ public class Lobby {
         if(characterMap.containsKey(clientId)){
             return -1;
         }
-
         Character joinedCharacter;
-       if(lobbyCharType == LobbyCharType.PlayableCharacter) {
-           joinedCharacter = game.addPlayer();
-       }else{
-           joinedCharacter = game.addEnemy(lobbyCharType);
-       }
+        if(lobbyCharType == LobbyCharType.PlayableCharacter) {
+            joinedCharacter = game.addPlayer();
+        }else{
+            joinedCharacter = game.addEnemy(lobbyCharType);
+        }
+        characterMap.put(clientId, joinedCharacter);
 
-       return joinedCharacter.getId();
+        return joinedCharacter.getId();
     }
 
     /**
@@ -147,25 +153,10 @@ public class Lobby {
 
     /**
      * Sends the next Turn signal to LobbyFacade.
-     * @param gameState the current GameState
      */
-    public void nextTurn(GameState gameState){
-        //TODO: Trigger nextTurn method in LobbyFacade with all clientIds
+    public void nextTurn(){
         GameState gameStateCopy = game.getGameState();
-        for (Integer clientId: characterMap.keySet()) {
-            LobbyFacade.getInstance().sendNextTurn(clientId, gameStateCopy);
-        }
-    }
-
-    /**
-     * Creates a new Character and adds it to the Game
-     * @param clientID the id of the client
-     * @return the id of the character
-     */
-    public int createCharacter(int clientID){
-        PlayableCharacter playableCharacter = game.addPlayer();
-        characterMap.put(clientID, playableCharacter);
-        return playableCharacter.getId();
+        LobbyFacade.getInstance().sendNextTurn(characterMap.keySet(), gameStateCopy);
     }
 
     public void setLobbyId(int lobbyId) {
@@ -178,5 +169,13 @@ public class Lobby {
 
     public GameState getGameState() {
         return game.getGameState();
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public Set<Integer> getLobbyIds () {
+        return characterMap.keySet();
     }
 }

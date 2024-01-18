@@ -24,8 +24,10 @@ public class PlayableCharacter extends Character {
 
     public PlayableCharacter () {
         //TODO: Set Stats of Character
-        id= idCounter++;
-        inventory = List.of(new Book(0, "Book", "A book that gives you 10 EXP", 10), new Weapon(1, "Sword", "A sword that gives you 10 Attack", 10), new Armor(2, "Shield", "A shield that gives you 10 Defense", 10));
+        id= ++idCounter;
+        inventory = List.of(new Book(50, "Book", "A book that gives you 10 EXP", 10),
+                new Weapon(51, "Sword", "A sword that gives you 10 Attack", 10),
+                new Armor(52, "Shield", "A shield that gives you 10 Defense", 10));
         armorSlot = null;
         weaponSlot = null;
         hp= 10;

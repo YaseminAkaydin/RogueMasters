@@ -7,8 +7,8 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 
-import de.roguemaster.player.DataContainer;
-import de.roguemaster.player.JSONManager;
+import de.roguemaster.player.cs.DataContainer;
+import de.roguemaster.player.cs.JSONManager;
 import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.View.*;
 
@@ -381,8 +381,8 @@ public class Game {
      * @param gameState
      */
     public void updateGameState(String gameState) {
-        // System.out.println("Thread UpdateGameState started...");
-        if (this.gameState == null) {
+         System.out.println("Thread UpdateGameState started...");
+        if (this.gameState != null) {
             System.out.println("GS: " + gameState);
         }
 
@@ -391,6 +391,7 @@ public class Game {
         });
         // Use read to get the data out of the EXAMPLE JSON
         this.gameState = jsonManager.read(gameState);
+        this.gameState.setLocalPlayerID(localPlayerID);
         this.gameState.initGameState();
         //System.out.println(this.gameState.toString());
 
