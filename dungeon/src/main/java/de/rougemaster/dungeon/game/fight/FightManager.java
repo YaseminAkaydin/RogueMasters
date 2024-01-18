@@ -77,6 +77,9 @@ public class FightManager {
     public void executeAllTurns() {
         for (Fight fight : this.activeFights) {
             fight.executeTurn();
+            if((fight.getCombatantOne().getHp()<=0) || fight.getCombatantTwo().getHp()<=0){
+                endFight(fight);
+            }
         }
     }
 
