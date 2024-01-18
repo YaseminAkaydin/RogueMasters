@@ -71,7 +71,7 @@ public class TurnManager {
         List<Character> allCharactersInFights = fightManager.getAllCharactersInFights();
         setAllFightActions(allCharactersInFights);
         fightManager.executeAllTurns();
-        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             if (allCharactersInFights.contains(currentCharacter)) {
                 doNothingGameCommand newCommand = new doNothingGameCommand(currentCharacter);
@@ -133,18 +133,18 @@ public class TurnManager {
      * eingegeben hat. Sollten sich zwei Spieler in einem Raum befinden, wird an den FightManager weitergegeben.
      */
     private void handleCharacterInput() {
-        Map<Character, GameCommand> commandMap = startTurn();
-        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+        Map<Character, GameCommand> copyCommandMap = startTurn();
+        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
             GameCommand command = entry.getValue();
             command.execute();
 
         }
         // Iteration durch die Map, um Charactere im gleichen Raum zu finden
-        for (Map.Entry<Character, GameCommand> entry1 : commandMap.entrySet()) {
+        for (Map.Entry<Character, GameCommand> entry1 : copyCommandMap.entrySet()) {
             Character character1 = entry1.getKey();
             Room room1 = character1.getCurrentRoom();
 
-            for (Map.Entry<Character, GameCommand> entry2 : commandMap.entrySet()) {
+            for (Map.Entry<Character, GameCommand> entry2 : copyCommandMap.entrySet()) {
                 Character character2 = entry2.getKey();
                 Room room2 = character2.getCurrentRoom();
 
@@ -161,10 +161,11 @@ public class TurnManager {
             }
         }
 
-        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
             doNothingGameCommand newCommand = new doNothingGameCommand(entry.getKey());
             entry.setValue(newCommand);
         }
+        commandMap=copyCommandMap;
     }
 
     public void setCharacterTurn(Character character, GameCommand command) {
