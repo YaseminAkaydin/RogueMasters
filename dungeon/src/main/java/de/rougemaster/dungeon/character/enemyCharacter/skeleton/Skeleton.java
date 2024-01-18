@@ -10,8 +10,9 @@ public class Skeleton extends EnemyCharacter {
 
     private static final int boneAttackBonusDamage = 5;
 
-    public Skeleton(int baseExpDropAmount) {
+    public Skeleton(int dangerLevel) {
         super(baseExpDropAmount);
+        this.dangerLevel = dangerLevel;
     }
 
     /**

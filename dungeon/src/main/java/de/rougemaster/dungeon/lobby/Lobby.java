@@ -1,7 +1,6 @@
 package de.rougemaster.dungeon.lobby;
 import de.rougemaster.dungeon.character.Character;
 
-import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
@@ -53,9 +52,7 @@ public class Lobby {
         } else {
             Room roomOfCharacter = character.getCurrentRoom();
 
-
-            item = roomOfCharacter.getItem();//.stream().filter(item1 -> item1.getId() == id).toList().get(0);
-            //TODO: item ist keine Liste mehr
+            item = roomOfCharacter.getItem();
         }
 
         if (character instanceof PlayableCharacter) {
@@ -130,27 +127,25 @@ public class Lobby {
      * @param clientId The Identifikator of the client
      * @param lobbyCharType The character type of the client
      */
-    public void joinClientLobby(int clientId, LobbyCharType lobbyCharType){
+    public int joinClientLobby(int clientId, LobbyCharType lobbyCharType){
         //Check if clientId and character have a valid value.
         if(clientId<=0){
-            return;
+            return -1;
         }
 
         //Check if Client is already registered
         if(characterMap.containsKey(clientId)){
-            return;
+            return -1;
         }
 
+        Character joinedCharacter;
         //switch case for different character types
-        Character character = switch (lobbyCharType) {
-            case PlayableCharacter -> new PlayableCharacter();
-            case Zombie -> new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, (int) (Math.random() * 8 + 1));
-            case Skeleton -> new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Skeleton, (int) (Math.random() * 12 + 1));
-            case Devil -> new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Devil, 15);
-
-            default -> throw new IllegalArgumentException("LobbyCharType is not valid.");
-        };
-        //TODO: Add Character to Game
+       if(lobbyCharType == LobbyCharType.PlayableCharacter) {
+           joinedCharacter = game.addPlayer();
+       }else{
+           joinedCharacter = game.addEnemy(lobbyCharType);
+       }
+       return joinedCharacter.getId();
     }
 
     /**

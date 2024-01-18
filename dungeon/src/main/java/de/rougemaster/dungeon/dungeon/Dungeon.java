@@ -6,7 +6,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Dungeon {
-
+    /*
+     * TODO: ROOMS should generate on a grid that dont overlap
+     *  EXAMPLE:
+     *  Room 1: 0,0 -> East leads to Room 2
+     *  Room 2: 1,0 -> South leads to Room 3
+     *  Room 3: 1,1 -> West leads to Room 4
+     *  Room 4: 0,1 -> North leads to Room 5
+     *  Room 5: 0,0
+     *  Shouldn't be possible
+     */
     private final int dungeonDifficulty;
     private List<Room> roomList;
     private String map;

@@ -13,6 +13,7 @@ public class Zombie extends EnemyCharacter {
 
     public Zombie(int dangerLvl){
         super(baseExpDropAmount);
+        this.dangerLevel = dangerLvl;
         if(dangerLvl <= 0) {
             dangerLvl = 1;
         }

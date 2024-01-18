@@ -20,7 +20,6 @@ public class LobbyFacade {
     //private static final Map<int, StreamObserver<MessageResponse>> clientsToConnection
     //private static final Map<StreamObserver<MessageResponse>, int> ConnectionToClients
 
-
     //private constructor
     private LobbyFacade() {
         lobbyFactory = new LobbyFactory();
@@ -35,25 +34,24 @@ public class LobbyFacade {
         return instance;
     }
 
-    public JoinLobbyResponseMessage joinLobby(int lobbyId){
+    public JoinLobbyResponseMessage joinLobby(int lobbyId, LobbyCharType lobbyCharType){
         int clientId = createClientId();
         int characterId;
 
         if(lobbyId == 0){
             lobbyId = lobbyFactory.createLobby().getLobbyId();
+        }
+
+        if(lobbyBroker.getLobbyBrokerRegister().checkLobbyIdExist(lobbyId)){
             lobbyBroker.registerUser(clientId, lobbyId);
-            characterId = lobbyBroker.forwardToLobby(clientId).createCharacter(clientId);
-            return new JoinLobbyResponseMessage(characterId, clientId, lobbyId, true);
+            characterId = lobbyBroker.forwardToLobby(clientId).joinClientLobby(clientId, lobbyCharType);
+            if(characterId > 0){
+                return new JoinLobbyResponseMessage(characterId, clientId, lobbyId, true);
+            }
         }
-        else if(lobbyBroker.getLobbyBrokerRegister().checkLobbyIdExist(lobbyId)){
-            lobbyBroker.registerUser(clientId, lobbyId);
-            characterId = lobbyBroker.forwardToLobby(clientId).createCharacter(clientId);
-            return new JoinLobbyResponseMessage(characterId, clientId, lobbyId, true);
-        }
-        else{
-            lobbyBroker.unregisterUser(clientId);
-            return new JoinLobbyResponseMessage(-1, -1, lobbyId, false);
-        }
+
+        lobbyBroker.unregisterUser(clientId);
+        return new JoinLobbyResponseMessage(-1, -1, lobbyId, false);
     }
 
     /**

@@ -7,7 +7,7 @@ public class Devil extends EnemyCharacter {
 
     private DevilState state;
 
-    public Devil(int baseExpDropAmount) {
+    public Devil() {
         super(0);
     }
 

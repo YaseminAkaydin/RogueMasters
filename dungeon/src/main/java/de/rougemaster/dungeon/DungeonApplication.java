@@ -8,6 +8,7 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.game.GameState;
 import de.rougemaster.dungeon.lobby.JSONManager;
+import de.rougemaster.dungeon.lobby.LobbyCharType;
 import de.rougemaster.dungeon.lobby.LobbyFacade;
 import de.rougemaster.dungeon.lobby.messageData.GameStateMessage;
 import de.rougemaster.dungeon.lobby.messageData.JoinLobbyResponseMessage;
@@ -149,7 +150,7 @@ public class DungeonApplication {
             PlayableCharacter p =new PlayableCharacter();
             p.teleport(dungeon.getRoomList().get(0));
 
-            EnemyCharacter zombie = new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, 2);
+            EnemyCharacter zombie = new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie);
             zombie.teleport(dungeon.getRoomList().get(0));
 
             GameState gameState = new GameState(
@@ -181,7 +182,7 @@ public class DungeonApplication {
             System.out.println("Received joinLobby request: " + request.getLobbyID());
 
             try {
-                lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID());
+                lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID(), LobbyCharType.PlayableCharacter);
             } catch (Throwable e) {
                 e.printStackTrace();
             }
