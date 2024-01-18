@@ -6,10 +6,7 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.ItemFactory;
 import de.rougemaster.dungeon.dungeon.Room;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FightManager {
 
@@ -75,9 +72,12 @@ public class FightManager {
      * Executes the next turn for all fights. Should be called once every 5 seconds by TurnManager.
      */
     public void executeAllTurns() {
-        for (Fight fight : this.activeFights) {
+        Iterator<Fight> iterator = this.activeFights.iterator();
+        while (iterator.hasNext()) {
+            Fight fight = iterator.next();
             fight.executeTurn();
-            if((fight.getCombatantOne().getHp()<=0) || fight.getCombatantTwo().getHp()<=0){
+            if (fight.getCombatantOne().getHp() <= 0 || fight.getCombatantTwo().getHp() <= 0) {
+                iterator.remove();
                 endFight(fight);
             }
         }
