@@ -7,23 +7,15 @@ public class Devil extends EnemyCharacter {
 
     private DevilState state;
 
+    public Devil() {
+        super(0);
+    }
+
     /**
      * Devil does a "sword"-attack against a character.
      * @param character enemy character
      */
     public void flameSwordAttack(Character character){
-        //TODO: character could be changed to the type PlayableCharacter (useful?)
-        //TODO: check if devil and character are fighting.
-
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
-
-
-        /*TODO: The Following implementation is a example and shouldn't be used for the final product.
-         *       There should be a FightManager to handle this. */
-
         character.setHp(character.getHp()-(this.attack - character.getDefense()));
     }
 
@@ -46,11 +38,7 @@ public class Devil extends EnemyCharacter {
      * Increases the defense of the Devil for a round in a fight
      */
     public void SpikeShield() {
-        /*
-         * TODO: The Following implementation is a example and shouldn't be used for the final product.
-         *       There should be a FightManager to handle this. */
         this.defense *= 2;
-        //TODO: On attack damage the attacker
     }
 
     /**
@@ -59,15 +47,6 @@ public class Devil extends EnemyCharacter {
      * @param character enemy character
      */
     public void playerKillerAttack(Character character){
-        //TODO: character could be changed to the type PlayableCharacter (useful?)
-        //TODO: check if devil and character are fighting.
-
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
-
-        //TODO: Check if Character does a move that is not nothing
         character.setHp(0);
     }
 

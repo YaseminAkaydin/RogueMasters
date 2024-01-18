@@ -2,12 +2,15 @@ package de.rougemaster.dungeon.game;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
+import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.Room;
+import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
+import de.rougemaster.dungeon.lobby.LobbyCharType;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ public class Game {
     private final Dungeon dungeon;
 
     private final TurnManager turnManager;
+    private final TurnManagerThread turnManagerThread;
 
     /**
      * Creates a new Game
@@ -33,6 +37,7 @@ public class Game {
 
 
         this.turnManager = new TurnManager();
+        this.turnManagerThread = new TurnManagerThread(turnManager);
     }
 
     /**
@@ -64,11 +69,15 @@ public class Game {
         return player;
     }
 
+
+
     /**
      * Adds an enemy to the game, puts him into a room, except boss -> bossroom
-     * @param enemy the enemy that is to be added
+     * @param enemyType the enemytype that is to be added
      */
-    public void addEnemy(EnemyCharacter enemy) {
+    public EnemyCharacter addEnemy(LobbyCharType enemyType) {
+        EnemyCharacterFactory enemyFactory = new EnemyCharacterFactory();
+        EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType));
 
         List<Room> allRooms = dungeon.getRoomList();
         List<Room> nonBossRooms = allRooms.stream()
@@ -92,6 +101,7 @@ public class Game {
             }
         }
         enemyList.add(enemy);
+        return enemy;
     }
 
     public TurnManager getTurnManager() {
@@ -102,6 +112,7 @@ public class Game {
      * Starts the game
      */
     private void startGame() {
+        turnManagerThread.run();
         //TODO: Start Game in TurnManager
     }
 
@@ -133,20 +144,45 @@ public class Game {
     }
 
 
+    //TODO: Testttttt
     /**
      * Removes a player from the game
      * @param character the player that is to be removed
      */
     public void removeCharacter(Character character) {
         //Check if char is in playerList or enemyList by class type
-        if(character instanceof PlayableCharacter){
-            playerList.remove(character);
-        }
-        else if(character instanceof EnemyCharacter){
-            enemyList.remove(character);
+
+        if(turnManager.getFightManager().getAllCharactersInFights().contains(character)) {
+            //Fight beenden
+            //character aus der Commanmap vom turnmanager holen
+            Fight fight = turnManager.getFightManager().getFight(character);
+            turnManager.getFightManager().endFight(fight);
+            turnManager.getCommandMap().remove(character);
+        }else {
+            turnManager.getCommandMap().remove(character);
         }
 
-        //TODO: Check if fightManager has a fight with the character stop the fight
-        //TODO: Check if turnManager has a turn with the character delete character from turnManager
+        if(character instanceof PlayableCharacter){
+            playerList.remove(character);
+        } else {
+            enemyList.remove(character);
+
+        }
+    }
+
+
+
+    /**
+     * Translates a LobbyMessage to a GameCommand
+     * @param lobbyCharType lobbyCharType the CharTypeToBeTranslated
+     * @return the translated GameCommand
+     */
+    private EnemyCharacterFactory.EnemyTyp convertLobbyCharTypToEnemyCharType(LobbyCharType lobbyCharType) {
+        return switch (lobbyCharType) {
+            case Zombie -> EnemyCharacterFactory.EnemyTyp.Zombie;
+            case Skeleton -> EnemyCharacterFactory.EnemyTyp.Skeleton;
+            case Devil -> EnemyCharacterFactory.EnemyTyp.Devil;
+            default -> throw new IllegalArgumentException("PlayableCharacter is not an EnemyCharacter");
+        };
     }
 }

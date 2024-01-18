@@ -1,7 +1,7 @@
 package de.rougemaster.dungeon.lobby;
 import de.rougemaster.dungeon.character.Character;
 
-import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
+import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
@@ -52,63 +52,45 @@ public class Lobby {
                     .toList().get(0);
         } else {
             Room roomOfCharacter = character.getCurrentRoom();
-
-
-            item = roomOfCharacter.getItem();//.stream().filter(item1 -> item1.getId() == id).toList().get(0);
-            //TODO: item ist keine Liste mehr
+            item = roomOfCharacter.getItem();
         }
 
         if (character instanceof PlayableCharacter) {
-            PlayableCharacter playableCharacter = (PlayableCharacter) character;
             switch (lobbyMessage.getCommand()) {
-                case ("move"):
-                    return new moveGameCommand(character, character.getCurrentRoom());
-                case ("doNothing"):
-                    return new doNothingGameCommand(character);
-                case ("flee"):
-                    return new fleeGameCommand(character, room);
-                case ("attackUsingEquipment"):
-                    return new attackUsingEquipmentCommand();
-                case ("defend"):
-                    return new defendingPlayerCommand();
-                case ("equipItem"):
-                    return new equipItemGameCommand(playableCharacter, item);
-                case ("takeItem"):
-                    return new takeItemInRoomGameCommand(playableCharacter, item);
-                case ("useItem"):
-                    return new useItemGameCommand(playableCharacter, item);
-                case ("useItemInFight"):
-                    return new inspectRoomGameCommand(playableCharacter, room);
+                case "move" -> {return new moveGameCommand(character, character.getCurrentRoom());}
+                case "doNothing" -> {return new doNothingGameCommand(character);}
+                case "flee" -> {return new fleeGameCommand(character, room);}
+                case "attackUsingEquipment" -> {return new attackUsingEquipmentCommand();}
+                case "defend" -> {return new defendingPlayerCommand();}
+                case "equipItem" -> {return new equipItemGameCommand((PlayableCharacter) character, item);}
+                case "takeItem" -> {return new takeItemInRoomGameCommand((PlayableCharacter) character, item);}
+                case "useItem" -> {return new useItemGameCommand((PlayableCharacter) character, item);}
+                case "useItemInFight" -> {return new inspectRoomGameCommand((PlayableCharacter) character, room);}
             }
-        } else if (character instanceof Zombie) {
-            Zombie zombie = (Zombie) character;
+        }
+
+        if (character instanceof Zombie) {
             switch (lobbyMessage.getCommand()) {
-                case ("clawAttack"):
-                    return new zombieClawAttackCommand();
-                case ("biteAttack"):
-                    return new zombieBiteAttackCommand();
+                case ("clawAttack") -> {return new zombieClawAttackCommand();}
+                case ("biteAttack") -> {return new zombieBiteAttackCommand();}
             }
-        } else if (character instanceof Skeleton) {
+        }
+
+        if (character instanceof Skeleton) {
             switch (lobbyMessage.getCommand()) {
-                case ("defend"):
-                    return new defendingSkeletonCommand();
-                case ("boneAttack"):
-                    return new skeletonBoneAttackCommand();
-                case ("bonesPlosion"):
-                    return new skeletonBonesplosionAttackCommand();
-                case ("swordAttack"):
-                    return new skeletonSwordAttackCommand();
+                case ("defend") -> {return new defendingSkeletonCommand();}
+                case ("boneAttack") -> {return new skeletonBoneAttackCommand();}
+                case ("bonesPlosion") -> {return new skeletonBonesplosionAttackCommand();}
+                case ("swordAttack") -> {return new skeletonSwordAttackCommand();}
             }
-        } else {
+        }
+
+        if (character instanceof Devil) {
             switch (lobbyMessage.getCommand()) {
-                case ("defend"):
-                    return new devilDefendCommand();
-                case ("flameSwordAttack"):
-                    return new devilFlameSwordAttackCommand();
-                case ("playerKillerAttack"):
-                    return new devilPlayerKillerAttackCommand();
-                case ("spikeShield"):
-                    return new devilSpikeShieldCommand();
+                case ("defend") -> {return new devilDefendCommand();}
+                case ("flameSwordAttack") -> {return new devilFlameSwordAttackCommand();}
+                case ("playerKillerAttack") -> {return new devilPlayerKillerAttackCommand();}
+                case ("spikeShield") -> {return new devilSpikeShieldCommand();}
             }
         }
         return new doNothingGameCommand(character);
@@ -130,27 +112,25 @@ public class Lobby {
      * @param clientId The Identifikator of the client
      * @param lobbyCharType The character type of the client
      */
-    public void joinClientLobby(int clientId, LobbyCharType lobbyCharType){
+    public int joinClientLobby(int clientId, LobbyCharType lobbyCharType){
         //Check if clientId and character have a valid value.
         if(clientId<=0){
-            return;
+            return -1;
         }
 
         //Check if Client is already registered
         if(characterMap.containsKey(clientId)){
-            return;
+            return -1;
         }
 
-        //switch case for different character types
-        Character character = switch (lobbyCharType) {
-            case PlayableCharacter -> new PlayableCharacter();
-            case Zombie -> new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Zombie, (int) (Math.random() * 8 + 1));
-            case Skeleton -> new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Skeleton, (int) (Math.random() * 12 + 1));
-            case Devil -> new EnemyCharacterFactory().createEnemy(EnemyCharacterFactory.EnemyTyp.Devil, 15);
+        Character joinedCharacter;
+       if(lobbyCharType == LobbyCharType.PlayableCharacter) {
+           joinedCharacter = game.addPlayer();
+       }else{
+           joinedCharacter = game.addEnemy(lobbyCharType);
+       }
 
-            default -> throw new IllegalArgumentException("LobbyCharType is not valid.");
-        };
-        //TODO: Add Character to Game
+       return joinedCharacter.getId();
     }
 
     /**
