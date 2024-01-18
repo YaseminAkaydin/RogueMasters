@@ -67,9 +67,10 @@ public class TurnManager {
      * Kopiert die aktuelle Command Map mit den aktuellen Commands pro Character.
      */
     private Map<Character, GameCommand> startTurn() {
+
         Map<Character, GameCommand> copyCommandMap = commandMap;
         List<Character> allCharactersInFights = fightManager.getAllCharactersInFights();
-        setAllFightActions(allCharactersInFights);
+        setAllFightActions(allCharactersInFights, copyCommandMap);
         fightManager.executeAllTurns();
         for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
@@ -82,8 +83,10 @@ public class TurnManager {
         return copyCommandMap;
     }
 
-    private void setAllFightActions(List<Character> allFighters) {
-        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+
+
+    private void setAllFightActions(List<Character> allFighters, Map<Character, GameCommand> copyCommandMap) {
+        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             GameCommand command = entry.getValue();
             if (allFighters.contains(currentCharacter)) {

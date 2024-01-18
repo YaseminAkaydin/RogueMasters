@@ -16,6 +16,7 @@ import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Game {
@@ -131,6 +132,7 @@ public class Game {
      * @param character the character that is to be set
      */
     public void setCharacterTurn(GameCommand gameCommand, Character character) {
+        searchForDeadCharacter();
         turnManager.setCharacterTurn(character, gameCommand);
     }
 
@@ -169,6 +171,15 @@ public class Game {
         } else {
             enemyList.remove(character);
 
+        }
+    }
+
+    private void searchForDeadCharacter(){
+        Map<Character, GameCommand> commandMap= turnManager.getCommandMap();
+        for (Map.Entry<Character, GameCommand> entry: commandMap.entrySet()){
+            if(entry.getKey().getHp()<=0){
+                removeCharacter(entry.getKey());
+            }
         }
     }
 
