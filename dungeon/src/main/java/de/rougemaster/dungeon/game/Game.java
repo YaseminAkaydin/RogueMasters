@@ -152,21 +152,25 @@ public class Game {
     public void removeCharacter(Character character) {
         //Check if char is in playerList or enemyList by class type
 
-        if(turnManager.getFightList().containsKey(character)){
-           //Fight beenden
+        if(turnManager.getFightManager().getAllCharactersInFights().contains(character)) {
+            //Fight beenden
             //character aus der Commanmap vom turnmanager holen
-           Fight fight= turnManager.getFightManager().getFight(character);
-           turnManager.getFightManager().endFight(fight);
-           turnManager.getCommandMap().remove(character);
-            if(character instanceof PlayableCharacter){
-                playerList.remove(character);
-            }
-            else if(character instanceof EnemyCharacter){
-                enemyList.remove(character);
-            }
+            Fight fight = turnManager.getFightManager().getFight(character);
+            turnManager.getFightManager().endFight(fight);
+            turnManager.getCommandMap().remove(character);
+        }else {
+            turnManager.getCommandMap().remove(character);
         }
 
+        if(character instanceof PlayableCharacter){
+            playerList.remove(character);
+        } else {
+            enemyList.remove(character);
+
+        }
     }
+
+
 
     /**
      * Translates a LobbyMessage to a GameCommand
