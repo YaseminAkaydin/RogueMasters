@@ -1,6 +1,7 @@
 package de.rougemaster.dungeon.lobby;
 import de.rougemaster.dungeon.character.Character;
 
+import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
@@ -51,61 +52,45 @@ public class Lobby {
                     .toList().get(0);
         } else {
             Room roomOfCharacter = character.getCurrentRoom();
-
             item = roomOfCharacter.getItem();
         }
 
         if (character instanceof PlayableCharacter) {
-            PlayableCharacter playableCharacter = (PlayableCharacter) character;
             switch (lobbyMessage.getCommand()) {
-                case ("move"):
-                    return new moveGameCommand(character, character.getCurrentRoom());
-                case ("doNothing"):
-                    return new doNothingGameCommand(character);
-                case ("flee"):
-                    return new fleeGameCommand(character, room);
-                case ("attackUsingEquipment"):
-                    return new attackUsingEquipmentCommand();
-                case ("defend"):
-                    return new defendingPlayerCommand();
-                case ("equipItem"):
-                    return new equipItemGameCommand(playableCharacter, item);
-                case ("takeItem"):
-                    return new takeItemInRoomGameCommand(playableCharacter, item);
-                case ("useItem"):
-                    return new useItemGameCommand(playableCharacter, item);
-                case ("useItemInFight"):
-                    return new inspectRoomGameCommand(playableCharacter, room);
+                case "move" -> {return new moveGameCommand(character, character.getCurrentRoom());}
+                case "doNothing" -> {return new doNothingGameCommand(character);}
+                case "flee" -> {return new fleeGameCommand(character, room);}
+                case "attackUsingEquipment" -> {return new attackUsingEquipmentCommand();}
+                case "defend" -> {return new defendingPlayerCommand();}
+                case "equipItem" -> {return new equipItemGameCommand((PlayableCharacter) character, item);}
+                case "takeItem" -> {return new takeItemInRoomGameCommand((PlayableCharacter) character, item);}
+                case "useItem" -> {return new useItemGameCommand((PlayableCharacter) character, item);}
+                case "useItemInFight" -> {return new inspectRoomGameCommand((PlayableCharacter) character, room);}
             }
-        } else if (character instanceof Zombie) {
-            Zombie zombie = (Zombie) character;
+        }
+
+        if (character instanceof Zombie) {
             switch (lobbyMessage.getCommand()) {
-                case ("clawAttack"):
-                    return new zombieClawAttackCommand();
-                case ("biteAttack"):
-                    return new zombieBiteAttackCommand();
+                case ("clawAttack") -> {return new zombieClawAttackCommand();}
+                case ("biteAttack") -> {return new zombieBiteAttackCommand();}
             }
-        } else if (character instanceof Skeleton) {
+        }
+
+        if (character instanceof Skeleton) {
             switch (lobbyMessage.getCommand()) {
-                case ("defend"):
-                    return new defendingSkeletonCommand();
-                case ("boneAttack"):
-                    return new skeletonBoneAttackCommand();
-                case ("bonesPlosion"):
-                    return new skeletonBonesplosionAttackCommand();
-                case ("swordAttack"):
-                    return new skeletonSwordAttackCommand();
+                case ("defend") -> {return new defendingSkeletonCommand();}
+                case ("boneAttack") -> {return new skeletonBoneAttackCommand();}
+                case ("bonesPlosion") -> {return new skeletonBonesplosionAttackCommand();}
+                case ("swordAttack") -> {return new skeletonSwordAttackCommand();}
             }
-        } else {
+        }
+
+        if (character instanceof Devil) {
             switch (lobbyMessage.getCommand()) {
-                case ("defend"):
-                    return new devilDefendCommand();
-                case ("flameSwordAttack"):
-                    return new devilFlameSwordAttackCommand();
-                case ("playerKillerAttack"):
-                    return new devilPlayerKillerAttackCommand();
-                case ("spikeShield"):
-                    return new devilSpikeShieldCommand();
+                case ("defend") -> {return new devilDefendCommand();}
+                case ("flameSwordAttack") -> {return new devilFlameSwordAttackCommand();}
+                case ("playerKillerAttack") -> {return new devilPlayerKillerAttackCommand();}
+                case ("spikeShield") -> {return new devilSpikeShieldCommand();}
             }
         }
         return new doNothingGameCommand(character);
