@@ -13,6 +13,40 @@ public class Skeleton extends EnemyCharacter {
     public Skeleton(int dangerLevel) {
         super(baseExpDropAmount);
         this.dangerLevel = dangerLevel;
+
+        if(dangerLevel <= 0) {
+            dangerLevel = 1;
+        }
+        if(dangerLevel > 8) {
+            dangerLevel = 8;
+        }
+
+        if(dangerLevel < 5){
+            this.attack= 2;
+            this.defense=3;
+            this.maxHp=3;
+            this.hp=3;
+            for(int i = dangerLevel; i>1; i--){
+                attack += 3;
+                defense += 4;
+                maxHp +=  4;
+                hp += 4;
+            }
+        }
+
+        if(dangerLevel >= 5){
+            this.attack= 14;
+            this.defense=19;
+            this.maxHp=19;
+            this.hp=19;
+            for(int i = dangerLevel; i>1; i--){
+                attack += 5;
+                defense += 5;
+                maxHp +=  6;
+                hp += 6;
+            }
+        }
+
     }
 
     /**
