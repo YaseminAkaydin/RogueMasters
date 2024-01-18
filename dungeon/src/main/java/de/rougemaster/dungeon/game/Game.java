@@ -132,8 +132,9 @@ public class Game {
      * @param character the character that is to be set
      */
     public void setCharacterTurn(GameCommand gameCommand, Character character) {
-        searchForDeadCharacter();
         turnManager.setCharacterTurn(character, gameCommand);
+        searchForDeadCharacter();
+
     }
 
     /**
@@ -175,11 +176,15 @@ public class Game {
     }
 
     private void searchForDeadCharacter(){
-        Map<Character, GameCommand> commandMap= turnManager.getCommandMap();
-        for (Map.Entry<Character, GameCommand> entry: commandMap.entrySet()){
-            if(entry.getKey().getHp()<=0){
-                removeCharacter(entry.getKey());
+        Map<Character, GameCommand> commandMap = turnManager.getCommandMap();
+        List<Character> charactersToRemove = new ArrayList<>();
+        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+            if (entry.getKey().getHp() <= 0) {
+                charactersToRemove.add(entry.getKey());
             }
+        }
+        for (Character character : charactersToRemove) {
+            removeCharacter(character);
         }
     }
 
