@@ -89,6 +89,14 @@ abstract public class Room {
     }
 
     /**
+     * Sets the item in this room.
+     *
+     */
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    /**
      * Removes the item from this room.
      */
     public void removeItem() {this.item = null;}
