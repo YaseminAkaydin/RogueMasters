@@ -128,7 +128,7 @@ public class DungeonApplication {
 
                     for (StreamObserver<GameCommandResponse> client : clients) {
 
-                        System.out.println("Sending game state update to client");
+                        //System.out.println("Sending game state update to client");
                         client.onNext(response); // Damit Rufen wir onNext von SimpleClient.java auf
 
                     }
@@ -144,7 +144,7 @@ public class DungeonApplication {
 
         private GameCommandResponse buildGameStateResponse() {
             // Build response based on game state
-            Dungeon dungeon = new Dungeon(10, 2);
+            Dungeon dungeon = new Dungeon(20, 2);
 
             PlayableCharacter p =new PlayableCharacter();
             p.teleport(dungeon.getRoomList().get(0));
@@ -190,7 +190,7 @@ public class DungeonApplication {
             JoinLobbyResponse response = JoinLobbyResponse.newBuilder()
                     .setSuccess(lobbyResponseMessage.isSuccess())
                     .setLobbyID(lobbyResponseMessage.getLobbyId())
-                    .setCharacterID(lobbyResponseMessage.getCharacterId())
+                    .setCharacterID(0)
                     .build();
 
             // Send the response back to the client

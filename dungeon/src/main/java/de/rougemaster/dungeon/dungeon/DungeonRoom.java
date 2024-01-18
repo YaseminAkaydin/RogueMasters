@@ -28,4 +28,9 @@ public class DungeonRoom extends Room {
             }
         }
     }
+    @Override
+    public String getRoomType() {
+        return "DungeonRoom";
+    }
+
 }

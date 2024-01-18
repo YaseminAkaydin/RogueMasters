@@ -25,10 +25,6 @@ public class SimpleClientALT {
         this.game = game;
     }
 
-    // TODO: Aus game.run() irgendwie ein request aus der mainloop dort erstellen
-    // TODO: Synchronisation mit gameLoop
-    // TODO: PlayerDate ID hinzufügen
-    // TODO: RoomDrawing für mehrere Spieler erstellen
     public void startGame() {
         logger.info("Starting game...");
 

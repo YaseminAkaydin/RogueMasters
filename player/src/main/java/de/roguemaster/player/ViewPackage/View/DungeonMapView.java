@@ -4,7 +4,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
-import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.DataForView.RoomData;
 import java.io.IOException;
 import java.util.*;
@@ -13,19 +13,13 @@ import java.util.*;
 public class DungeonMapView extends ViewComponent {
 
     private final Set<Corridor> corridors = new HashSet<>();
-    private int playerRoomID;
 
-    private final int horizontalSpacing = 12;
-    private final int verticalSpacing = 7;
-
-    public DungeonMapView(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
-        super(terminal, playerData, dungeonData);
-        this.playerRoomID = dungeonData.getCurrentRoomId(playerData.getId());
+    public DungeonMapView(Terminal terminal, GameState gameState) {
+        super(terminal, gameState);
     }
 
     @Override
     public void display() {
-        this.playerRoomID = dungeonData.getCurrentRoomId(playerData.getId());
         try {
             clearAndInitializeGraphics();
             Map<Point, RoomData> roomPositions = calculateRoomPositions();
@@ -61,46 +55,61 @@ public class DungeonMapView extends ViewComponent {
     private Map<Point, RoomData> calculateRoomPositions() {
         Map<Point, RoomData> roomPositions = new HashMap<>();
         Set<Integer> visitedRooms = new HashSet<>();
-        calculatePositionsRecursive(rooms.get(0), 0, 0, visitedRooms, roomPositions, horizontalSpacing, verticalSpacing);
+        int horizontalSpacing = 12;
+        int verticalSpacing = 7;
+        calculatePositionsRecursive(gameState.getRoomList().get(0), 0, 0, visitedRooms, roomPositions, horizontalSpacing, verticalSpacing);
         return roomPositions;
     }
 
-    private void calculatePositionsRecursive(RoomData room, int x, int y, Set<Integer> visitedRooms, Map<Point, RoomData> roomPositions, int horizontalSpacing, int verticalSpacing) {
+    private void calculatePositionsRecursive(RoomData room, int x, int y, Set<Integer> visitedRooms,
+                                             Map<Point, RoomData> roomPositions, int horizontalSpacing, int verticalSpacing) {
+        // Wenn der aktuelle Raum bereits besucht wurde, beenden wir die Rekursion für diesen Pfad.
         if (visitedRooms.contains(room.getId())) return;
+
+        // Markieren Sie den aktuellen Raum als besucht.
         visitedRooms.add(room.getId());
+
+        // Fügen Sie den aktuellen Raum und seine Position zur Map hinzu.
         roomPositions.put(new Point(x, y), room);
 
+        // Gehen Sie die benachbarten Räume durch, die im aktuellen Raum gespeichert sind.
         for (Map.Entry<String, Integer> entry : room.getAdjacentRooms().entrySet()) {
+            // Richtung und ID des benachbarten Raums.
             String direction = entry.getKey();
             Integer adjacentRoomId = entry.getValue();
+
+            // Finden Sie den Raumdatensatz für die benachbarte Raum-ID.
             RoomData childRoom = findRoomById(adjacentRoomId);
 
+            // Wenn ein benachbarter Raum existiert und noch nicht besucht wurde...
             if (childRoom != null && !visitedRooms.contains(childRoom.getId())) {
                 Point newRoomPoint;
                 int startX, startY, endX, endY;
                 switch (direction) {
-                    case "NORTH":
+                    case "North":
+                        // Setze den neuen Punkt oberhalb des aktuellen Raums.
                         newRoomPoint = new Point(x, y - verticalSpacing);
+                        // Koordinaten für den Beginn und das Ende des Korridors einstellen.
                         startX = x;
-                        startY = y - 2; // Starting from the northern wall of the room
+                        startY = y - 2; // Beginnend von der nördlichen Wand des Raumes
                         endX = newRoomPoint.x;
-                        endY = newRoomPoint.y + 2; // Ending at the southern wall of the adjacent room
+                        endY = newRoomPoint.y + 2; // Endend an der südlichen Wand des angrenzenden Raums
                         break;
-                    case "SOUTH":
+                    case "South":
                         newRoomPoint = new Point(x, y + verticalSpacing);
                         startX = x;
                         startY = y + 2; // Starting from the southern wall
                         endX = newRoomPoint.x;
                         endY = newRoomPoint.y - 2; // Ending at the northern wall
                         break;
-                    case "EAST":
+                    case "East":
                         newRoomPoint = new Point(x + horizontalSpacing, y);
                         startX = x + 2;
                         startY = y; // Starting from the eastern wall
                         endX = newRoomPoint.x - 2;
                         endY = newRoomPoint.y; // Ending at the western wall
                         break;
-                    case "WEST":
+                    case "West":
                         newRoomPoint = new Point(x - horizontalSpacing, y);
                         startX = x - 2;
                         startY = y; // Starting from the western wall
@@ -117,7 +126,7 @@ public class DungeonMapView extends ViewComponent {
     }
 
     private void drawRoom(TextGraphics tg, RoomData room, int x, int y) {
-        if (room.getId() == dungeonData.getCurrentRoomId(playerData.getId())) tg.setForegroundColor(TextColor.ANSI.CYAN);
+        if (room.getId() == gameState.getCurrentRoomId()) tg.setForegroundColor(TextColor.ANSI.CYAN);
         else setColorBasedOnRoomType(tg, room.getRoomType());
 
 
@@ -162,7 +171,7 @@ public class DungeonMapView extends ViewComponent {
     }
 
     private RoomData findRoomById(int id) {
-        for (RoomData room : rooms) {
+        for (RoomData room : gameState.getRoomList()) {
             if (room.getId() == id) {
                 return room;
             }

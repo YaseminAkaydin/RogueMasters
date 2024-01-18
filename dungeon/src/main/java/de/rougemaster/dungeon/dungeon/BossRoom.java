@@ -10,4 +10,8 @@ public class BossRoom extends Room {
         //IDK
     }
 
+    @Override
+    public String getRoomType() {
+        return "BossRoom";
+    }
 }

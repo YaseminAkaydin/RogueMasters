@@ -3,6 +3,8 @@ package de.rougemaster.dungeon.dungeon;
 import de.rougemaster.dungeon.item.Book;
 import de.rougemaster.dungeon.item.Item;
 
+import java.util.function.BiPredicate;
+
 /**
  * A factory class for creating Item objects.
  */
@@ -16,6 +18,10 @@ public class ItemFactory {
      * @return a new Item object
      */
     public static Item createItem() {
-        return new Book(1, "Die Bibel", "Religious stuff.", 15);
+        int i = 0;
+        Book book = new Book(i, "Book", "Religious stuff.", 15);
+        i++;
+        return book;
+
     }
 }
