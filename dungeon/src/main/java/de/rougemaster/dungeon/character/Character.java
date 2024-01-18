@@ -52,7 +52,8 @@ public abstract class Character {
      * This Method is maybe not needed and should be implemented in turnManager.
      */
     public void doNothing(){
-        //TODO: implement after turnManager/fightManager is done.
+        //TODO: Counter einbauen, und schauen, wie oft hintereinander doNothing ausgeführt wurde
+        return;
     }
 
     public void setHp(int hp) {

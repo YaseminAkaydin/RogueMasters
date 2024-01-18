@@ -45,6 +45,18 @@ public class TurnManager {
         this.fightManager = fightManager;
     }
 
+    public PlayableCharacter getCharacter() {
+        return character;
+    }
+
+    public Map<Character, GameCommand> getCommandMap() {
+        return commandMap;
+    }
+
+    public Map<FightManager, List<Character>> getFightList() {
+        return fightList;
+    }
+
     public void executeTurn() {
         startTurn();
         handleCharacterInput();

@@ -8,6 +8,7 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.Room;
+import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.lobby.LobbyCharType;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
@@ -67,6 +68,8 @@ public class Game {
         playerList.add(player);
         return player;
     }
+
+
 
     /**
      * Adds an enemy to the game, puts him into a room, except boss -> bossroom
@@ -141,21 +144,28 @@ public class Game {
     }
 
 
+    //TODO: Testttttt
     /**
      * Removes a player from the game
      * @param character the player that is to be removed
      */
     public void removeCharacter(Character character) {
         //Check if char is in playerList or enemyList by class type
-        if(character instanceof PlayableCharacter){
-            playerList.remove(character);
-        }
-        else if(character instanceof EnemyCharacter){
-            enemyList.remove(character);
+
+        if(turnManager.getFightList().containsKey(character)){
+           //Fight beenden
+            //character aus der Commanmap vom turnmanager holen
+           Fight fight= turnManager.getFightManager().getFight(character);
+           turnManager.getFightManager().endFight(fight);
+           turnManager.getCommandMap().remove(character);
+            if(character instanceof PlayableCharacter){
+                playerList.remove(character);
+            }
+            else if(character instanceof EnemyCharacter){
+                enemyList.remove(character);
+            }
         }
 
-        //TODO: Check if fightManager has a fight with the character stop the fight
-        //TODO: Check if turnManager has a turn with the character delete character from turnManager
     }
 
     /**
