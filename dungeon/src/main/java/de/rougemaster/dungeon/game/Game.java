@@ -43,6 +43,9 @@ public class Game {
         this.turnManagerThread = new TurnManagerThread(turnManager);
     }
 
+    public List<PlayableCharacter> getPlayerLits(){
+        return playerList;
+    }
     /**
      * Adds a player to the game
      */
