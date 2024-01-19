@@ -21,6 +21,7 @@ public class SimpleClient {
 
     private final Game game;
     private Thread gameThread;
+    private int userID; // Id der Clients zum befehle verarbeiten
 
     private final GameServiceGrpc.GameServiceStub asyncStub; // Async stub, for commands and 5sekGamestate from server
     private final ManageServiceGrpc.ManageServiceBlockingStub blockingStub; // For joining lobbies/creating lobbies
@@ -46,17 +47,16 @@ public class SimpleClient {
             if (command != null) {
                 checkAndSendCommands(command);
             }
-            try {
-                //Thread.sleep(0); // Sleep for a short duration
-            } finally {
-                if (requestObserver != null && !game.getRunning()) {
-                    System.out.println("Client shutting down, sending complete");
-                    stopGame();
-                    requestObserver.onCompleted(); // Complete the request stream
-                }
+
+            if (requestObserver != null && !game.getRunning()) {
+                System.out.println("Client shutting down, sending complete");
+                stopGame();
+                requestObserver.onCompleted(); // Complete the request stream
             }
+
         }
     }
+
     // Erstellen den Stream erst NUR wenn wir auch in einem game starten
     private void checkGameStarted() {
         if (requestObserver == null && game.getRunning()) {
@@ -77,7 +77,8 @@ public class SimpleClient {
                 @Override
                 public void onError(Throwable t) {
                     logger.warning("RPC failed: " + t.getMessage());
-
+                    //TODO: somehow reconnect to server
+                    requestObserver.onNext(convertToGameCommandRequest(new Command("initialize")));
                 }
 
                 @Override
@@ -100,7 +101,9 @@ public class SimpleClient {
                 game.setSuccessJoinLobby(true);
                 System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
                 game.setLocalPlayerID(response.getCharacterID());
+                this.userID = response.getUserID();
                 checkGameStarted();
+                requestObserver.onNext(convertToGameCommandRequest(new Command("initialize"))); //init direkt nach dem erstellen des streams mitsenden für Init
             }
         } else {
             // Create a gamecommand
@@ -123,6 +126,7 @@ public class SimpleClient {
         return GameCommandRequest.newBuilder().
                 setCommand(command.getCommand()).
                 setTarget(command.getTarget()).
+                setUserId(userID).
                 build();
     }
 
@@ -152,7 +156,9 @@ public class SimpleClient {
 
         try {
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+            terminalFactory.setTerminalEmulatorTitle("RogueMaster");
             Terminal terminal = terminalFactory.createTerminal();
+            // Chane title of terminal window
             Game game = new Game(terminal);
 
             SimpleClient client = new SimpleClient(asyncChannel, game, blockingChannel);
@@ -161,6 +167,8 @@ public class SimpleClient {
             // You can add some logic here to wait for the game to finish
             // For example, a simple input to stop the game
             System.out.println("Press Enter to stop the game...");
+            terminal.flush();
+            terminal.putString("Press Enter to stop the game...");
             System.in.read();
 
             client.stopGame(); // Stop the game and the game thread
@@ -168,7 +176,7 @@ public class SimpleClient {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-                System.out.println("Shutting down Client...");
+            System.out.println("Shutting down Client...");
             asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
             blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
         }

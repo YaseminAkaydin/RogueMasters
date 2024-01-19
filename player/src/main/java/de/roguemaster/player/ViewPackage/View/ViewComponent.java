@@ -3,10 +3,7 @@ package de.roguemaster.player.ViewPackage.View;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
-import de.roguemaster.player.ViewPackage.DataForView.ItemData;
-import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
-import de.roguemaster.player.ViewPackage.DataForView.RoomData;
+import de.roguemaster.player.ViewPackage.DataForView.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,43 +14,26 @@ public abstract class ViewComponent {
     protected final Terminal terminal;
     protected TextGraphics tg;
 
-    // MGV, IV
-    protected RoomData roomData;
-    protected PlayerData playerData;
-    protected DungeonData dungeonData;
     protected final Random random = new Random();
-    protected List<ItemData> inventoryItems;
-    // DMV
-    protected List<RoomData> rooms;
+
+    protected static final String asciiArt = "\n" +            " (                              *                                   \n" +
+            " )\\ )                         (  `                 )                \n" +
+            "(()/(      (  (     (     (   )\\))(      )      ( /(   (   (        \n" +
+            " /(_)) (   )\\))(   ))\\   ))\\ ((_)()\\  ( /(  (   )\\()) ))\\  )(   (   \n" +
+            "(_))   )\\ ((_))\\  /((_) /((_)(_()((_) )(_)) )\\ (_))/ /((_)(()\\  )\\  \n" +
+            "| _ \\ ((_) (()(_)(_))( (_))  |  \\/  |((_)_ ((_)| |_ (_))   ((_)((_) \n" +
+            "|   // _ \\/ _` | | || |/ -_) | |\\/| |/ _` |(_-<|  _|/ -_) | '_|(_-< \n" +
+            "|_|_\\\\___/\\__, |  \\_,_|\\___| |_|  |_|\\__,_|/__/ \\__|\\___| |_|  /__/ \n" +
+            "          |___/                                                     \n";
+
+
+    protected GameState gameState;
 
     public abstract void display();
 
-    // For MGV
-    protected ViewComponent(Terminal terminal, RoomData roomData, PlayerData playerData, DungeonData dungeonData) {
+    protected ViewComponent(Terminal terminal, GameState gameState) {
         this.terminal = terminal;
-        this.roomData = roomData;
-        this.playerData = playerData;
-        this.dungeonData = dungeonData;
-        this.rooms = dungeonData.getRooms();
-        this.inventoryItems = playerData.getInventory();
-
-    }
-
-    // For DMV
-    protected ViewComponent(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
-        this.terminal = terminal;
-        this.playerData = playerData;
-        this.dungeonData = dungeonData;
-        this.rooms = dungeonData.getRooms();
-        this.inventoryItems = playerData.getInventory();
-
-    }
-
-    // For IV
-    protected ViewComponent(Terminal terminal, PlayerData playerData) {
-        this.terminal = terminal;
-        this.playerData = playerData;
-        this.inventoryItems = playerData.getInventory();
+        this.gameState = gameState;
     }
 
     protected ViewComponent(Terminal terminal) {
@@ -64,10 +44,10 @@ public abstract class ViewComponent {
         int statsStartY = terminal.getTerminalSize().getRows() - 1; // Below the room
         tg.setForegroundColor(TextColor.ANSI.CYAN);
         tg.putString(1, statsStartY,
-                "LEVEL: " + playerData.getLevel() +
-                " - " + playerData.getHp() +
-                "/" + playerData.getMaxHp() +
-                " - EXP: " + playerData.getExperience() +
+                "LEVEL: " + gameState.getLocalPlayer().getLevel() +
+                " - " + gameState.getLocalPlayer().getHp() +
+                "/" + gameState.getLocalPlayer().getMaxHp() +
+                " - EXP: " + gameState.getLocalPlayer().getExperience() +
                 "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
 
@@ -76,4 +56,15 @@ public abstract class ViewComponent {
         tg = terminal.newTextGraphics();
     }
 
+    protected void drawTitle(TextColor textColor) throws IOException {
+        tg.setForegroundColor(textColor);
+        String[] lines = asciiArt.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            tg.putString(2, 2 + i, lines[i]);
+        }
+    }
+
+    public RoomData getRoomData() {
+        return gameState.getRoomData();
+    }
 }

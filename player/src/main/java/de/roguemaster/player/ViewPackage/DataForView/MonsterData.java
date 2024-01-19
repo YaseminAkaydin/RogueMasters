@@ -6,6 +6,8 @@ public class MonsterData {
     private int maxHp;
     private int hp;
     private int id;
+    // private int attack; // brauchen wir nicht deswegen erstmal weggelassen
+    // private int defense;
 
     public MonsterData(String name, int dangerLevel, int maxHp, int hp, int id) {
         this.name = name;

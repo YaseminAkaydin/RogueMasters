@@ -9,15 +9,19 @@ public class EnemyCharacterFactory {
     /**
      * Creates an enemy with the given strength
      * @param enemyTyp the corresponding enemyTyp as String
-     * @param dangerLevel the dangerLevel of the Enemy
      * @return the created enemy
      */
-    public EnemyCharacter createEnemy(EnemyTyp enemyTyp, int dangerLevel){
+    public EnemyCharacter createEnemy(EnemyTyp enemyTyp){
+        int dangerLevel;
         switch (enemyTyp){
             case Zombie:
+                // Dangerlevel random number between 1 and 8
+                dangerLevel = (int) (Math.random() * 8 + 1);
                 return new Zombie(dangerLevel);
             case Skeleton:
-                return new Skeleton();
+                // Dangerlevel random number between 1 and 13
+                dangerLevel = (int) (Math.random() * 13 + 1);
+                return new Skeleton(dangerLevel);
             case Devil:
                 return new Devil();
         }

@@ -1,6 +1,9 @@
 package de.rougemaster.dungeon.game.fight;
 
 import de.rougemaster.dungeon.character.Character;
+import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
+import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +39,11 @@ public class FightManager {
      * @param fight fight to be ended.
      */
     public void endFight(Fight fight){
-        //TODO: Distribute rewards
+        if (fight.getCombatantOne() instanceof EnemyCharacter){
+            ((EnemyCharacter) fight.getCombatantOne()).dropExperience((PlayableCharacter) fight.getCombatantTwo());
+        } else{
+            ((EnemyCharacter) fight.getCombatantTwo()).dropExperience((PlayableCharacter) fight.getCombatantOne());
+        }
         this.activeFights.remove(fight);
     }
 

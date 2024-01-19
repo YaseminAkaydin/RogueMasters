@@ -3,6 +3,7 @@ package de.roguemaster.player.ViewPackage.View;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
+import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.DataForView.ItemData;
 import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
 
@@ -12,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InventoryView extends ViewComponent {
+
+
     // Define the states for InventoryView
     public enum State {
         MAIN_OPTIONS,
@@ -27,8 +30,8 @@ public class InventoryView extends ViewComponent {
     private final Map<Integer, String> useConsumableOptionMappings = new HashMap<>();
 
 
-    public InventoryView(Terminal terminal, PlayerData playerData) {
-        super(terminal, playerData);
+    public InventoryView(Terminal terminal, GameState gameState) {
+        super(terminal, gameState);
         this.currentState = State.MAIN_OPTIONS;
     }
 
@@ -71,29 +74,29 @@ public class InventoryView extends ViewComponent {
     private void drawItemList(TextGraphics tg) {
         // Display the list of inventory items
         int startY = 3; // Adjust the starting Y position as needed
-        for (int i = 0; i < inventoryItems.size(); i++) {
+        for (int i = 0; i < gameState.getInventoryItems().size(); i++) {
             String itemString = (i + 1) + ". " +
-                    inventoryItems.get(i).getName() +
-                    ": " +
-                    inventoryItems.get(i).getDescription() + " | Attribute: " + inventoryItems.get(i).getAttributes();
+                    gameState.getInventoryItems().get(i).getName() +
+                    ": " + gameState.getInventoryItems().get(i).getDescription() +
+                    " | Attribute: " + gameState.getInventoryItems().get(i).getAttributes();
             tg.putString(2, startY + i, itemString);
         }
     }
 
     private void displayOptions(TextGraphics tg) {
 
-        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1); // Start with option number 1
 
         // Example: Display 'Drop Item' only if inventory has items
         tg.putString(2, optionsStartY.get() - 1, "Options");
-        if (!inventoryItems.isEmpty()) {
+        if (!gameState.getInventoryItems().isEmpty()) {
             String dropItemOption = optionNumber + ". Drop Item";
             tg.putString(2, optionsStartY.getAndIncrement(), dropItemOption);
-            optionMappings.put(optionNumber.getAndIncrement(), "Drop Item");
+            optionMappings.put(optionNumber.getAndIncrement(), "Drop Item"); //TODO:
         }
         // Display 'Use Consumable' option if any consumable items are present
-        long consumableCount = inventoryItems.stream()
+        long consumableCount = gameState.getInventoryItems().stream()
                 .filter(item -> item.getDescription().contains("Potion") || item.getDescription().contains("Book"))
                 .count();
         if (consumableCount > 0) {
@@ -105,10 +108,10 @@ public class InventoryView extends ViewComponent {
     }
 
     private void displayDropItemOptions(TextGraphics tg) {
-        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
         tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to drop");
-        for (ItemData item : inventoryItems) {
+        for (ItemData item : gameState.getInventoryItems()) {
             String optionText = optionNumber.get() + ". Drop " + optionNumber.get();
             dropItemOptionMappings.put(optionNumber.get(), "Drop " + optionNumber.getAndIncrement());
             tg.putString(2, optionsStartY.getAndIncrement(), optionText);
@@ -118,10 +121,10 @@ public class InventoryView extends ViewComponent {
     }
 
     private void displayUseConsumableOptions(TextGraphics tg) {
-        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
         tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to use");
-        for (ItemData item : inventoryItems) {
+        for (ItemData item : gameState.getInventoryItems()) {
             if (item.getDescription().contains("Potion") || item.getDescription().contains("Book")) {
                 String itemType = item.getDescription().contains("Potion") ? "Potion" : "Book";
                 String optionText = optionNumber.get() + ". Use " + itemType;

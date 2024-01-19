@@ -7,13 +7,12 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 
-import de.roguemaster.player.DataContainer;
-import de.roguemaster.player.JSONManager;
-import de.roguemaster.player.GameState;
+import de.roguemaster.player.cs.DataContainer;
+import de.roguemaster.player.cs.JSONManager;
+import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.View.*;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,10 +34,9 @@ public class Game {
     private final StartingLobbyView startingLobbyView;
     private final JoiningLobbyView joiningLobbyView;
     private final LeaderBoardView leaderBoardView;
-    private final ViewBuilder viewBuilder;
 
     Logger logger = Logger.getLogger(getClass().getName());
-    private ConcurrentLinkedQueue<Command> commandQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Command> commandQueue = new ConcurrentLinkedQueue<>();
 
     private final AtomicBoolean running = new AtomicBoolean(true);
     private final AtomicBoolean gameStarted = new AtomicBoolean(false);
@@ -51,14 +49,11 @@ public class Game {
 
     public Game(Terminal terminal) {
         this.terminal = terminal;
-        this.viewBuilder = new ViewBuilder(terminal);
-        this.startScreenView = viewBuilder.getStartScreenView();
-        this.startingLobbyView = viewBuilder.getStartingLobbyView();
-        this.joiningLobbyView = viewBuilder.getJoiningLobbyView();
-        this.leaderBoardView = viewBuilder.getLeaderBoardView();
-        this.dungeonMapView = viewBuilder.getDungeonMapView();
-        this.mainGameView = viewBuilder.getMainGameView();
-        this.inventoryView = viewBuilder.getInventoryView();
+        this.startScreenView = new StartScreenView(terminal);
+        this.startingLobbyView = new StartingLobbyView(terminal);
+        this.joiningLobbyView = new JoiningLobbyView(terminal);
+        this.leaderBoardView = new LeaderBoardView(terminal);
+
         this.currentView = startScreenView;
     }
 
@@ -70,19 +65,18 @@ public class Game {
 
         while (running.get()) {
             try {
-                // Display the current view
                 currentView.display();
-
                 // Init Game when starting own lobby
                 if ((currentView instanceof StartingLobbyView) && (gameState == null)) {
                     while (gameState == null) {
-                        System.out.println("Waiting for DungeonData...");
+                        logger.info("Waiting for DungeonData...");
+                        currentView.display();
                         Thread.sleep(1000);
                     }
-                    System.out.println("Init gameState with viewbuilder");
-                    viewBuilder.getDungeonData().setRooms(gameState.getRoomList());
-                    viewBuilder.setPlayerData(gameState.getLocalPlayer(localPlayerID));
-
+                    this.dungeonMapView = new DungeonMapView(terminal, this.gameState);
+                    this.mainGameView = new MainGameView(terminal, this.gameState);
+                    this.inventoryView = new InventoryView(terminal, this.gameState);
+                    gameState.setLocalPlayerID(localPlayerID);
                     gameStarted.set(true);
                     currentView = mainGameView;
                 }
@@ -92,6 +86,7 @@ public class Game {
             } catch (InterruptedException e) {
                 logger.log(java.util.logging.Level.SEVERE, "Interrupted while sleeping", e);
                 inputThread.interrupt();
+                terminal.close();
                 running.set(false);
             }
         }
@@ -105,7 +100,7 @@ public class Game {
             try {
                 if (successJoinLobby) {
                     logger.info("Command was good, game start");
-                    this.currentView = startingLobbyView;
+                    currentView = startingLobbyView;
                     successJoinLobby = false;
                 }
                 KeyStroke keyStroke = terminal.pollInput();
@@ -127,6 +122,34 @@ public class Game {
         }
     }
 
+    public void updateGameState(String gameState) {
+        System.out.println("Player: " + localPlayerID + " received GameState");
+        JSONManager<GameState> jsonManager = new JSONManager<>(new TypeToken<DataContainer<GameState>>() {
+        });
+        this.gameState = jsonManager.read(gameState);
+        this.gameState.setLocalPlayerID(localPlayerID);
+        this.gameState.initGameState();
+        this.dungeonMapView = new DungeonMapView(terminal, this.gameState);
+        this.mainGameView = new MainGameView(terminal, this.gameState);
+        this.inventoryView = new InventoryView(terminal, this.gameState);
+        System.out.println(gameState);
+        updateCurrentView();
+
+
+    }
+
+    private void updateCurrentView() {
+        if (currentView instanceof MainGameView) {
+            currentView = mainGameView;
+        } else if (currentView instanceof DungeonMapView) {
+            currentView = dungeonMapView;
+        } else if (currentView instanceof InventoryView) {
+            currentView = inventoryView;
+        } else if (currentView instanceof StartingLobbyView) {
+            currentView = mainGameView;
+        }
+    }
+
     private void processInput(KeyStroke keyStroke) {
         if (currentView instanceof StartScreenView) {
             processStartScreenViewInput(keyStroke);
@@ -145,13 +168,14 @@ public class Game {
         }
     }
 
-    // TODO: Wenn Antwort von server success = false dann nochmal versuchen,
-    // TODO: sonst warten bis der gamestateUpdat vollbracht wird
     private void processJoinLobbyViewInput(KeyStroke keyStroke) {
 
         Character inputChar = keyStroke.getCharacter();
         Command command = null;
 
+        if (keyStroke.getCharacter() == 'b') {
+            currentView = startScreenView;
+        }
         // Überprüfen, ob eine gültige Nummernziffer eingegeben wurde
         if (inputChar != null && Character.isDigit(inputChar)) {
             currentInput += inputChar;
@@ -159,9 +183,16 @@ public class Game {
 
             // Wenn die Länge fünf erreicht, verarbeiten
             if (currentInput.length() == 5) {
-                Integer.parseInt(currentInput);
                 command = Command.joinLobby(currentInput);
                 currentInput = ""; // Zurücksetzen der Eingabe für den nächsten Versuch
+                if (successJoinLobby) {
+                    logger.info("Command was good, game start");
+                    currentView = startingLobbyView;
+                    successJoinLobby = false;
+                } else {
+                    logger.info("Command was bad, game not start");
+                    joiningLobbyView.setCurrentID("");
+                }
             }
         }
         // Add command to the queue
@@ -169,10 +200,7 @@ public class Game {
             logger.info("Command added to queue");
             commandQueue.add(command);
         }
-        if (successJoinLobby) {
-            logger.info("Command was good, game start");
-            currentView = startingLobbyView;
-        }
+
     }
 
     private void processStartScreenViewInput(KeyStroke keyStroke) {
@@ -180,13 +208,11 @@ public class Game {
         Command command = null;
         switch (keyStroke.getCharacter()) {
             case '1':
-                // Simulate receiving dungeon data from the server
-                //JoinLobby-CLIENT(n(sololobbystarten) ODER "LobbyCode Zahl 5stellig") --> success, lobbyID, charID
                 command = Command.startLobby();
                 logger.info("StartLobbyCommand sent");
                 break;
             case '2':
-                currentView = joiningLobbyView; // TODO: mechanics hier implementeiren,
+                currentView = joiningLobbyView;
                 break;
             case '3':
                 currentView = leaderBoardView;
@@ -210,8 +236,6 @@ public class Game {
         }
     }
 
-    /*command: attack, move, pickupitem, donothig, use item
-          target: /, r+{rID}, /, /, i{iID}*/
     private void processMainGameViewInput(KeyStroke keyStroke) {
         if (keyStroke.getCharacter() == null) return;
         Map<Integer, String> options = mainGameView.getOptionMappings();
@@ -222,37 +246,38 @@ public class Game {
             String action = options.get(selectedOption);
             switch (action) {
                 case "Attack":
-                    logger.info("Send Attack to Server");
                     command = Command.attackCommand();
                     break;
                 case "Do Nothing":
-                    logger.info("Do Nothing");
                     command = Command.doNothingCommand();
                     break;
-                // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
-                case "Move NORTH":
-                    logger.info("Move N");
-                    mainGameView.updateRoom("NORTH");
-                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
+                case "Move North":
+                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("North"));
                     break;
-                case "Move SOUTH":
-                    logger.info("Move S");
-                    mainGameView.updateRoom("SOUTH");
-                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
+                case "Move South":
+                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("South"));
                     break;
-                case "Move EAST":
-                    logger.info("Move E");
-                    mainGameView.updateRoom("EAST");
-                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
+                case "Move East":
+                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("East"));
                     break;
-                case "Move WEST":
-                    logger.info("Move W");
-                    mainGameView.updateRoom("WEST");
-                    command = Command.moveCommand(mainGameView.getCurrentRoomId());
+                case "Move West":
+                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("West"));
+                    break;
+                case "Flee North":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("North"));
+                    break;
+                case "Flee South":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("South"));
+                    break;
+                case "Flee East":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("East"));
+                    break;
+                case "Flee West":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("West"));
                     break;
                 case "Pick Up Item":
                     logger.info("Pick up Item");
-                    command = Command.pickupCommand(mainGameView.getRoomData().getItems().getId());
+                    command = Command.pickupCommand(mainGameView.getRoomData().getItem().getId());
                     break;
                 default:
                     logger.info("Default: Do Nothing");
@@ -266,7 +291,6 @@ public class Game {
         }
     }
 
-
     private void processInventoryViewInput(InventoryView inventoryView, KeyStroke keyStroke) {
         if (keyStroke.getCharacter() == null) return;
         char inputChar = keyStroke.getCharacter();
@@ -279,20 +303,20 @@ public class Game {
                 switch (action) {
                     case "Drop 1":
                         logger.info("DROP_ITEM: send drop 1 to server");
-                        //command = Command.dropItemCommand(); TODO: xx
+                        command = Command.dropItemCommand(1); // TODO: Option ID --> Inventory ID
                         break;
                     case "Drop 2":
                         logger.info("DROP_ITEM: send drop 2 to server");
-                        //command = Command.dropItemCommand();
+                        command = Command.dropItemCommand(2);
                         break;
                     // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
                     case "Drop 3":
                         logger.info("DROP_ITEM: send drop 3 to server");
-                        //command = Command.dropItemCommand();
+                        command = Command.dropItemCommand(3);
                         break;
                     case "Drop 4":
                         logger.info("DROP_ITEM: send drop 4 to server");
-                        //command = Command.dropItemCommand();
+                        command = Command.dropItemCommand(4);
                         break;
                     case "Go back":
                         logger.info("Go Back");
@@ -303,6 +327,9 @@ public class Game {
                         break;
                 }
 
+                if (command != null) {
+                    commandQueue.add(command);
+                }
             }
 
         }
@@ -368,7 +395,7 @@ public class Game {
             case 's':
                 currentView = mainGameView;
                 break;
-            case 'm':
+            case 'm', 'd':
                 currentView = dungeonMapView;
                 break;
             default:
@@ -376,7 +403,7 @@ public class Game {
         }
     }
 
-    // Add a method to retrieve and remove a command from the queue
+    // Getter & Setter
     public Command getNextCommand() {
         return commandQueue.poll();
     }
@@ -387,29 +414,6 @@ public class Game {
 
     public boolean getRunning() {
         return running.get();
-    }
-
-    /**
-     * Update der Daten für den ViewBuilder mit den Incoming daten nach dem vorgegebenen Format
-     *
-     * @param gameState
-     */
-    public void updateGameState(String gameState) {
-        System.out.println("Thread UpdateGameState started...");
-        System.out.println("GS: " + gameState);
-        // Item: id, typ, name, description, itemAttribute
-        // enemie: id, name, dangerLevel, maxHp, hp, id
-        // playerliste max 4 player: level, experience, maxExperience, inventory, maxHp, hp, attack, defense, id
-        // roomList: n räume: id, ein item, ein enemie, 4 adjazente räume SOUTH x ID
-
-
-        JSONManager<GameState> jsonManager = new JSONManager<>(new TypeToken<DataContainer<GameState>>() {
-        });
-        // Use read to get the data out of the EXAMPLE JSON
-        this.gameState = jsonManager.read(gameState);
-
-        System.out.println("Thread UpdateGameState finished...");
-
     }
 
     public void setSuccessJoinLobby(boolean successJoinLobby) {
@@ -424,16 +428,4 @@ public class Game {
         this.localPlayerID = localPlayerID;
     }
 
-    public static void main(String[] args) {
-        try {
-            DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
-            Terminal terminal = terminalFactory.createTerminal();
-
-            Game game = new Game(terminal);
-            game.run();
-            terminal.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

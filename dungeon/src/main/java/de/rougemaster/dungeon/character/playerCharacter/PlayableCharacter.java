@@ -24,8 +24,8 @@ public class PlayableCharacter extends Character {
 
     public PlayableCharacter () {
         //TODO: Set Stats of Character
-        id= idCounter++;
-        inventory = List.of(new Book(0, "Book", "A book that gives you 10 EXP", 10), new Weapon(1, "Sword", "A sword that gives you 10 Attack", 10), new Armor(2, "Shield", "A shield that gives you 10 Defense", 10));
+        id= ++idCounter;
+        inventory = new ArrayList<>();
         armorSlot = null;
         weaponSlot = null;
         hp= 10;
@@ -37,14 +37,6 @@ public class PlayableCharacter extends Character {
      * @param character enemy character
      */
     public void attackUsingEquipment(Character character) {
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
-
-        //TODO: Check if character is in battle with PlayerCharacter
-
-
         int attackDamage = this.attack + weaponSlot.getDamage();
         character.setHp(character.getHp()-(attackDamage - character.getDefense()));
     }
@@ -92,12 +84,12 @@ public class PlayableCharacter extends Character {
      * @param exp the amount of Experience gained. exp can only be positive
      */
     public void gainExperience (int exp) {
-        //TODO: The Following implementation is a example and shouldn't be used for the final product.
-
         if(exp < 0) {
             return;
         }
-        //TODO: Check if level cap is reached
+        if(level >= 15){
+            return;
+        }
 
         experience += exp;
 
@@ -127,6 +119,14 @@ public class PlayableCharacter extends Character {
             inventory.add(item);
         }else{
             //TODO: throw exception
+        }
+    }
+
+    public void deleteItem(Item item){
+        if(inventory.contains(item)){
+            inventory.remove(item);
+        }else{
+            //TODO:throw exception
         }
     }
 

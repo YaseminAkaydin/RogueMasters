@@ -43,6 +43,7 @@ public class JSONManager<T> {
                 .toList());
         System.out.println(jsonManager.write(gameState));
     }
+
     /**
      * {
      *   "data": {

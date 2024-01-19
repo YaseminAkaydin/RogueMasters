@@ -6,7 +6,7 @@ import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 
 public class fleeGameCommand extends GameCommand {
     Character character;
-    Room room;
+    public Room room;
 
     public fleeGameCommand(Character character, Room room) {
         this.character = character;

@@ -6,6 +6,7 @@ import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.CombatAction;
 import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.fight.FightManager;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.fleeGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilFlameSwordAttackCommand;
@@ -19,7 +20,7 @@ import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonBonesplo
 import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
-import lombok.Getter;
+
 
 
 import java.util.*;
@@ -27,7 +28,7 @@ import java.util.*;
 public class TurnManager {
     FightManager fightManager;
     PlayableCharacter character;
-    @Getter
+
     Map<Character, GameCommand> commandMap;
     Map<FightManager, List<Character>> fightList;
 
@@ -45,8 +46,19 @@ public class TurnManager {
         this.fightManager = fightManager;
     }
 
+    public PlayableCharacter getCharacter() {
+        return character;
+    }
+
+    public Map<Character, GameCommand> getCommandMap() {
+        return commandMap;
+    }
+
+    public Map<FightManager, List<Character>> getFightList() {
+        return fightList;
+    }
+
     public void executeTurn() {
-        startTurn();
         handleCharacterInput();
     }
 
@@ -71,7 +83,7 @@ public class TurnManager {
     }
 
     private void setAllFightActions(List<Character> allFighters) {
-        /*for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             GameCommand command = entry.getValue();
             if (allFighters.contains(currentCharacter)) {
@@ -84,7 +96,7 @@ public class TurnManager {
                     handleFightAction(fight, combatantTwo, command);
                 }
             }
-        }*/
+        }
     }
 
     private void handleFightAction(Fight fight, Character combatant, GameCommand command) {
@@ -94,6 +106,10 @@ public class TurnManager {
             fight.setCombatantAction(combatant, CombatAction.ATTACK);
         } else if (command instanceof defendingPlayerCommand) {
             fight.setCombatantAction(combatant, CombatAction.DEFEND);
+        } else if (command instanceof fleeGameCommand) {
+            fight.setCombatantAction(combatant, CombatAction.FLEE);
+            fleeGameCommand fleeCommand = (fleeGameCommand) command;
+            combatant.flee(fleeCommand.room);
         } else if (command instanceof useItemInFightCommand) {
             fight.setCombatantAction(combatant, CombatAction.USE_ITEM);
         } else if (command instanceof skeletonSwordAttackCommand) {

@@ -6,14 +6,12 @@ import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
-import lombok.Getter;
+
 
 import java.util.function.Consumer;
-//TODO: test if it works
+
 public class Fight {
-    @Getter
     private final Character combatantOne;
-    @Getter
     private final Character combatantTwo;
     private final Consumer<CombatAction> combatantOneExecutor;
     private final Consumer<CombatAction> combatantTwoExecutor;
@@ -89,9 +87,11 @@ public class Fight {
      */
     private void executePlayerAction(PlayableCharacter player, CombatAction action) {
         Character enemy = (combatantOne == player) ? combatantTwo : combatantOne;
+        //TODO: Implement fleeing
 
         switch (action) {
             case DO_NOTHING:
+                player.doNothing();
                 break;
             case ATTACK:
                 player.attackUsingEquipment(enemy);
@@ -101,6 +101,8 @@ public class Fight {
                 break;
             case STOP_DEFENDING:
                 player.stopDefending();
+                break;
+            case FLEE:
                 break;
             case USE_ITEM:
                 //TODO: Implement using an item
@@ -124,6 +126,7 @@ public class Fight {
 
         switch (action) {
             case DO_NOTHING:
+                skeleton.doNothing();
                 break;
             case SKELETON_SWORD_ATTACK:
                 if (player != null) {
@@ -161,6 +164,7 @@ public class Fight {
 
         switch (action) {
             case DO_NOTHING:
+                zombie.doNothing();
                 break;
             case ZOMBIE_CLAW_ATTACK:
                 if (player != null) {
@@ -186,6 +190,7 @@ public class Fight {
 
         switch (action) {
             case DO_NOTHING:
+                devil.doNothing();
                 break;
             case DEVIL_FLAME_SWORD_ATTACK:
                 if (player != null) {
@@ -194,10 +199,16 @@ public class Fight {
                 break;
             case DEVIL_SPIKE_SHIELD:
                 devil.SpikeShield();
+                if (player == combatantOne && combatantOneAction == CombatAction.ATTACK){
+                    //TODO: how much damage?
+                    player.setHp(player.getHp()-3);
+                }
                 break;
             case DEVIL_PLAYER_KILLER_ATTACK:
                 if (player != null) {
-                    devil.playerKillerAttack(player);
+                    if((player == combatantOne && combatantOneAction!=CombatAction.DO_NOTHING) || (player == combatantTwo && combatantTwoAction!=CombatAction.DO_NOTHING)){
+                        devil.playerKillerAttack(player);
+                    }
                 }
                 break;
             case DEFEND:
@@ -235,4 +246,11 @@ public class Fight {
         this.combatantTwoAction = combatantTwoAction;
     }
 
+    public Character getCombatantOne() {
+        return combatantOne;
+    }
+
+    public Character getCombatantTwo() {
+        return combatantTwo;
+    }
 }

@@ -9,5 +9,8 @@ public class TreasureRoom extends Room {
     public void generateRoom() {
         //IDK
     }
-
+    @Override
+    public String getRoomType() {
+        return "TreasureRoom";
+    }
 }

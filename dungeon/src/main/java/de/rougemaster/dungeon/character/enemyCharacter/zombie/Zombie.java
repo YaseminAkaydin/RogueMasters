@@ -5,13 +5,15 @@ import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 
 public class Zombie extends EnemyCharacter {
 
-    //TODO: I dont know if this kind of inheritance works. (Check EnemyCharacter dropExperience)
+
     private static final int baseExpDropAmount = 10;
     private static final int biteBonusDamage = 5;
 
     private ZombieState state;
 
     public Zombie(int dangerLvl){
+        super(baseExpDropAmount);
+        this.dangerLevel = dangerLvl;
         if(dangerLvl <= 0) {
             dangerLvl = 1;
         }
@@ -51,15 +53,6 @@ public class Zombie extends EnemyCharacter {
      * @param character enemy character
      */
     public void clawAttack(Character character) {
-        //TODO: character could be changed to the type PlayableCharacter (useful?)
-        //TODO: check if zombie and character are fighting.
-
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
-
-
         character.setHp(character.getHp()-(this.attack - character.getDefense()));
     }
 
@@ -68,13 +61,6 @@ public class Zombie extends EnemyCharacter {
      * @param character enemy character
      */
     public void biteAttack(Character character){
-        //TODO: character could be changed to the type PlayableCharacter (useful?)
-        //TODO: check if zombie and character are fighting.
-
-        //Check if character is in the same Room as PlayerCharacter
-        if(this.currentRoom.equals(character.getCurrentRoom())){
-            return;
-        }
 
         character.setHp(character.getHp()-(this.attack + biteBonusDamage - character.getDefense()));
     }

@@ -1,7 +1,8 @@
-package de.roguemaster.player;
+package de.roguemaster.player.cs;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import de.roguemaster.player.cs.DataContainer;
 
 public class JSONManager<T> {
 

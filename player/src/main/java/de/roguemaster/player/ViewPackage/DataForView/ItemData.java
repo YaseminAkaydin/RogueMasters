@@ -13,13 +13,21 @@ public class ItemData {
         this.id = id;
         this.name = name;
         this.description = description;
-        if (description.contains("Sword")) this.damage = itemAttribute;
-        if (description.contains("Shield")) this.defense = itemAttribute;
-        if (description.contains("Potion")) this.effect = itemAttribute;
-        if (description.contains("Book")) this.extraPoints = itemAttribute;
+        if (name.startsWith("Weapon")) this.damage = itemAttribute;
+        if (name.startsWith("Armor")) this.defense = itemAttribute;
+        if (name.startsWith("Potion")) this.effect = itemAttribute;
+        if (name.startsWith("Book")) this.extraPoints = itemAttribute;
     }
 
     // Getter & Setter
+
+    public String getAttributeName(){
+        if (name.startsWith("Weapon")) return "Damage";
+        if (name.startsWith("Armor")) return "Defense";
+        if (name.startsWith("Potion")) return "Effect";
+        if (name.startsWith("Book")) return "Experience";
+        return "Server sends wrong Name";
+    }
 
     public int getId() {
         return id;
@@ -46,10 +54,10 @@ public class ItemData {
     }
 
     public int getAttributes(){
-        if (description.contains("Sword")) return this.damage;
-        if (description.contains("Shield")) return this.defense;
-        if (description.contains("Potion")) return this.effect;
-        if (description.contains("Book")) return this.extraPoints;
+        if (name.contains("Sword")) return this.damage;
+        if (name.contains("Shield")) return this.defense;
+        if (name.contains("Potion")) return this.effect;
+        if (name.contains("Book")) return this.extraPoints;
         return 999;
     }
 
