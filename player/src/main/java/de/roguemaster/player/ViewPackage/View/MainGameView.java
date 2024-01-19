@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class MainGameView extends ViewComponent {
+public class MainGameView extends ViewComponent{
 
     private final Map<Integer, String> optionMappings;
 
@@ -241,7 +241,5 @@ public class MainGameView extends ViewComponent {
     public int getCurrentRoomId() {
         return gameState.getCurrentRoomId();
     }
-
-
 
 }

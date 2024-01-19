@@ -16,11 +16,20 @@ public abstract class ViewComponent {
 
     protected final Random random = new Random();
 
+    protected static final String asciiArt = "\n" +            " (                              *                                   \n" +
+            " )\\ )                         (  `                 )                \n" +
+            "(()/(      (  (     (     (   )\\))(      )      ( /(   (   (        \n" +
+            " /(_)) (   )\\))(   ))\\   ))\\ ((_)()\\  ( /(  (   )\\()) ))\\  )(   (   \n" +
+            "(_))   )\\ ((_))\\  /((_) /((_)(_()((_) )(_)) )\\ (_))/ /((_)(()\\  )\\  \n" +
+            "| _ \\ ((_) (()(_)(_))( (_))  |  \\/  |((_)_ ((_)| |_ (_))   ((_)((_) \n" +
+            "|   // _ \\/ _` | | || |/ -_) | |\\/| |/ _` |(_-<|  _|/ -_) | '_|(_-< \n" +
+            "|_|_\\\\___/\\__, |  \\_,_|\\___| |_|  |_|\\__,_|/__/ \\__|\\___| |_|  /__/ \n" +
+            "          |___/                                                     \n";
+
 
     protected GameState gameState;
 
     public abstract void display();
-
 
     protected ViewComponent(Terminal terminal, GameState gameState) {
         this.terminal = terminal;
@@ -45,6 +54,14 @@ public abstract class ViewComponent {
     protected void clearAndInitializeGraphics() throws IOException {
         terminal.clearScreen();
         tg = terminal.newTextGraphics();
+    }
+
+    protected void drawTitle(TextColor textColor) throws IOException {
+        tg.setForegroundColor(textColor);
+        String[] lines = asciiArt.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            tg.putString(2, 2 + i, lines[i]);
+        }
     }
 
     public RoomData getRoomData() {

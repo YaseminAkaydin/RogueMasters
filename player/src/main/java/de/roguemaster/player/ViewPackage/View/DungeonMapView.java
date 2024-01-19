@@ -179,6 +179,8 @@ public class DungeonMapView extends ViewComponent {
         return null;
     }
 
+
+
     private static class Point {
         int x, y;
 

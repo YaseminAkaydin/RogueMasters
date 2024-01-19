@@ -1,4 +1,4 @@
-package de.roguemaster.player.cs;
+package de.roguemaster.player;
 
 import com.example.grpc.*;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -47,17 +47,16 @@ public class SimpleClient {
             if (command != null) {
                 checkAndSendCommands(command);
             }
-            try {
-                //Thread.sleep(0); // Sleep for a short duration
-            } finally {
-                if (requestObserver != null && !game.getRunning()) {
-                    System.out.println("Client shutting down, sending complete");
-                    stopGame();
-                    requestObserver.onCompleted(); // Complete the request stream
-                }
+
+            if (requestObserver != null && !game.getRunning()) {
+                System.out.println("Client shutting down, sending complete");
+                stopGame();
+                requestObserver.onCompleted(); // Complete the request stream
             }
+
         }
     }
+
     // Erstellen den Stream erst NUR wenn wir auch in einem game starten
     private void checkGameStarted() {
         if (requestObserver == null && game.getRunning()) {
@@ -155,7 +154,9 @@ public class SimpleClient {
 
         try {
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+            terminalFactory.setTerminalEmulatorTitle("RogueMaster");
             Terminal terminal = terminalFactory.createTerminal();
+            // Chane title of terminal window
             Game game = new Game(terminal);
 
             SimpleClient client = new SimpleClient(asyncChannel, game, blockingChannel);
@@ -164,6 +165,8 @@ public class SimpleClient {
             // You can add some logic here to wait for the game to finish
             // For example, a simple input to stop the game
             System.out.println("Press Enter to stop the game...");
+            terminal.flush();
+            terminal.putString("Press Enter to stop the game...");
             System.in.read();
 
             client.stopGame(); // Stop the game and the game thread
@@ -171,7 +174,7 @@ public class SimpleClient {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-                System.out.println("Shutting down Client...");
+            System.out.println("Shutting down Client...");
             asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
             blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
         }

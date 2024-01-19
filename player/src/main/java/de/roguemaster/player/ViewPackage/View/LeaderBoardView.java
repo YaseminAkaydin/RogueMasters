@@ -1,5 +1,6 @@
 package de.roguemaster.player.ViewPackage.View;
 
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
@@ -18,11 +19,17 @@ public class LeaderBoardView extends ViewComponent {
     @Override
     public void display() {
         try {
+            clearAndInitializeGraphics();
             terminal.clearScreen();
-            terminal.setCursorPosition(0, 0);
-            terminal.putString("Press 'B' to go back");
-            terminal.setCursorPosition(0, 2);
-            terminal.putString("Showing Leaderboard");
+
+            drawTitle(TextColor.ANSI.RED);
+            String[] lines = asciiArt.split("\n");
+
+            tg.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
+
+            tg.putString(2, lines.length + 4, "Press 'B' to go back");
+            tg.putString(2, lines.length + 5, "Showing Leaderboard");
+
             terminal.flush();
         } catch (IOException e) {
             e.printStackTrace();

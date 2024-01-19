@@ -34,7 +34,6 @@ public class Game {
     private final StartingLobbyView startingLobbyView;
     private final JoiningLobbyView joiningLobbyView;
     private final LeaderBoardView leaderBoardView;
-    private final ViewBuilder viewBuilder;
 
     Logger logger = Logger.getLogger(getClass().getName());
     private final ConcurrentLinkedQueue<Command> commandQueue = new ConcurrentLinkedQueue<>();
@@ -50,11 +49,10 @@ public class Game {
 
     public Game(Terminal terminal) {
         this.terminal = terminal;
-        this.viewBuilder = new ViewBuilder(terminal);
-        this.startScreenView = viewBuilder.getStartScreenView();
-        this.startingLobbyView = viewBuilder.getStartingLobbyView();
-        this.joiningLobbyView = viewBuilder.getJoiningLobbyView();
-        this.leaderBoardView = viewBuilder.getLeaderBoardView();
+        this.startScreenView = new StartScreenView(terminal);
+        this.startingLobbyView = new StartingLobbyView(terminal);
+        this.joiningLobbyView = new JoiningLobbyView(terminal);
+        this.leaderBoardView = new LeaderBoardView(terminal);
 
         this.currentView = startScreenView;
     }
@@ -67,32 +65,28 @@ public class Game {
 
         while (running.get()) {
             try {
+                currentView.display();
                 // Init Game when starting own lobby
                 if ((currentView instanceof StartingLobbyView) && (gameState == null)) {
                     while (gameState == null) {
-                        System.out.println("Waiting for DungeonData...");
+                        logger.info("Waiting for DungeonData...");
+                        currentView.display();
                         Thread.sleep(1000);
                     }
-                    this.gameState.initGameState();
-                    viewBuilder.initGame(gameState);
-                    this.dungeonMapView = viewBuilder.getDungeonMapView();
-                    this.mainGameView = viewBuilder.getMainGameView();
-                    this.inventoryView = viewBuilder.getInventoryView();
-                    System.out.println("Init gameState with viewbuilder");
-                    //viewBuilder.getDungeonData().setRooms(gameState.getRoomList());
-                    //viewBuilder.setPlayerData(gameState.getLocalPlayer(localPlayerID));
+                    this.dungeonMapView = new DungeonMapView(terminal, this.gameState);
+                    this.mainGameView = new MainGameView(terminal, this.gameState);
+                    this.inventoryView = new InventoryView(terminal, this.gameState);
                     gameState.setLocalPlayerID(localPlayerID);
                     gameStarted.set(true);
                     currentView = mainGameView;
                 }
-                // Display the current view
-                currentView.display();
 
                 Thread.sleep(100);
 
             } catch (InterruptedException e) {
                 logger.log(java.util.logging.Level.SEVERE, "Interrupted while sleeping", e);
                 inputThread.interrupt();
+                terminal.close();
                 running.set(false);
             }
         }
@@ -106,7 +100,7 @@ public class Game {
             try {
                 if (successJoinLobby) {
                     logger.info("Command was good, game start");
-                    this.currentView = startingLobbyView;
+                    currentView = startingLobbyView;
                     successJoinLobby = false;
                 }
                 KeyStroke keyStroke = terminal.pollInput();
@@ -125,6 +119,33 @@ public class Game {
                 logger.log(java.util.logging.Level.SEVERE, "Interrupted while handling input", e);
                 running.set(false);
             }
+        }
+    }
+
+    public void updateGameState(String gameState) {
+        System.out.println("Player: " + localPlayerID + " received GameState");
+        JSONManager<GameState> jsonManager = new JSONManager<>(new TypeToken<DataContainer<GameState>>() {
+        });
+        this.gameState = jsonManager.read(gameState);
+        this.gameState.setLocalPlayerID(localPlayerID);
+        this.gameState.initGameState();
+        this.dungeonMapView = new DungeonMapView(terminal, this.gameState);
+        this.mainGameView = new MainGameView(terminal, this.gameState);
+        this.inventoryView = new InventoryView(terminal, this.gameState);
+        updateCurrentView();
+
+
+    }
+    private void updateCurrentView(){
+        if (currentView instanceof MainGameView) {
+            currentView = mainGameView;
+        } else if (currentView instanceof DungeonMapView) {
+            currentView = dungeonMapView;
+        } else if (currentView instanceof InventoryView) {
+            currentView = inventoryView;
+        }
+        else if (currentView instanceof StartingLobbyView) {
+            currentView = mainGameView;
         }
     }
 
@@ -151,6 +172,9 @@ public class Game {
         Character inputChar = keyStroke.getCharacter();
         Command command = null;
 
+        if (keyStroke.getCharacter() == 'b') {
+            currentView = startScreenView;
+        }
         // Überprüfen, ob eine gültige Nummernziffer eingegeben wurde
         if (inputChar != null && Character.isDigit(inputChar)) {
             currentInput += inputChar;
@@ -158,9 +182,16 @@ public class Game {
 
             // Wenn die Länge fünf erreicht, verarbeiten
             if (currentInput.length() == 5) {
-                Integer.parseInt(currentInput);
                 command = Command.joinLobby(currentInput);
                 currentInput = ""; // Zurücksetzen der Eingabe für den nächsten Versuch
+                if (successJoinLobby) {
+                    logger.info("Command was good, game start");
+                    currentView = startingLobbyView;
+                    successJoinLobby = false;
+                } else {
+                    logger.info("Command was bad, game not start");
+                    joiningLobbyView.setCurrentID("");
+                }
             }
         }
         // Add command to the queue
@@ -168,10 +199,7 @@ public class Game {
             logger.info("Command added to queue");
             commandQueue.add(command);
         }
-        if (successJoinLobby) {
-            logger.info("Command was good, game start");
-            currentView = startingLobbyView;
-        }
+
     }
 
     private void processStartScreenViewInput(KeyStroke keyStroke) {
@@ -179,8 +207,6 @@ public class Game {
         Command command = null;
         switch (keyStroke.getCharacter()) {
             case '1':
-                // Simulate receiving dungeon data from the server
-                //JoinLobby-CLIENT(n(sololobbystarten) ODER "LobbyCode Zahl 5stellig") --> success, lobbyID, charID
                 command = Command.startLobby();
                 logger.info("StartLobbyCommand sent");
                 break;
@@ -354,7 +380,7 @@ public class Game {
             case 's':
                 currentView = mainGameView;
                 break;
-            case 'm':
+            case 'm', 'd':
                 currentView = dungeonMapView;
                 break;
             default:
@@ -362,7 +388,7 @@ public class Game {
         }
     }
 
-    // Add a method to retrieve and remove a command from the queue
+    // Getter & Setter
     public Command getNextCommand() {
         return commandQueue.poll();
     }
@@ -373,34 +399,6 @@ public class Game {
 
     public boolean getRunning() {
         return running.get();
-    }
-
-    /**
-     * Update der Daten für den ViewBuilder mit den Incoming daten nach dem vorgegebenen Format
-     *
-     * @param gameState
-     */
-    public void updateGameState(String gameState) {
-         System.out.println("Thread UpdateGameState started...");
-        if (this.gameState != null) {
-            System.out.println("GS: " + gameState);
-        }
-
-
-        JSONManager<GameState> jsonManager = new JSONManager<>(new TypeToken<DataContainer<GameState>>() {
-        });
-        // Use read to get the data out of the EXAMPLE JSON
-        this.gameState = jsonManager.read(gameState);
-        this.gameState.setLocalPlayerID(localPlayerID);
-        viewBuilder.initGame(this.gameState);
-        this.gameState.initGameState();
-        this.dungeonMapView = viewBuilder.getDungeonMapView();
-        this.mainGameView = viewBuilder.getMainGameView();
-        this.inventoryView = viewBuilder.getInventoryView();
-        //System.out.println(this.gameState.toString());
-
-        //System.out.println("Thread UpdateGameState finished...");
-
     }
 
     public void setSuccessJoinLobby(boolean successJoinLobby) {

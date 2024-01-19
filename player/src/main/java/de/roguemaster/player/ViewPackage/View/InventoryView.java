@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InventoryView extends ViewComponent {
+
+
     // Define the states for InventoryView
     public enum State {
         MAIN_OPTIONS,

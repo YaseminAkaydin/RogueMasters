@@ -89,8 +89,8 @@ public class DungeonApplication {
     public static class GameServiceImpl extends GameServiceGrpc.GameServiceImplBase {
         private final CopyOnWriteArrayList<StreamObserver<GameCommandResponse>> clients = new CopyOnWriteArrayList<>();
         private final Map<Integer,StreamObserver<GameCommandResponse>> clientToStreamConnection = new HashMap<>();
-        private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         private LobbyFacade lobbyFacade;
+
 
         public GameServiceImpl(LobbyFacade lobbyFacade) {
             this.lobbyFacade = lobbyFacade;
@@ -103,33 +103,40 @@ public class DungeonApplication {
             System.out.println("Client connected, total clients: " + clients.size());
 
             return new StreamObserver<GameCommandRequest>() {
+                private Integer userId = null;
+
                 @Override
                 public void onNext(GameCommandRequest request) {
                     System.out.println("Received command: " + request.getCommand() + " " + request.getTarget());
 
 
-                    if(clientToStreamConnection.containsKey(request.getUserId())) {
+                    if(request.getCommand().equals("initialize") && lobbyFacade.isClientIdExisting(request.getUserId())){
+                        userId = request.getUserId();
+                        clientToStreamConnection.put(userId, responseObserver);
+                    } else if(clientToStreamConnection.containsKey(request.getUserId())) {
                         lobbyFacade.setGameCommand(request.getUserId(), new LobbyMessage(request.getCommand(), request.getTarget()));
                     }
                     //TODO: Client initialize might have been eaten by the dark and angry internet
-                    if(request.getCommand().equals("initialize") && lobbyFacade.isClientIdExisting(request.getUserId())){
-                        clientToStreamConnection.put(request.getUserId(), responseObserver);
-                    }
 
                 }
 
                 @Override
                 public void onError(Throwable t) {
-                    // Handle error
-                    logger.info("Error sendGameCommand: " + t.getMessage());
-                    clientToStreamConnection.remove(responseObserver);
+                    logger.log(Level.INFO, "Error in sendGameCommand: " + t.getMessage());
+                    // Remove the client from the list and the map
+                    if (userId != null) {
+                        clientToStreamConnection.remove(userId);
+                    }
                     clients.remove(responseObserver);
                 }
 
                 @Override
                 public void onCompleted() {
-                    // Complete the response stream
                     logger.info("Completed Server sendGameCommand, removing client");
+                    // Remove the client from the list and the map
+                    if (userId != null) {
+                        clientToStreamConnection.remove(userId);
+                    }
                     clients.remove(responseObserver);
                     responseObserver.onCompleted();
                 }
