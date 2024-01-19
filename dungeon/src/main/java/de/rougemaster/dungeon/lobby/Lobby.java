@@ -60,7 +60,12 @@ public class Lobby {
             Room roomOfCharacter = character.getCurrentRoom();
             item = roomOfCharacter.getItem();
         }
+        if (lobbyMessage.getCommand().startsWith("drop")) {
+            PlayableCharacter player = (PlayableCharacter) character;
+            item = player.getInventory().stream().filter(item1 -> item1.getId() == id).toList().get(0);
+        }
 
+        // dropItem", "i" + itemId
         if (character instanceof PlayableCharacter) {
             switch (lobbyMessage.getCommand()) {
                 case "move" -> {return new moveGameCommand(character, room);}
@@ -72,6 +77,7 @@ public class Lobby {
                 case "takeItem" -> {return new takeItemInRoomGameCommand((PlayableCharacter) character, item);}
                 case "useItem" -> {return new useItemGameCommand((PlayableCharacter) character, item);}
                 case "useItemInFight" -> {return new inspectRoomGameCommand((PlayableCharacter) character, room);}
+                case "dropItem" -> {return new deleteItemGameCommand((PlayableCharacter)character,item);}
             }
         }
 

@@ -51,6 +51,7 @@ public class Dungeon {
             Point newPoint = getNextPoint(currentPoint, direction);
 
             if (grid.containsKey(newPoint)) {
+                i--;
                 continue;
             }
 

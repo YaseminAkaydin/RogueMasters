@@ -132,19 +132,20 @@ public class Game {
         this.dungeonMapView = new DungeonMapView(terminal, this.gameState);
         this.mainGameView = new MainGameView(terminal, this.gameState);
         this.inventoryView = new InventoryView(terminal, this.gameState);
+        System.out.println(gameState);
         updateCurrentView();
 
 
     }
-    private void updateCurrentView(){
+
+    private void updateCurrentView() {
         if (currentView instanceof MainGameView) {
             currentView = mainGameView;
         } else if (currentView instanceof DungeonMapView) {
             currentView = dungeonMapView;
         } else if (currentView instanceof InventoryView) {
             currentView = inventoryView;
-        }
-        else if (currentView instanceof StartingLobbyView) {
+        } else if (currentView instanceof StartingLobbyView) {
             currentView = mainGameView;
         }
     }
@@ -250,7 +251,6 @@ public class Game {
                 case "Do Nothing":
                     command = Command.doNothingCommand();
                     break;
-                // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
                 case "Move North":
                     command = Command.moveCommand(mainGameView.getAdjacentRoomId("North"));
                     break;
@@ -262,6 +262,18 @@ public class Game {
                     break;
                 case "Move West":
                     command = Command.moveCommand(mainGameView.getAdjacentRoomId("West"));
+                    break;
+                case "Flee North":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("North"));
+                    break;
+                case "Flee South":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("South"));
+                    break;
+                case "Flee East":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("East"));
+                    break;
+                case "Flee West":
+                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("West"));
                     break;
                 case "Pick Up Item":
                     logger.info("Pick up Item");
@@ -291,20 +303,20 @@ public class Game {
                 switch (action) {
                     case "Drop 1":
                         logger.info("DROP_ITEM: send drop 1 to server");
-                        //command = Command.dropItemCommand(); TODO: Irgendwann, erstmal soll move und angriff funktionieren mit dem server
+                        command = Command.dropItemCommand(1); // TODO: Option ID --> Inventory ID
                         break;
                     case "Drop 2":
                         logger.info("DROP_ITEM: send drop 2 to server");
-                        //command = Command.dropItemCommand();
+                        command = Command.dropItemCommand(2);
                         break;
                     // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
                     case "Drop 3":
                         logger.info("DROP_ITEM: send drop 3 to server");
-                        //command = Command.dropItemCommand();
+                        command = Command.dropItemCommand(3);
                         break;
                     case "Drop 4":
                         logger.info("DROP_ITEM: send drop 4 to server");
-                        //command = Command.dropItemCommand();
+                        command = Command.dropItemCommand(4);
                         break;
                     case "Go back":
                         logger.info("Go Back");
@@ -315,6 +327,9 @@ public class Game {
                         break;
                 }
 
+                if (command != null) {
+                    commandQueue.add(command);
+                }
             }
 
         }
@@ -413,16 +428,4 @@ public class Game {
         this.localPlayerID = localPlayerID;
     }
 
-    public static void main(String[] args) {
-        try {
-            DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
-            Terminal terminal = terminalFactory.createTerminal();
-
-            Game game = new Game(terminal);
-            game.run();
-            terminal.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

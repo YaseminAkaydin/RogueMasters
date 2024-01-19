@@ -93,7 +93,7 @@ public class InventoryView extends ViewComponent {
         if (!gameState.getInventoryItems().isEmpty()) {
             String dropItemOption = optionNumber + ". Drop Item";
             tg.putString(2, optionsStartY.getAndIncrement(), dropItemOption);
-            optionMappings.put(optionNumber.getAndIncrement(), "Drop Item");
+            optionMappings.put(optionNumber.getAndIncrement(), "Drop Item"); //TODO:
         }
         // Display 'Use Consumable' option if any consumable items are present
         long consumableCount = gameState.getInventoryItems().stream()

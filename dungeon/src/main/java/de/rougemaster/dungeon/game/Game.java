@@ -7,6 +7,7 @@ import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
+import de.rougemaster.dungeon.dungeon.ItemManager;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
@@ -21,6 +22,7 @@ public class Game {
     private final List<PlayableCharacter> playerList;
     private final List<EnemyCharacter> enemyList;
     private final Dungeon dungeon;
+    private final ItemManager itemManager;
 
     private final TurnManager turnManager;
     private LobbyThread turnManagerThread;
@@ -34,7 +36,8 @@ public class Game {
         this.playerList = new ArrayList<>();
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
-
+        this.itemManager = new ItemManager(dungeon);
+        this.itemManager.placeItem();
         this.turnManager = new TurnManager();
         this.turnManagerThread = null;
     }

@@ -29,11 +29,14 @@ public class Command {
     public static Command attackCommand() {
         return new Command("attackUsingEquipment");
     }
+    public static Command fleeCommand(int roomId) {
+        return new Command("flee", "r" + roomId);
+    }
     public static Command moveCommand(int roomId) {
         return new Command("move", "r" + roomId);
     }
     public static Command pickupCommand(int itemId) {
-        return new Command("pickup", "i" + itemId);
+        return new Command("takeItem", "i" + itemId);
     }
     public static Command doNothingCommand() {
         return new Command("doNothing");

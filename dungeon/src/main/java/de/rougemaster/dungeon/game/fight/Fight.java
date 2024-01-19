@@ -102,6 +102,8 @@ public class Fight {
             case STOP_DEFENDING:
                 player.stopDefending();
                 break;
+            case FLEE:
+                break;
             case USE_ITEM:
                 //TODO: Implement using an item
 //                try {

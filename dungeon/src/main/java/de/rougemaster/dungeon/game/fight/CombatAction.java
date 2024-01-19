@@ -10,6 +10,7 @@ public enum CombatAction {
     // Player specific actions
     ATTACK,
     USE_ITEM,
+    FLEE,
 
     // Skeleton specific actions
     SKELETON_SWORD_ATTACK,

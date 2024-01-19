@@ -77,6 +77,8 @@ public class SimpleClient {
                 @Override
                 public void onError(Throwable t) {
                     logger.warning("RPC failed: " + t.getMessage());
+                    //TODO: somehow reconnect to server
+                    requestObserver.onNext(convertToGameCommandRequest(new Command("initialize")));
                 }
 
                 @Override

@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class MainGameView extends ViewComponent{
+public class MainGameView extends ViewComponent {
 
     private final Map<Integer, String> optionMappings;
 
@@ -32,7 +32,6 @@ public class MainGameView extends ViewComponent{
     private static final int DOOR_OFFSET = ROOM_WIDTH / 2;
 
 
-
     private Set<Point> uniqueCoordinates;
 
     public MainGameView(Terminal terminal, GameState gameState) {
@@ -41,6 +40,7 @@ public class MainGameView extends ViewComponent{
         uniqueCoordinates = generateUniqueCoordinates(5, ROOM_WIDTH, ROOM_HEIGHT, ROOM_START_X, ROOM_START_Y);
 
     }
+
     private Set<Point> generateUniqueCoordinates(int count, int width, int height, int startX, int startY) {
         Set<Point> coordinates = new HashSet<>();
         while (coordinates.size() < count) {
@@ -57,7 +57,6 @@ public class MainGameView extends ViewComponent{
             clearAndInitializeGraphics();
             drawRoom(tg);
             drawLocalPlayer(tg);
-            /*System.out.println(gameState.getCurrentRoomId());*/
             drawPlayers(tg);
             drawMonster(tg);
             drawMonserInfo(tg);
@@ -77,7 +76,7 @@ public class MainGameView extends ViewComponent{
         int i = 0;
         // Über die GameState playerRoomMap gehen und schauen wenn ein player im selben raum ist wie der lokale spieler
         for (PlayerData player : gameState.getRoomData().getPlayers()) {
-            if(player.getId() == gameState.getLocalPlayer().getId()){
+            if (player.getId() == gameState.getLocalPlayer().getId()) {
                 continue;
             }
             tg.putString(uniqueCoordinates.stream().toList().get(i).x, uniqueCoordinates.stream().toList().get(i).y, "X");
@@ -109,7 +108,7 @@ public class MainGameView extends ViewComponent{
         tg.putString(1, statsStartY, "ITEM INFO: " + gameState.getRoomData().getItem().getName() +
                 " - " + gameState.getRoomData().getItem().getDescription() +
                 " - Attribute: " + gameState.getRoomData().getItem().getAttributeName() +
-                " "+gameState.getRoomData().getItem().getAttributes());
+                " " + gameState.getRoomData().getItem().getAttributes());
 
     }
 
@@ -199,12 +198,20 @@ public class MainGameView extends ViewComponent{
             optionMappings.put(optionNumber.getAndIncrement(), "Attack");
         }
 
-        // Display movement options based on available doors
+
+        // Display movement options based on available doors, Display "Flee" instead of move if there is another player in the room
         gameState.getRoomData().getAdjacentRooms().forEach((direction, adjacentRoomId) -> {
             if (adjacentRoomId != -1) {
-                String moveOptionText = optionNumber + ". Move " + direction.charAt(0); // 'N', 'S', 'E', 'W'
-                tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), moveOptionText);
-                optionMappings.put(optionNumber.getAndIncrement(), "Move " + direction);
+                if (gameState.getRoomData().getPlayers().size() > 1) {
+                    String moveOptionText = optionNumber + ". Flee " + direction.charAt(0); // 'N', 'S', 'E', 'W'
+                    tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), moveOptionText);
+                    optionMappings.put(optionNumber.getAndIncrement(), "Flee "+ direction);
+                } else {
+                    String moveOptionText = optionNumber + ". Move " + direction.charAt(0); // 'N', 'S', 'E', 'W'
+                    tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), moveOptionText);
+                    optionMappings.put(optionNumber.getAndIncrement(), "Move " + direction);
+                }
+
             }
         });
 

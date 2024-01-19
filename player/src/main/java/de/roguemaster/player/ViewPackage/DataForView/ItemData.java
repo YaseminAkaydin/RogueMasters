@@ -13,19 +13,19 @@ public class ItemData {
         this.id = id;
         this.name = name;
         this.description = description;
-        if (name.contains("Sword")) this.damage = itemAttribute;
-        if (name.contains("Shield")) this.defense = itemAttribute;
-        if (name.contains("Potion")) this.effect = itemAttribute;
-        if (name.contains("Book")) this.extraPoints = itemAttribute;
+        if (name.startsWith("Weapon")) this.damage = itemAttribute;
+        if (name.startsWith("Armor")) this.defense = itemAttribute;
+        if (name.startsWith("Potion")) this.effect = itemAttribute;
+        if (name.startsWith("Book")) this.extraPoints = itemAttribute;
     }
 
     // Getter & Setter
 
     public String getAttributeName(){
-        if (name.contains("Sword")) return "Damage";
-        if (name.contains("Shield")) return "Defense";
-        if (name.contains("Potion")) return "Effect";
-        if (name.contains("Book")) return "Experience";
+        if (name.startsWith("Weapon")) return "Damage";
+        if (name.startsWith("Armor")) return "Defense";
+        if (name.startsWith("Potion")) return "Effect";
+        if (name.startsWith("Book")) return "Experience";
         return "Server sends wrong Name";
     }
 
