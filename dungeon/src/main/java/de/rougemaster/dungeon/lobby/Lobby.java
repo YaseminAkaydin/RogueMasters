@@ -60,7 +60,7 @@ public class Lobby {
             Room roomOfCharacter = character.getCurrentRoom();
             item = roomOfCharacter.getItem();
         }
-        if (lobbyMessage.getCommand().startsWith("drop")) {
+        if (lobbyMessage.getCommand().startsWith("drop") || lobbyMessage.getCommand().startsWith("use") || lobbyMessage.getCommand().startsWith("equip")) {
             PlayableCharacter player = (PlayableCharacter) character;
             item = player.getInventory().stream().filter(item1 -> item1.getId() == id).toList().get(0);
         }

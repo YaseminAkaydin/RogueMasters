@@ -10,6 +10,16 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class ViewComponent {
+
+    protected State currentState;
+
+    // Define the states for InventoryView
+    public enum State {
+        MAIN_OPTIONS,
+        DROP_ITEM,
+        USE_CONSUMABLE
+        // Add other states as needed
+    }
     // ALl
     protected final Terminal terminal;
     protected TextGraphics tg;
@@ -62,6 +72,9 @@ public abstract class ViewComponent {
         for (int i = 0; i < lines.length; i++) {
             tg.putString(2, 2 + i, lines[i]);
         }
+    }
+    public State getCurrentState() {
+        return currentState;
     }
 
     public RoomData getRoomData() {

@@ -26,8 +26,8 @@ public class Command {
     public void setCommand(String command) {this.command = command; }
 
     // Factory methods for different game actions
-    public static Command attackCommand() {
-        return new Command("attackUsingEquipment");
+    public static Command attackCommand(int attackedId) {
+        return new Command("attackUsingEquipment", "a" + attackedId);
     }
     public static Command fleeCommand(int roomId) {
         return new Command("flee", "r" + roomId);

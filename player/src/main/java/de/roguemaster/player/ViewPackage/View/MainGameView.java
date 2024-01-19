@@ -7,6 +7,7 @@ import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
 import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
 import de.roguemaster.player.ViewPackage.DataForView.RoomData;
+import de.roguemaster.player.ViewPackage.View.MainActions.*;
 
 
 import java.awt.*;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainGameView extends ViewComponent {
 
-    private final Map<Integer, String> optionMappings;
+    private final Map<Integer, MainAction> optionMappings;
 
     private static final int ROOM_WIDTH = 35;
     private static final int ROOM_HEIGHT = 17;
@@ -177,7 +178,7 @@ public class MainGameView extends ViewComponent {
         AtomicInteger optionsStartY = new AtomicInteger(OPTIONS_START_Y);
         AtomicInteger optionNumber = new AtomicInteger(1); // Start with option number 1
 
-        tg.setForegroundColor(TextColor.ANSI.CYAN);
+        tg.setForegroundColor(TextColor.ANSI.WHITE);
         // Display the current room ID and adjacent room IDs
         String roomInfo = "CurrentRoomID: " + gameState.getRoomData().getId() +
                 "| North: " + getAdjacentRoomId("North") +
@@ -195,7 +196,7 @@ public class MainGameView extends ViewComponent {
         // Display 'Attack' option if a monster is present
         if (gameState.getRoomData().getEnemy() != null) {
             tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), optionNumber + ". Attack");
-            optionMappings.put(optionNumber.getAndIncrement(), "Attack");
+            optionMappings.put(optionNumber.getAndIncrement(), new AttackAction(gameState.getRoomData().getEnemy().getId()));
         }
 
 
@@ -203,50 +204,31 @@ public class MainGameView extends ViewComponent {
         gameState.getRoomData().getAdjacentRooms().forEach((direction, adjacentRoomId) -> {
             if (adjacentRoomId != -1) {
                 if (gameState.getRoomData().getPlayers().size() > 1) {
-                    String moveOptionText = optionNumber + ". Flee " + direction.charAt(0); // 'N', 'S', 'E', 'W'
+                    String moveOptionText = optionNumber + ". Flee " + direction; // 'N', 'S', 'E', 'W'
                     tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), moveOptionText);
-                    optionMappings.put(optionNumber.getAndIncrement(), "Flee "+ direction);
+                    optionMappings.put(optionNumber.getAndIncrement(), new FleeAction(adjacentRoomId));
                 } else {
-                    String moveOptionText = optionNumber + ". Move " + direction.charAt(0); // 'N', 'S', 'E', 'W'
+                    String moveOptionText = optionNumber + ". Move " + direction; // 'N', 'S', 'E', 'W'
                     tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), moveOptionText);
-                    optionMappings.put(optionNumber.getAndIncrement(), "Move " + direction);
+                    optionMappings.put(optionNumber.getAndIncrement(), new MoveAction(adjacentRoomId));
                 }
 
             }
         });
 
-        // Display 'Do Nothing' option
-        tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), optionNumber + ". Do Nothing");
-        optionMappings.put(optionNumber.getAndIncrement(), "Do Nothing");
-
         // Display 'Pick Up Item' option if items are present
         if (gameState.getRoomData().getItem() != null) {
             tg.putString(OPTIONS_START_X, optionsStartY.get(), optionNumber + ". Pick Up Item");
-            optionMappings.put(optionNumber.getAndIncrement(), "Pick Up Item");
+            optionMappings.put(optionNumber.getAndIncrement(), new PickupAction(gameState.getRoomData().getItem().getId()));
         }
     }
 
-    public Map<Integer, String> getOptionMappings() {
+    public Map<Integer, MainAction> getOptionMappings() {
         return optionMappings;
-    }
-
-    public void updateRoom(String direction) {
-
-        Integer newRoomId = gameState.getRoomData().getAdjacentRooms().get(direction.toUpperCase());
-        System.out.println("Server sollte jetzt neuen gamestate senden um den raum zu updaten");
-        /*if (newRoomId != null) {
-            RoomData roomData1 = gameState.getRoomList().get(newRoomId - 1);
-            dungeonData.updatePlayerRoom(playerData.getId(), roomData1);
-            roomData = dungeonData.getRoomList().get(newRoomId - 1); // Update roomData to the new room
-        }*/
     }
 
     public int getAdjacentRoomId(String direction) {
         return Integer.parseInt(gameState.getRoomData().getAdjacentRooms().getOrDefault(direction, -1).toString());
-    }
-
-    public int getCurrentRoomId() {
-        return gameState.getCurrentRoomId();
     }
 
 }

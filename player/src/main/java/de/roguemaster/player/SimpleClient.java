@@ -163,14 +163,6 @@ public class SimpleClient {
 
             SimpleClient client = new SimpleClient(asyncChannel, game, blockingChannel);
             client.startGame();
-
-            // You can add some logic here to wait for the game to finish
-            // For example, a simple input to stop the game
-            System.out.println("Press Enter to stop the game...");
-            terminal.flush();
-            terminal.putString("Press Enter to stop the game...");
-            System.in.read();
-
             client.stopGame(); // Stop the game and the game thread
             terminal.close();
         } catch (IOException e) {

@@ -32,7 +32,7 @@ public class ItemManager {
      */
     public void placeItem(){
         Random random= new Random();
-        int num= random.nextInt(6);
+        int num= random.nextInt(5)+1;
         List<TreasureRoom> treasureRooms= getAllTreasureRooms();
         for (Room room: treasureRooms) {
             room.item = ItemFactory.createRandomItem(num);
