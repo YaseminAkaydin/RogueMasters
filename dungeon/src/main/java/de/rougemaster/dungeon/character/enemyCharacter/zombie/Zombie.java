@@ -22,28 +22,28 @@ public class Zombie extends EnemyCharacter {
         }
 
         if(dangerLvl < 5){
-            this.attack= 2;
-            this.defense=3;
-            this.maxHp=3;
-            this.hp=3;
+            this.attack= 4;
+            this.defense=2;
+            this.maxHp=4;
+            this.hp=4;
             for(int i = dangerLvl; i>1; i--){
                 attack += 3;
-                defense += 4;
+                defense += 1;
                 maxHp +=  4;
                 hp += 4;
             }
         }
 
-        if(dangerLvl > 5){
-            this.attack= 14;
-            this.defense=19;
-            this.maxHp=19;
-            this.hp=19;
+        if(dangerLvl >= 5){
+            this.attack= 16;
+            this.defense=6;
+            this.maxHp=20;
+            this.hp=20;
             for(int i = dangerLvl; i>1; i--){
-                attack += 5;
-                defense += 5;
-                maxHp +=  6;
-                hp += 6;
+                attack += 4;
+                defense += 3;
+                maxHp +=  4;
+                hp += 4;
             }
         }
     }

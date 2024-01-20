@@ -35,7 +35,7 @@ public class ItemManager {
         int num= random.nextInt(5)+1;
         List<TreasureRoom> treasureRooms= getAllTreasureRooms();
         for (Room room: treasureRooms) {
-            room.item = ItemFactory.createRandomItem(num);
+            room.setItem(ItemFactory.createRandomItem(num));
         }
     }
 }

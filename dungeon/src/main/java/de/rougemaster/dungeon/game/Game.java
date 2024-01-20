@@ -17,6 +17,7 @@ import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Game {
@@ -37,12 +38,15 @@ public class Game {
         this.playerList = new ArrayList<>();
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
-        this.itemManager = new ItemManager(dungeon);
-        this.itemManager.placeItem();
+        this.itemManager= new ItemManager(dungeon);
+        itemManager.placeItem();
         this.turnManager = new TurnManager();
         this.turnManagerThread = null;
     }
 
+    public List<PlayableCharacter> getPlayerLits(){
+        return playerList;
+    }
     /**
      * Adds a player to the game
      */
@@ -133,6 +137,8 @@ public class Game {
      */
     public void setCharacterTurn(GameCommand gameCommand, Character character) {
         turnManager.setCharacterTurn(character, gameCommand);
+        searchForDeadCharacter();
+
     }
 
     /**
@@ -170,6 +176,19 @@ public class Game {
         } else {
             enemyList.remove(character);
 
+        }
+    }
+
+    private void searchForDeadCharacter(){
+        Map<Character, GameCommand> commandMap = turnManager.getCommandMap();
+        List<Character> charactersToRemove = new ArrayList<>();
+        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
+            if (entry.getKey().getHp() <= 0) {
+                charactersToRemove.add(entry.getKey());
+            }
+        }
+        for (Character character : charactersToRemove) {
+            removeCharacter(character);
         }
     }
 
