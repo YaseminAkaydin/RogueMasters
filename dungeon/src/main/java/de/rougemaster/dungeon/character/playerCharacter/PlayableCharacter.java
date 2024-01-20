@@ -3,10 +3,7 @@ package de.rougemaster.dungeon.character.playerCharacter;
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.characterExceptions.InventoryItemMissingException;
 import de.rougemaster.dungeon.dungeon.ItemFactory;
-import de.rougemaster.dungeon.item.Armor;
-import de.rougemaster.dungeon.item.Book;
-import de.rougemaster.dungeon.item.Item;
-import de.rougemaster.dungeon.item.Weapon;
+import de.rougemaster.dungeon.item.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,13 +70,23 @@ public class PlayableCharacter extends Character {
     }
 
     /**
-     * Uses a given Item on the PlayerCharacter
+     * Uses a given Item on the PlayerCharacter (bombs handled in Fight)
      * @param item the Item that is used.
      * @throws InventoryItemMissingException if inventory doesn't contain the given item.
      */
     public void useItem(Item item) throws InventoryItemMissingException{
         if(!inventory.contains(item)){
             throw new InventoryItemMissingException();
+        }
+        if(item instanceof Armor){
+            equipItem(item);
+        }else if (item instanceof Book){
+            Book book = (Book) item;
+            gainExperience(book.getExtraPoints());
+        }else if (item instanceof Potion){
+            hp+= ((Potion) item).use();
+        }else if (item instanceof Weapon){
+            equipItem(item);
         }
         //TODO: useItem can first be implemented after Items are implemented.
     }

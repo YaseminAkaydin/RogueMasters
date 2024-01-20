@@ -68,7 +68,13 @@ public class FightManager {
                 itemLevel = 5;
                 break;
         }
-        Room room = combatantOne.getCurrentRoom();
+        Room room;
+        if(combatantOne.getHp()<=0){
+            room = combatantTwo.getCurrentRoom();
+        }else{
+            room = combatantOne.getCurrentRoom();
+        }
+
         room.setItem(ItemFactory.createRandomItem(itemLevel));
         this.activeCombatants.remove(combatantOne);
         this.activeCombatants.remove(combatantTwo);
