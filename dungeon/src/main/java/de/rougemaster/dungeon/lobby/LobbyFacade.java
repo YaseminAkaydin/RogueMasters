@@ -103,6 +103,8 @@ public class LobbyFacade {
         return clientId;
     }
 
+
+    //------------------- Bad Design ------------------- please fix if enough time
     public GameStateMessage getGameStateMessage(int clientId){
         return new GameStateMessage(lobbyBroker.forwardToLobby(clientId).getGameState());
     }
@@ -113,10 +115,11 @@ public class LobbyFacade {
 
     public void setGameService(DungeonApplication.GameServiceImpl gameService) {
         this.gameService = gameService;
-
     }
 
     public void setClientsToConnection(Map<Integer, StreamObserver<GameCommandResponse>> clientsToConnection) {
         LobbyFacade.clientsToConnection = clientsToConnection;
     }
+
+
 }

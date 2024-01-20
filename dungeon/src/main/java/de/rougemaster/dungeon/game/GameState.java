@@ -5,6 +5,7 @@ import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.List;
+import java.util.Map;
 
 public class GameState {
 
@@ -12,10 +13,14 @@ public class GameState {
     private final List<EnemyCharacter> enemyList;
     private final List<RoomMessage> roomList;
 
-    public GameState(List<PlayableCharacter> playerList, List<EnemyCharacter> enemyList, List<RoomMessage> roomList) {
+    private final Map<Integer,Integer> fightMap;
+
+
+    public GameState(List<PlayableCharacter> playerList, List<EnemyCharacter> enemyList, List<RoomMessage> roomList, Map<Integer, Integer> fightMap) {
         this.playerList = playerList;
         this.enemyList = enemyList;
         this.roomList = roomList;
+        this.fightMap = fightMap;
     }
 
     public List<PlayableCharacter> getPlayerList() {
@@ -28,5 +33,9 @@ public class GameState {
 
     public List<RoomMessage> getRoomList() {
         return roomList;
+    }
+
+    public Map<Integer, Integer> getFightMap() {
+        return fightMap;
     }
 }

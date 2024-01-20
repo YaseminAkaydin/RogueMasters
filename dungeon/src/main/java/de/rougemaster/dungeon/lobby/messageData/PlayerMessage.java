@@ -19,6 +19,8 @@ public class PlayerMessage {
     ItemMessage armorSlot;
     ItemMessage weaponSlot;
 
+    int currentRoomId;
+
     public PlayerMessage (PlayableCharacter playableCharacter){
         this(   playableCharacter.getLevel(),
                 playableCharacter.getExperience(),
@@ -31,13 +33,14 @@ public class PlayerMessage {
                 playableCharacter.getDefense(),
                 playableCharacter.getId(),
                 new ItemMessage(playableCharacter.getArmorSlot()),
-                new ItemMessage(playableCharacter.getWeaponSlot()));
+                new ItemMessage(playableCharacter.getWeaponSlot()),
+                playableCharacter.getCurrentRoom().getId());
     }
 
     private PlayerMessage(int level, int experience, int maxExperience,
-                         String name, List<ItemMessage> inventory,
-                         int maxHP, int hp, int attack, int defense, int id,
-                          ItemMessage armorSlot, ItemMessage weaponSlot) {
+                          String name, List<ItemMessage> inventory,
+                          int maxHP, int hp, int attack, int defense, int id,
+                          ItemMessage armorSlot, ItemMessage weaponSlot, int currentRoomId) {
         this.level = level;
         this.experience = experience;
         this.maxExperience = maxExperience;
@@ -50,6 +53,7 @@ public class PlayerMessage {
         this.id = id;
         this.armorSlot = armorSlot;
         this.weaponSlot = weaponSlot;
+        this.currentRoomId = currentRoomId;
     }
 
     private static List<ItemMessage> convertItemToItemMessage (List<Item> inventory){

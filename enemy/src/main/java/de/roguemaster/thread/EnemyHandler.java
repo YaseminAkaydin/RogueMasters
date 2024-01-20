@@ -46,6 +46,7 @@ public class EnemyHandler {
     public void nextCommand() {
         //TODO: getNextTurn muss know if Enemy is in a Fight
         CommandHolder nextCommand = enemy.getNextTurn(false);
+        grpcEnemieClient.sendCommand(nextCommand);
     }
 
     public void tryConnecting() {

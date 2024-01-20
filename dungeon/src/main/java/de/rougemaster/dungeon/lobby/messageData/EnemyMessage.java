@@ -14,6 +14,8 @@ public class EnemyMessage {
     int defense;
     int id;
 
+    int currentRoomId;
+
     public EnemyMessage (EnemyCharacter enemyCharacter){
         this(   getName(enemyCharacter),
                 enemyCharacter.getDangerLevel(),
@@ -21,10 +23,12 @@ public class EnemyMessage {
                 enemyCharacter.getHp(),
                 enemyCharacter.getAttack(),
                 enemyCharacter.getDefense(),
-                enemyCharacter.getId());
+                enemyCharacter.getId(),
+                enemyCharacter.getCurrentRoom().getId());
+
     }
 
-    private EnemyMessage(String name, int dangerLevel, int maxHp, int hp, int attack, int defense, int id) {
+    private EnemyMessage(String name, int dangerLevel, int maxHp, int hp, int attack, int defense, int id, int currentRoomId) {
         this.name = name;
         this.dangerLevel = dangerLevel;
         this.maxHp = maxHp;
@@ -32,6 +36,7 @@ public class EnemyMessage {
         this.attack = attack;
         this.defense = defense;
         this.id = id;
+        this.currentRoomId = currentRoomId;
     }
 
     private static String getName (EnemyCharacter enemyCharacter) {

@@ -105,4 +105,8 @@ public class FightManager {
         }
         return charactersInFights;
     }
+
+    public List<Fight> getActiveFights() {
+        return activeFights;
+    }
 }

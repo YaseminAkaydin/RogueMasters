@@ -15,10 +15,7 @@ import de.rougemaster.dungeon.lobby.LobbyCharType;
 import de.rougemaster.dungeon.lobby.LobbyThread;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Game {
     private final List<PlayableCharacter> playerList;
@@ -146,7 +143,17 @@ public class Game {
      * @return the current GameState
      */
     public GameState getGameState(){
-        return new GameState(playerList, enemyList, dungeon.getRoomList().stream().map(RoomMessage::new).toList());
+        Map<Integer,Integer> fightMap = new HashMap<>();
+        List<Fight> fightList = this.turnManager.getFightManager().getActiveFights();
+        for(Fight fight : fightList){
+            fightMap.put(fight.getCombatantOne().getId(),fight.getCombatantTwo().getId());
+            fightMap.put(fight.getCombatantTwo().getId(),fight.getCombatantOne().getId());
+        }
+
+        return new GameState(playerList
+                            , enemyList
+                            , dungeon.getRoomList().stream().map(RoomMessage::new).toList()
+                            , fightMap);
     }
     public Dungeon getDungeon() {
         return dungeon;
