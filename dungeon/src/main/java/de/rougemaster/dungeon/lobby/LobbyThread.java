@@ -1,4 +1,4 @@
-package de.rougemaster.dungeon.game;
+package de.rougemaster.dungeon.lobby;
 
 import de.rougemaster.dungeon.lobby.Lobby;
 import de.rougemaster.dungeon.lobby.LobbyFacade;

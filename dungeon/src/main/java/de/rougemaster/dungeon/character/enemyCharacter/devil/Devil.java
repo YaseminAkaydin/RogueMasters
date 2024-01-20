@@ -6,16 +6,25 @@ import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 public class Devil extends EnemyCharacter {
 
     private DevilState state;
+    private static final int flameDamage = 50;
 
     public Devil() {
         super(0);
     }
 
     /**
-     * Devil does a "sword"-attack against a character.
+     * Devil does a "flameSword"-attack against a character.
      * @param character enemy character
      */
     public void flameSwordAttack(Character character){
+        character.setHp(character.getHp()-(this.attack + flameDamage - character.getDefense()));
+    }
+
+    /**
+     * Devil does a "sword"-attack against a character.
+     * @param character enemy character
+     */
+    public void swordAttack(Character character){
         character.setHp(character.getHp()-(this.attack - character.getDefense()));
     }
 

@@ -12,6 +12,7 @@ import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCo
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilFlameSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilPlayerKillerAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilSpikeShieldCommand;
+import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.attackUsingEquipmentCommand;
 import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.defendingPlayerCommand;
 import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.useItemInFightCommand;
@@ -128,6 +129,10 @@ public class TurnManager {
             fight.setCombatantAction(combatant, CombatAction.DEVIL_SPIKE_SHIELD);
         } else if (command instanceof devilPlayerKillerAttackCommand) {
             fight.setCombatantAction(combatant, CombatAction.DEVIL_PLAYER_KILLER_ATTACK);
+        } else if(command instanceof devilSwordAttackCommand){
+            fight.setCombatantAction(combatant, CombatAction.DEVIL_SWORD_ATTACK);
+        } else {
+            fight.setCombatantAction(combatant, CombatAction.DO_NOTHING);
         }
     }
 

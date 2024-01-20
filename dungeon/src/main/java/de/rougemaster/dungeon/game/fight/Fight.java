@@ -210,6 +210,10 @@ public class Fight {
                         devil.playerKillerAttack(player);
                     }
                 }
+            case DEVIL_SWORD_ATTACK:
+                if (player != null) {
+                    devil.swordAttack(player);
+                }
                 break;
             case DEFEND:
                 devil.defend();

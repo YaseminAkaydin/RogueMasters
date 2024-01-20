@@ -1,5 +1,7 @@
 package de.roguemaster.enemy.devil;
 
+import de.roguemaster.enemy.CommandHolder;
+
 public interface DevilState {
 
     /**
@@ -16,4 +18,10 @@ public interface DevilState {
      * @return The next Action as a State.
      */
     public DevilState roam();
+
+    /**
+     * Returns the current Action of the Devil as a CommandHolder.
+     * @return The current Action of the Devil as a CommandHolder.
+     */
+    public CommandHolder createCommand();
 }

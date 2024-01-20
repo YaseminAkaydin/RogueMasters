@@ -12,6 +12,7 @@ import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.lobby.LobbyCharType;
+import de.rougemaster.dungeon.lobby.LobbyThread;
 import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 
 import java.util.ArrayList;

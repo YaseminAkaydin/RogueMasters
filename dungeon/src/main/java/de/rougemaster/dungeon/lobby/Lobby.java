@@ -7,7 +7,6 @@ import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.Game;
-import de.rougemaster.dungeon.game.LobbyThread;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.GameState;
@@ -92,7 +91,7 @@ public class Lobby {
             switch (lobbyMessage.getCommand()) {
                 case ("defend") -> {return new defendingSkeletonCommand();}
                 case ("boneAttack") -> {return new skeletonBoneAttackCommand();}
-                case ("bonesPlosion") -> {return new skeletonBonesplosionAttackCommand();}
+                case ("bonesExplosion") -> {return new skeletonBonesplosionAttackCommand();}
                 case ("swordAttack") -> {return new skeletonSwordAttackCommand();}
             }
         }
@@ -101,6 +100,7 @@ public class Lobby {
             switch (lobbyMessage.getCommand()) {
                 case ("defend") -> {return new devilDefendCommand();}
                 case ("flameSwordAttack") -> {return new devilFlameSwordAttackCommand();}
+                case ("swordAttack") -> {return new devilSwordAttackCommand();}
                 case ("playerKillerAttack") -> {return new devilPlayerKillerAttackCommand();}
                 case ("spikeShield") -> {return new devilSpikeShieldCommand();}
             }
