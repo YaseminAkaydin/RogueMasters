@@ -283,9 +283,9 @@ public class Game {
         }
     }
     // Function for processing drop and use actions
-    private void processDropAndUse(int selectedOption, Map<Integer, ItemAction> dropItemOptionMappings) {
-        if (dropItemOptionMappings.containsKey(selectedOption)) {
-            ItemAction action = dropItemOptionMappings.get(selectedOption);
+    private void processDropAndUse(int selectedOption, Map<Integer, ItemAction> ItemOptionMappings) {
+        if (ItemOptionMappings.containsKey(selectedOption)) {
+            ItemAction action = ItemOptionMappings.get(selectedOption);
             if (action.isInternalAction()) {
                 if (action instanceof GoBackAction) {
                     ((GoBackAction) action).execute(inventoryView);

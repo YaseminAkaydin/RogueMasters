@@ -178,6 +178,7 @@ public class MainGameView extends ViewComponent {
         AtomicInteger optionsStartY = new AtomicInteger(OPTIONS_START_Y);
         AtomicInteger optionNumber = new AtomicInteger(1); // Start with option number 1
 
+        // Display upper MGV bar
         tg.setForegroundColor(TextColor.ANSI.WHITE);
         // Display the current room ID and adjacent room IDs
         String roomInfo = "CurrentRoomID: " + gameState.getRoomData().getId() +
@@ -186,6 +187,7 @@ public class MainGameView extends ViewComponent {
                 "| East: " + getAdjacentRoomId("East") +
                 "| West: " + getAdjacentRoomId("West");
         tg.putString(ROOM_START_X, ROOM_START_Y - 1, roomInfo);
+
 
         tg.setForegroundColor(TextColor.ANSI.WHITE);
         tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), "Options:");
@@ -198,6 +200,13 @@ public class MainGameView extends ViewComponent {
             tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), optionNumber + ". Attack");
             optionMappings.put(optionNumber.getAndIncrement(), new AttackAction(gameState.getRoomData().getEnemy().getId()));
         }
+        // Display 'Attack' playerID for each player in the room
+        gameState.getRoomData().getPlayers().forEach(player -> {
+            if (player.getId() != gameState.getLocalPlayer().getId()) {
+                tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), optionNumber + ". Attack Player " + player.getId());
+                optionMappings.put(optionNumber.getAndIncrement(), new AttackAction(player.getId()));
+            }
+        });
 
 
         // Display movement options based on available doors, Display "Flee" instead of move if there is another player in the room

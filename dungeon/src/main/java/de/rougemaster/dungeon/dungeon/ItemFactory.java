@@ -10,6 +10,7 @@ import java.util.Random;
  */
 public class ItemFactory {
 
+    static int itemID = 0;
     /**
      * Creates a new Item object based on type and level.
      *
@@ -46,7 +47,8 @@ public class ItemFactory {
         }
     }
 
-    private static Armor createArmor(int level) {
+    public static Armor createArmor(int level) {
+        itemID++;
         // Sample implementation, you need to define the id, name, and description for each level
         int defense = switch (level) {
             case 1 -> 3;
@@ -56,10 +58,11 @@ public class ItemFactory {
             case 5 -> 30;
             default -> throw new IllegalArgumentException("Invalid level for armor");
         };
-        return new Armor(level, "Armor " + level, "Armor description " + level, defense);
+        return new Armor(itemID, "Armor " + level, "Armor description " + level, defense);
     }
 
-    private static Weapon createWeapon(int level) {
+    public static Weapon createWeapon(int level) {
+        itemID++;
         int attack = switch (level) {
             case 1 -> 3;
             case 2 -> 5;
@@ -68,20 +71,22 @@ public class ItemFactory {
             case 5 -> 30;
             default -> throw new IllegalArgumentException("Invalid level for weapon");
         };
-        return new Weapon(level, "Weapon " + level, "Weapon description " + level, attack);
+        return new Weapon(itemID, "Weapon " + level, "Weapon description " + level, attack);
     }
 
-    private static Book createBook(int level) {
+    public static Book createBook(int level) {
+        itemID++;
         int exp = switch (level) {
             case 1 -> 5;
             case 2 -> 10;
             case 3 -> 20;
             default -> throw new IllegalArgumentException("Invalid level for book");
         };
-        return new Book(level, "Book " + level, "Book description " + level, exp);
+        return new Book(itemID, "Book " + level, "Book description " + level, exp);
     }
 
-    private static Potion createPotion(int level) {
+    public static Potion createPotion(int level) {
+        itemID++;
         int health = switch (level) {
             case 1 -> 5;
             case 2 -> 15;
@@ -90,10 +95,11 @@ public class ItemFactory {
             case 5 -> 60;
             default -> throw new IllegalArgumentException("Invalid level for potion");
         };
-        return new Potion(level, "Potion " + level, "Potion description " + level, health);
+        return new Potion(itemID, "Potion " + level, "Potion description " + level, health);
     }
 
-    private static Bomb createBomb(int level) {
+    public static Bomb createBomb(int level) {
+        itemID++;
         int damage = switch (level) {
             case 1 -> 10;
             case 2 -> 20;
@@ -101,6 +107,6 @@ public class ItemFactory {
             default -> throw new IllegalArgumentException("Invalid level for bomb");
         };
         // Assuming you have a Bomb class similar to the other items
-        return new Bomb(level, "Bomb " + level, "Bomb description " + level, damage);
+        return new Bomb(itemID, "Bomb " + level, "Bomb description " + level, damage);
     }
 }

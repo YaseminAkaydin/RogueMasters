@@ -116,7 +116,6 @@ public class DungeonApplication {
                     } else if(clientToStreamConnection.containsKey(request.getUserId())) {
                         lobbyFacade.setGameCommand(request.getUserId(), new LobbyMessage(request.getCommand(), request.getTarget()));
                     }
-                    //TODO: Client initialize might have been eaten by the dark and angry internet
 
                 }
 

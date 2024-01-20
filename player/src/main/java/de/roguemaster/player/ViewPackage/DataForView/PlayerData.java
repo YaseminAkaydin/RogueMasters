@@ -10,17 +10,21 @@ public class PlayerData {
     private int level;
     private int experience;
     private List<ItemData> inventory;
-    private int maxHp;
+    private int maxHP;
     private int hp;
     private int id;
+    private ItemData armorSlot;
+    private ItemData weaponSlot;
 
-    public PlayerData(int level, int hp, int experience, List<ItemData> inventory, int maxHp, int id) {
+    public PlayerData(int level, int hp, int experience, List<ItemData> inventory, int maxHp, int id, ItemData armorSlot, ItemData weaponSlot) {
         this.level = level;
         this.hp = hp;
         this.experience = experience;
         this.inventory = new ArrayList<>(inventory);
-        this.maxHp = maxHp;
+        this.maxHP = maxHp;
         this.id = id;
+        this.armorSlot = armorSlot;
+        this.weaponSlot = weaponSlot;
     }
 
     public int getLevel() {
@@ -44,7 +48,7 @@ public class PlayerData {
     }
 
     public int getMaxHp() {
-        return maxHp;
+        return maxHP;
     }
 
     public int getId() {

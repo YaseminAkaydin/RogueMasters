@@ -7,7 +7,7 @@ public class ItemMessage {
     String typ;
     String name;
     String description;
-    String itemAttribute;
+    int itemAttribute;
 
     public ItemMessage (Item item) {
         this(item.getId(),
@@ -17,7 +17,7 @@ public class ItemMessage {
                 getItemAttributeFromWeapon(item));
     }
 
-    private ItemMessage(int id, String typ, String name, String description, String itemAttribute) {
+    private ItemMessage(int id, String typ, String name, String description, int itemAttribute) {
         this.id = id;
         this.typ = typ;
         this.name = name;
@@ -43,21 +43,21 @@ public class ItemMessage {
         }
         throw new IllegalArgumentException("Not known Typ of Item");
     }
-    private static String getItemAttributeFromWeapon(Item item) {
+    private static Integer getItemAttributeFromWeapon(Item item) {
         if(item instanceof Armor){
-            return "Defense: " + ((Armor) item).getDefense();
+            return ((Armor) item).getDefense();
         }
         if(item instanceof Book){
-            return "Experience: " + ((Book) item).getExtraPoints();
+            return ((Book) item).getExtraPoints();
         }
         if(item instanceof Potion){
-            return "Healing: " + ((Potion) item).getEffect();
+            return ((Potion) item).getEffect();
         }
         if(item instanceof Weapon){
-            return "Attack: " + ((Weapon) item).getDamage();
+            return ((Weapon) item).getDamage();
         }
         if(item instanceof Bomb){
-            return "Damage: " + ((Bomb) item).getEffect();
+            return ((Bomb) item).getEffect();
         }
         throw new IllegalArgumentException("Not known Typ of Item");
     }
