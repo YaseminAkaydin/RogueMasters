@@ -6,6 +6,7 @@ import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.CombatAction;
 import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.fight.FightManager;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.fleeGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilFlameSwordAttackCommand;
@@ -109,6 +110,9 @@ public class TurnManager {
             fight.setCombatantAction(combatant, CombatAction.ATTACK);
         } else if (command instanceof defendingPlayerCommand) {
             fight.setCombatantAction(combatant, CombatAction.DEFEND);
+        } else if (command instanceof fleeGameCommand fleeCommand) {
+            fight.setCombatantAction(combatant, CombatAction.FLEE);
+            combatant.flee(fleeCommand.room);
         } else if (command instanceof useItemInFightCommand) {
             fight.setCombatantAction(combatant, CombatAction.USE_ITEM);
         } else if (command instanceof skeletonSwordAttackCommand) {

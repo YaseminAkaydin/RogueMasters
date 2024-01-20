@@ -5,6 +5,7 @@ public enum CombatAction {
     // Generic actions
     DO_NOTHING,
     DEFEND,
+    FLEE,
     STOP_DEFENDING,
 
     // Player specific actions
