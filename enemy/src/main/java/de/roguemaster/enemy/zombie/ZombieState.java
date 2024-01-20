@@ -1,5 +1,7 @@
 package de.roguemaster.enemy.zombie;
 
+import de.roguemaster.enemy.CommandHolder;
+
 public interface ZombieState {
     /**
      * Returns Zombies next action inform of a State.
@@ -15,4 +17,10 @@ public interface ZombieState {
      * @return The next Action as a State.
      */
     public ZombieState roam();
+
+    /**
+     * Returns the current Action of the Zombie as a CommandHolder.
+     * @return The current Action of the Zombie as a CommandHolder.
+     */
+    public CommandHolder createCommand();
 }
