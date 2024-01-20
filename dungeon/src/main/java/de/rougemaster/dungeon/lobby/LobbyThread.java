@@ -25,6 +25,8 @@ public class LobbyThread implements Runnable{
             List<Character> charactersToKill = game.searchAndRemoveAllDeadCharacters();
             for (Character character: charactersToKill) {
                 lobby.killCharacter(character);
+                int clientId = lobby.getClienID(character);
+                LobbyFacade.getInstance().unregisterUser(clientId);
             }
             game.getTurnManager().executeTurn();
 
