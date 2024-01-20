@@ -113,6 +113,7 @@ public class TurnManager {
             fight.setCombatantAction(combatant, CombatAction.FLEE);
             fleeGameCommand fleeCommand = (fleeGameCommand) command;
             combatant.flee(fleeCommand.room);
+            fightManager.endFight(fightManager.getFight(combatant));
         } else if (command instanceof useItemInFightCommand) {
             fight.setCombatantAction(combatant, CombatAction.USE_ITEM);
         } else if (command instanceof skeletonSwordAttackCommand) {
@@ -165,7 +166,7 @@ public class TurnManager {
                     continue;
                 }
 
-                if (room1.equals(room2) && !character1.equals(character2)) {
+                if (room1==room2 && character1!=character2) {
                     fightManager.startFight(character1, character2);
                 }
 

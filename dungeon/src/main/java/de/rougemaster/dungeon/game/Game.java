@@ -10,6 +10,7 @@ import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.ItemManager;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.Fight;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.lobby.LobbyCharType;
 import de.rougemaster.dungeon.lobby.LobbyThread;
@@ -50,29 +51,31 @@ public class Game {
     public PlayableCharacter addPlayer() {
         PlayableCharacter player = new PlayableCharacter();
 
-        List<Room> allRooms = dungeon.getRoomList();
-        List<Room> nonBossRooms = allRooms.stream()
-                .filter(room -> !(room instanceof BossRoom))
-                .toList();
-
-
-        //kein Random room OHNE GEGENER DRIN
-        if (!nonBossRooms.isEmpty()) {
-            Random random = new Random();
-            boolean done= true;
-            while (done){
-                Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
-                if(randomRoom.getCharacters().isEmpty()){
-                    player.teleport(randomRoom);
-                    done=false;
-                }
-            }
-        }
-
+        player.teleport(findFreeRoom());
+        setCharacterTurn(new doNothingGameCommand(player), player);
         playerList.add(player);
         return player;
     }
 
+    public Room findFreeRoom(){
+        List<Room> allRooms = dungeon.getRoomList();
+        List<Room> notAvailableRooms= new ArrayList<>();
+        for (PlayableCharacter playableCharacter: playerList) {
+            notAvailableRooms.add(playableCharacter.getCurrentRoom());
+        }
+        for (EnemyCharacter enemyCharacter: enemyList){
+            notAvailableRooms.add(enemyCharacter.getCurrentRoom());
+        }
+        Set<Room> mergedSet= new HashSet<>(allRooms);
+        mergedSet.removeAll(notAvailableRooms);
+
+        Room firstRoom=null;
+        Iterator<Room> iterator = mergedSet.iterator();
+        if (iterator.hasNext()) {
+            firstRoom = iterator.next();
+        }
+        return firstRoom;
+    }
 
 
     /**
@@ -83,27 +86,8 @@ public class Game {
         EnemyCharacterFactory enemyFactory = new EnemyCharacterFactory();
         EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType));
 
-        List<Room> allRooms = dungeon.getRoomList();
-        List<Room> nonBossRooms = allRooms.stream()
-                .filter(room -> !(room instanceof BossRoom))
-                .toList();
-        BossRoom bossRoom= (BossRoom) allRooms.stream().filter(room -> room instanceof BossRoom).toList().get(0);
-
-        if(enemy instanceof Devil){
-            enemy.teleport(bossRoom);
-        } else {
-            if (!nonBossRooms.isEmpty()) {
-                Random random = new Random();
-                boolean done= true;
-                while (done){
-                    Room randomRoom = nonBossRooms.get(random.nextInt(nonBossRooms.size()));
-                    if(randomRoom.getCharacters().isEmpty()){
-                        enemy.teleport(randomRoom);
-                        done=false;
-                    }
-                }
-            }
-        }
+        enemy.teleport(findFreeRoom());
+        setCharacterTurn(new doNothingGameCommand(enemy), enemy);
         enemyList.add(enemy);
         return enemy;
     }

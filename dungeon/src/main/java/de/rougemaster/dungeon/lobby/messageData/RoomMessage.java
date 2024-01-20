@@ -25,8 +25,6 @@ public class RoomMessage {
         this(
                 room.getId(),
                 room.getItem(),
-                getEnemies(room.getCharacters()),
-                getPlayers(room.getCharacters()),
                 room.getAdjacentRoom(RoomCardinalDirection.North) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.North).getId(),
                 room.getAdjacentRoom(RoomCardinalDirection.South) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.South).getId(),
                 room.getAdjacentRoom(RoomCardinalDirection.West) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.West).getId(),
@@ -35,13 +33,13 @@ public class RoomMessage {
         );
     }
 
-    public RoomMessage(int id, Item item, EnemyMessage enemies, List<PlayerMessage> players, int roomNorth, int roomSouth, int roomWest, int roomEast, String roomType) {
+    public RoomMessage(int id, Item item, int roomNorth, int roomSouth, int roomWest, int roomEast, String roomType) {
         this.id = id;
         if (item != null){
             this.item = new ItemMessage(item);
         }
-        this.enemy = enemies;
-        this.players = players;
+        this.enemy = null;
+        this.players = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
         this.roomType = roomType;
         adjacentRooms.put(RoomCardinalDirection.North, roomNorth);

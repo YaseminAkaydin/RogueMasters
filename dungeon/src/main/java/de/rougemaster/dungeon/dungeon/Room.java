@@ -4,20 +4,18 @@ import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.item.Item;
 
 import java.util.*;
-//TODO: Import Items und EnemyCharacter (durch NullType ersetzen), prüfen ob Typen von Klassenvariablen korrekt sind, Kommentare
+
 
 abstract public class Room {
 
     static int instanceCounter = 0;
     private int id;
     protected Item item;
-    protected List<Character> characters;
     private final Map<RoomCardinalDirection, Room> adjacentRooms;
 
     public Room() {
         instanceCounter++;
         this.id = instanceCounter;
-        this.characters = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
         adjacentRooms.put(RoomCardinalDirection.North, null);
         adjacentRooms.put(RoomCardinalDirection.South, null);
@@ -101,20 +99,6 @@ abstract public class Room {
      */
     public void removeItem() {this.item = null;}
 
-    /**
-     * Retrieves the list of characters present in this room.
-     *
-     * @return The list of characters in the room.
-     */
-    public List<Character> getCharacters() {
-        return characters;
-    }
-
-    public void removeCharacter(Character character){
-        if (characters.contains(character)){
-            characters.remove(character);
-        }
-    }
 
     /**
      * Retrieves the total number of Room instances created.

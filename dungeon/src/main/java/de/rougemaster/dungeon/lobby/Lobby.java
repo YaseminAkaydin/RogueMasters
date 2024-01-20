@@ -172,7 +172,6 @@ public class Lobby {
         if(!characterMap.containsValue(character)){
             return;
         }
-        character.getCurrentRoom().removeCharacter(character);
         character.die();
         game.removeCharacter(character);
         //TODO: remove from lobyfacade
