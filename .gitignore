@@ -1,3 +1,5 @@
 .idea/
 *.lock
 *.bin
+/enemy/build/
+/enemy/.gradle/

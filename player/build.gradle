@@ -37,7 +37,6 @@ dependencies {
 	// JSON
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 
-
 }
 
 protobuf {
@@ -75,9 +74,6 @@ configurations {
 		extendsFrom annotationProcessor
 	}
 }
-
-
-
 
 
 tasks.named('test') {

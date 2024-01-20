@@ -11,7 +11,7 @@ message GameCommandRequest {
 
 // The response message containing the result of the command.
 message GameCommandResponse {
-  string message = 2;
+  string message = 1;
 }
 
 message JoinLobbyRequest {

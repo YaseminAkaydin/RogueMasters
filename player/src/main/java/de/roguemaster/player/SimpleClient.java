@@ -3,8 +3,10 @@ package de.roguemaster.player;
 import com.example.grpc.*;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+
 import de.roguemaster.player.ViewPackage.Command;
 import de.roguemaster.player.ViewPackage.Game;
+
 import io.grpc.Channel;
 import io.grpc.Grpc;
 import io.grpc.InsecureChannelCredentials;
@@ -26,7 +28,7 @@ public class SimpleClient {
     private final GameServiceGrpc.GameServiceStub asyncStub; // Async stub, for commands and 5sekGamestate from server
     private final ManageServiceGrpc.ManageServiceBlockingStub blockingStub; // For joining lobbies/creating lobbies
 
-    StreamObserver<GameCommandRequest> requestObserver; //
+    StreamObserver<GameCommandRequest> requestObserver;
 
     public SimpleClient(Channel asyncChannel, Game game, Channel blockingChannel) {
         this.blockingStub = ManageServiceGrpc.newBlockingStub(blockingChannel);
@@ -41,19 +43,15 @@ public class SimpleClient {
         // Start the ClientLoop
         while (game.getRunning()) {
             Command command = game.getNextCommand();
-
             //checkGameStarted();
-
             if (command != null) {
                 checkAndSendCommands(command);
             }
-
             if (requestObserver != null && !game.getRunning()) {
                 System.out.println("Client shutting down, sending complete");
                 stopGame();
                 requestObserver.onCompleted(); // Complete the request stream
             }
-
         }
     }
 
@@ -112,8 +110,6 @@ public class SimpleClient {
             requestObserver.onNext(request);
         }
     }
-
-
     // Method to convert a Command to a JoinLobbyRequest
     private JoinLobbyRequest convertToJoinLobbyRequest(Command command) {
         return JoinLobbyRequest.newBuilder().
@@ -141,7 +137,6 @@ public class SimpleClient {
         });
         gameThread.start();
     }
-
     // Method to stop the game
     public void stopGame() {
         if (gameThread != null && gameThread.isAlive()) {

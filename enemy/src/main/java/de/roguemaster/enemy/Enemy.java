@@ -1,22 +1,17 @@
 package de.roguemaster.enemy;
 
-public class Enemy {
+public abstract class Enemy {
     //max hp plus getter
 
-    private int hp;
-    private int maxHp;
+    protected int hp;
+    protected int maxHp;
 
     /**
-     * This method is called every round to evaluate and execute the next action.
+     * Return the next Commands and continues the Enemystates
+     * @param isFighting if the enemy is in a Fight
+     * @return the next Command of the Enemy
      */
-    public boolean evaluateSituation(){
-        //TODO: implement this method to evaluate the situation and return true if the enemy should fight
-        return false;
-    }
-
-    public CommandHolder getNextTurn(boolean fight){
-        return new CommandHolder("move", "r1");
-    }
+    public abstract CommandHolder getNextTurn(boolean isFighting);
 
     public int getHp() {
         return hp;
