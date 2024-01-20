@@ -117,6 +117,10 @@ public class LobbyFacade {
         this.gameService = gameService;
     }
 
+    public void unregisterUser(int clientId){
+        this.lobbyBroker.unregisterUser(clientId);
+    }
+
     public void setClientsToConnection(Map<Integer, StreamObserver<GameCommandResponse>> clientsToConnection) {
         LobbyFacade.clientsToConnection = clientsToConnection;
     }

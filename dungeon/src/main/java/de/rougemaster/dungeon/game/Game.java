@@ -134,7 +134,6 @@ public class Game {
      */
     public void setCharacterTurn(GameCommand gameCommand, Character character) {
         turnManager.setCharacterTurn(character, gameCommand);
-        searchForDeadCharacter();
 
     }
 
@@ -186,7 +185,7 @@ public class Game {
         }
     }
 
-    private void searchForDeadCharacter(){
+    public List<Character> searchAndRemoveAllDeadCharacters(){
         Map<Character, GameCommand> commandMap = turnManager.getCommandMap();
         List<Character> charactersToRemove = new ArrayList<>();
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
@@ -194,9 +193,7 @@ public class Game {
                 charactersToRemove.add(entry.getKey());
             }
         }
-        for (Character character : charactersToRemove) {
-            removeCharacter(character);
-        }
+        return charactersToRemove;
     }
 
     public void createTurnManagerThread (LobbyThread turnManagerThread) {

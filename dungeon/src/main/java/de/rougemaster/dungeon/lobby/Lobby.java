@@ -119,6 +119,16 @@ public class Lobby {
         game.setCharacterTurn(clientGameCommand, clientCharacter);
     }
 
+    public int getClienID(Character character){
+        int result=0;
+        for (Map.Entry<Integer, Character> entry: characterMap.entrySet()) {
+            if(entry.getValue().equals(character)){
+                result=entry.getKey();
+            }
+        }
+        return result;
+    }
+
     /**
      * Registers a User to the Lobby
      * @param clientId The Identifikator of the client
@@ -157,6 +167,16 @@ public class Lobby {
         //TODO: Remove Character from Game
     }
 
+
+    public void killCharacter(Character character){
+        if(!characterMap.containsValue(character)){
+            return;
+        }
+        character.getCurrentRoom().removeCharacter(character);
+        character.die();
+        game.removeCharacter(character);
+        //TODO: remove from lobyfacade
+    }
     /**
      * Sends the next Turn signal to LobbyFacade.
      */
