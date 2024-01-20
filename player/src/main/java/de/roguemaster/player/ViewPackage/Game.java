@@ -3,10 +3,12 @@ package de.roguemaster.player.ViewPackage;
 import com.google.gson.reflect.TypeToken;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.GoBackAction;
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.ItemAction;
+import de.roguemaster.player.ViewPackage.View.MainActions.MainAction;
 import de.roguemaster.player.cs.DataContainer;
 import de.roguemaster.player.cs.JSONManager;
 import de.roguemaster.player.ViewPackage.DataForView.GameState;
@@ -160,7 +162,7 @@ public class Game {
         } else if (currentView instanceof MainGameView) {
             processMainGameViewInput(keyStroke);
         } else if (currentView instanceof InventoryView) {
-            processInventoryViewInput((InventoryView) currentView, keyStroke);
+            processInventoryViewInput(keyStroke);
         }
 
         if (gameStarted.get()) {
@@ -238,150 +240,60 @@ public class Game {
 
     private void processMainGameViewInput(KeyStroke keyStroke) {
         if (keyStroke.getCharacter() == null) return;
-        Map<Integer, String> options = mainGameView.getOptionMappings();
         char inputChar = keyStroke.getCharacter();
         int selectedOption = Character.isDigit(inputChar) ? Character.getNumericValue(inputChar) : -1;
-        Command command = null;
+        Map<Integer, MainAction> options = mainGameView.getOptionMappings();
         if (options.containsKey(selectedOption)) {
-            String action = options.get(selectedOption);
-            switch (action) {
-                case "Attack":
-                    command = Command.attackCommand();
-                    break;
-                case "Do Nothing":
-                    command = Command.doNothingCommand();
-                    break;
-                case "Move North":
-                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("North"));
-                    break;
-                case "Move South":
-                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("South"));
-                    break;
-                case "Move East":
-                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("East"));
-                    break;
-                case "Move West":
-                    command = Command.moveCommand(mainGameView.getAdjacentRoomId("West"));
-                    break;
-                case "Flee North":
-                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("North"));
-                    break;
-                case "Flee South":
-                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("South"));
-                    break;
-                case "Flee East":
-                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("East"));
-                    break;
-                case "Flee West":
-                    command = Command.fleeCommand(mainGameView.getAdjacentRoomId("West"));
-                    break;
-                case "Pick Up Item":
-                    logger.info("Pick up Item");
-                    command = Command.pickupCommand(mainGameView.getRoomData().getItem().getId());
-                    break;
-                default:
-                    logger.info("Default: Do Nothing");
-                    command = Command.doNothingCommand();
-                    break;
-            }
-        }
-        // Add command to the queue
-        if (command != null) {
-            commandQueue.add(command);
+            MainAction action = options.get(selectedOption);
+            action.createCommand();
+            commandQueue.add(action.createCommand());
         }
     }
 
-    private void processInventoryViewInput(InventoryView inventoryView, KeyStroke keyStroke) {
+    private void processInventoryViewInput(KeyStroke keyStroke) {
         if (keyStroke.getCharacter() == null) return;
         char inputChar = keyStroke.getCharacter();
         int selectedOption = Character.isDigit(inputChar) ? Character.getNumericValue(inputChar) : -1;
-        Command command = null;
-        if (inventoryView.getCurrentState() == InventoryView.State.DROP_ITEM) {
-            Map<Integer, String> dropItemOptionMappings = inventoryView.getDropItemOptionMappings();
-            if (dropItemOptionMappings.containsKey(selectedOption)) {
-                String action = dropItemOptionMappings.get(selectedOption);
-                switch (action) {
-                    case "Drop 1":
-                        logger.info("DROP_ITEM: send drop 1 to server");
-                        command = Command.dropItemCommand(1); // TODO: Option ID --> Inventory ID
-                        break;
-                    case "Drop 2":
-                        logger.info("DROP_ITEM: send drop 2 to server");
-                        command = Command.dropItemCommand(2);
-                        break;
-                    // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
-                    case "Drop 3":
-                        logger.info("DROP_ITEM: send drop 3 to server");
-                        command = Command.dropItemCommand(3);
-                        break;
-                    case "Drop 4":
-                        logger.info("DROP_ITEM: send drop 4 to server");
-                        command = Command.dropItemCommand(4);
-                        break;
-                    case "Go back":
-                        logger.info("Go Back");
-                        inventoryView.setCurrentState(InventoryView.State.MAIN_OPTIONS);
-                        break;
-                    default:
-                        logger.info("Default: Do Nothing DROP_ITEM");
-                        break;
-                }
 
-                if (command != null) {
-                    commandQueue.add(command);
-                }
-            }
-
+        if (currentView.getCurrentState() == ViewComponent.State.DROP_ITEM) {
+            Map<Integer, ItemAction> dropItemOptionMappings = inventoryView.getDropItemOptionMappings();
+            processDropAndUse(selectedOption, dropItemOptionMappings);
         }
         if (inventoryView.getCurrentState() == InventoryView.State.USE_CONSUMABLE) {
-            Map<Integer, String> useConsumableOptionMappings = inventoryView.getUseConsumableOptionMappings();
-            if (useConsumableOptionMappings.containsKey(selectedOption)) {
-                String action = useConsumableOptionMappings.get(selectedOption);
-                switch (action) {
-                    case "Use Book":
-                        logger.info("USE_CONSUMABLE: send Use Book to server");
-                        break;
-                    case "Use Potion":
-                        logger.info("USE_CONSUMABLE: send Use Potion to server");
-                        break;
-                    // Add cases for other actions like "Move NORTH", "Move SOUTH", etc.
-                    case "Use 3":
-                        logger.info("USE_CONSUMABLE: send use 3 to server");
-                        break;
-                    case "Use 4":
-                        logger.info("USE_CONSUMABLE: send use 4 to server");
-                        break;
-                    case "Go back":
-                        logger.info("Go Back");
-                        inventoryView.setCurrentState(InventoryView.State.MAIN_OPTIONS);
-                        break;
-                    default:
-                        logger.info("Default: Do Nothing USE_CONSUMABLE");
-                        break;
-                }
-
-            }
+            Map<Integer, ItemAction> useConsumableOptionMappings = inventoryView.getUseConsumableOptionMappings();
+            processDropAndUse(selectedOption, useConsumableOptionMappings);
 
         }
+        // Handles the menu state within inventory view
         Map<Integer, String> options = inventoryView.getOptionMappings();
         if (inventoryView.getCurrentState() == InventoryView.State.MAIN_OPTIONS && (options.containsKey(selectedOption))) {
             String action = options.get(selectedOption);
             switch (action) {
                 case "Drop Item":
                     inventoryView.setCurrentState(InventoryView.State.DROP_ITEM);
-                    logger.info("MAINOPTIONS: state = DROP_ITEM");
-                    currentView.display();
                     break;
                 case "Use Consumable":
-                    inventoryView.setCurrentState(InventoryView.State.USE_CONSUMABLE);
-                    logger.info("MAINOPTIONS: state = USE_CONSUMABLE");
-                    currentView.display();
+                    inventoryView.setCurrentState(ViewComponent.State.USE_CONSUMABLE);
                     break;
                 default:
                     logger.info("Default: Do Nothing MAINOPTIONS");
                     break;
             }
 
+        }
+    }
+    // Function for processing drop and use actions
+    private void processDropAndUse(int selectedOption, Map<Integer, ItemAction> dropItemOptionMappings) {
+        if (dropItemOptionMappings.containsKey(selectedOption)) {
+            ItemAction action = dropItemOptionMappings.get(selectedOption);
+            if (action.isInternalAction()) {
+                if (action instanceof GoBackAction) {
+                    ((GoBackAction) action).execute(inventoryView);
+                    currentView.display();
+                }
+            } else {
+                commandQueue.add(action.createCommand());
+            }
         }
     }
 

@@ -5,7 +5,10 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.DataForView.ItemData;
-import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.DropAction;
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.GoBackAction;
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.ItemAction;
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.UseAction;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,19 +18,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class InventoryView extends ViewComponent {
 
 
-    // Define the states for InventoryView
-    public enum State {
-        MAIN_OPTIONS,
-        DROP_ITEM,
-        USE_CONSUMABLE
-        // Add other states as needed
-    }
 
-    private State currentState;
 
     private final Map<Integer, String> optionMappings = new HashMap<>();
-    private final Map<Integer, String> dropItemOptionMappings = new HashMap<>();
-    private final Map<Integer, String> useConsumableOptionMappings = new HashMap<>();
+    private final Map<Integer, ItemAction> dropItemOptionMappings = new HashMap<>();
+    private final Map<Integer, ItemAction> useConsumableOptionMappings = new HashMap<>();
 
 
     public InventoryView(Terminal terminal, GameState gameState) {
@@ -93,7 +88,7 @@ public class InventoryView extends ViewComponent {
         if (!gameState.getInventoryItems().isEmpty()) {
             String dropItemOption = optionNumber + ". Drop Item";
             tg.putString(2, optionsStartY.getAndIncrement(), dropItemOption);
-            optionMappings.put(optionNumber.getAndIncrement(), "Drop Item"); //TODO:
+            optionMappings.put(optionNumber.getAndIncrement(), "Drop Item");
         }
         // Display 'Use Consumable' option if any consumable items are present
         long consumableCount = gameState.getInventoryItems().stream()
@@ -108,19 +103,21 @@ public class InventoryView extends ViewComponent {
     }
 
     private void displayDropItemOptions(TextGraphics tg) {
+        dropItemOptionMappings.clear();
         AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
         tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to drop");
         for (ItemData item : gameState.getInventoryItems()) {
             String optionText = optionNumber.get() + ". Drop " + optionNumber.get();
-            dropItemOptionMappings.put(optionNumber.get(), "Drop " + optionNumber.getAndIncrement());
+            dropItemOptionMappings.put(optionNumber.getAndIncrement(), new DropAction(item.getId()));
             tg.putString(2, optionsStartY.getAndIncrement(), optionText);
         }
         tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
-        dropItemOptionMappings.put(optionNumber.get(), "Go back");
+        dropItemOptionMappings.put(optionNumber.get(), new GoBackAction());
     }
 
     private void displayUseConsumableOptions(TextGraphics tg) {
+        useConsumableOptionMappings.clear();
         AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
         tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to use");
@@ -128,35 +125,28 @@ public class InventoryView extends ViewComponent {
             if (item.getDescription().contains("Potion") || item.getDescription().contains("Book")) {
                 String itemType = item.getDescription().contains("Potion") ? "Potion" : "Book";
                 String optionText = optionNumber.get() + ". Use " + itemType;
-                useConsumableOptionMappings.put(optionNumber.get(), "Use " + itemType);
+                useConsumableOptionMappings.put(optionNumber.getAndIncrement(), new UseAction(item.getId()));
                 tg.putString(2, optionsStartY.getAndIncrement(), optionText);
-                optionNumber.incrementAndGet();
             }
         }
         tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
-        useConsumableOptionMappings.put(optionNumber.get(), "Go back");
+        useConsumableOptionMappings.put(optionNumber.get(), new GoBackAction());
     }
-
 
     public void setCurrentState(State currentState) {
         this.currentState = currentState;
-        // Call display to refresh the view
         display();
-    }
-
-    public State getCurrentState() {
-        return currentState;
     }
 
     public Map<Integer, String> getOptionMappings() {
         return optionMappings;
     }
 
-    public Map<Integer, String> getDropItemOptionMappings() {
+    public Map<Integer, ItemAction> getDropItemOptionMappings() {
         return dropItemOptionMappings;
     }
 
-    public Map<Integer, String> getUseConsumableOptionMappings() {
+    public Map<Integer, ItemAction> getUseConsumableOptionMappings() {
         return useConsumableOptionMappings;
     }
 }

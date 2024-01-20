@@ -38,6 +38,9 @@ public class ItemMessage {
         if(item instanceof Weapon){
             return "Weapon";
         }
+        if(item instanceof Bomb){
+            return "Bomb";
+        }
         throw new IllegalArgumentException("Not known Typ of Item");
     }
     private static String getItemAttributeFromWeapon(Item item) {
@@ -52,6 +55,9 @@ public class ItemMessage {
         }
         if(item instanceof Weapon){
             return "Attack: " + ((Weapon) item).getDamage();
+        }
+        if(item instanceof Bomb){
+            return "Damage: " + ((Bomb) item).getEffect();
         }
         throw new IllegalArgumentException("Not known Typ of Item");
     }
