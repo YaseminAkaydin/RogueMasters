@@ -92,7 +92,7 @@ public class Lobby {
                 case ("defend") -> {return new defendingSkeletonCommand();}
                 case ("boneAttack") -> {return new skeletonBoneAttackCommand();}
                 case ("bonesExplosion") -> {return new skeletonBonesplosionAttackCommand();}
-                case ("swordAttack") -> {return new skeletonSwordAttackCommand();}
+                case ("skeletonSwordAttack") -> {return new skeletonSwordAttackCommand();}
             }
         }
 
@@ -100,7 +100,7 @@ public class Lobby {
             switch (lobbyMessage.getCommand()) {
                 case ("defend") -> {return new devilDefendCommand();}
                 case ("flameSwordAttack") -> {return new devilFlameSwordAttackCommand();}
-                case ("swordAttack") -> {return new devilSwordAttackCommand();}
+                case ("devilSwordAttack") -> {return new devilSwordAttackCommand();}
                 case ("playerKillerAttack") -> {return new devilPlayerKillerAttackCommand();}
                 case ("spikeShield") -> {return new devilSpikeShieldCommand();}
             }

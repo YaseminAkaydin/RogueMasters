@@ -1,5 +1,7 @@
 package de.roguemaster.enemy.skeleton;
 
+import de.roguemaster.enemy.CommandHolder;
+
 public interface SkeletonState {
     /**
      * Returns Skeleton next action in form of a State.
@@ -15,4 +17,10 @@ public interface SkeletonState {
      * @return The next Action as a State.
      */
     public SkeletonState roam();
+
+    /**
+     * Returns the current Action of the Skeleton as a CommandHolder.
+     * @return The current Action of the Skeleton as a CommandHolder.
+     */
+    public CommandHolder createCommand();
 }

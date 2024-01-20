@@ -21,6 +21,6 @@ public class DevilP1WeakAttack  implements DevilState {
 
     @Override
     public CommandHolder createCommand() {
-        return new CommandHolder("swordAttack", "");
+        return new CommandHolder("devilSwordAttack", "");
     }
 }
