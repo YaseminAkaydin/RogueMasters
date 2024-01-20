@@ -2,6 +2,14 @@ package de.rougemaster.dungeon.character.enemyCharacter.zombie;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
+import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.dungeon.DungeonRoom;
+import de.rougemaster.dungeon.dungeon.Room;
+import de.rougemaster.dungeon.dungeon.RoomCardinalDirection;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Zombie extends EnemyCharacter {
 
@@ -63,6 +71,39 @@ public class Zombie extends EnemyCharacter {
     public void biteAttack(Character character){
 
         character.setHp(character.getHp()-(this.attack + biteBonusDamage - character.getDefense()));
+    }
+
+    /**
+     * Zombie heals to full HP.
+     */
+    public void heal(){
+        hp = maxHp;
+    }
+
+
+    /**
+     * Makes the zombie move to a Room, where a character is
+     */
+    public void roam(){
+        Map<RoomCardinalDirection, Room> adjacentRooms = currentRoom.getAdjacentRooms();
+        Room potentialRoom = null;
+
+        for (Map.Entry<RoomCardinalDirection, Room> entry : adjacentRooms.entrySet()) {
+            System.out.println(entry.getKey() + "/" + entry.getValue());
+            Room room = entry.getValue();
+            List<Character> characters = room.getCharacters();
+            if(characters.size()==1) {
+                if (characters.get(0) instanceof PlayableCharacter) {
+                    move(room);
+                    return;
+                }
+            }else if(characters.isEmpty()){
+                potentialRoom = room;
+            }
+        }
+        if(potentialRoom != null){
+            move(potentialRoom);
+        }
     }
 
     /**

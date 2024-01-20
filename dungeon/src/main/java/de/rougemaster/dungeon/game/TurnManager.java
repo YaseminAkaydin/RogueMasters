@@ -160,7 +160,6 @@ public class TurnManager {
                 if (fightingCharacters.contains(character1) || fightingCharacters.contains(character2)) {
                     continue;
                 }
-
                 if (room1.equals(room2) && !character1.equals(character2)) {
                     fightManager.startFight(character1, character2);
                 }

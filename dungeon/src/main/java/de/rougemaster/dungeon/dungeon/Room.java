@@ -4,6 +4,7 @@ import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.item.Item;
 
 import java.util.*;
+import java.util.stream.Collectors;
 //TODO: Import Items und EnemyCharacter (durch NullType ersetzen), prüfen ob Typen von Klassenvariablen korrekt sind, Kommentare
 
 abstract public class Room {
@@ -77,6 +78,16 @@ abstract public class Room {
      */
     public boolean isRoomAdjacent(Room room) {
         return adjacentRooms.containsValue(room);
+    }
+
+    public RoomCardinalDirection getRandomAvailableDirection(Room room) {
+        List<RoomCardinalDirection> availableDirections = room.getAdjacentRooms().entrySet().stream().filter(entry -> entry.getValue() == null).map(Map.Entry::getKey).toList();
+        Random random = new Random();
+        if (availableDirections.isEmpty()) {
+            return null;
+        }
+        int randomIndex = random.nextInt(availableDirections.size());
+        return availableDirections.get(randomIndex);
     }
 
     /**
