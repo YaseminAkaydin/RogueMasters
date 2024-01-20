@@ -225,8 +225,8 @@ public class MainGameView extends ViewComponent {
             }
         });
 
-        // Display 'Pick Up Item' option if items are present
-        if (gameState.getRoomData().getItem() != null) {
+        // Display 'Pick Up Item' option if items are present AND if the is no other player in the room
+        if (gameState.getRoomData().getItem() != null && gameState.getRoomData().getPlayers().size() == 1 ) {
             tg.putString(OPTIONS_START_X, optionsStartY.get(), optionNumber + ". Pick Up Item");
             optionMappings.put(optionNumber.getAndIncrement(), new PickupAction(gameState.getRoomData().getItem().getId()));
         }
