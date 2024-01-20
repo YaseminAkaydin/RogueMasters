@@ -1,7 +1,11 @@
 package de.rougemaster.dungeon.lobby;
 
+import de.rougemaster.dungeon.game.Game;
+import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.lobby.Lobby;
 import de.rougemaster.dungeon.lobby.LobbyFacade;
+
+import java.util.List;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -17,7 +21,13 @@ public class LobbyThread implements Runnable{
         while (true) {
 
             long startTime = currentTimeMillis(); // Aufnahme der Startzeit
-            lobby.getGame().getTurnManager().executeTurn();
+            Game game = lobby.getGame();
+            List<Character> charactersToKill = game.searchAndRemoveAllDeadCharacters();
+            for (Character character: charactersToKill) {
+                lobby.killCharacter(character);
+            }
+            game.getTurnManager().executeTurn();
+
             long endTime = currentTimeMillis(); // Aufnahme der Endzeit
 
             long executionTime = endTime - startTime; // Berechnung der Ausführungszeit

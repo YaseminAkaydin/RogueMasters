@@ -60,6 +60,12 @@ public abstract class Character {
         this.hp = hp;
     }
 
+
+    public void die(){
+        hp = 0;
+        currentRoom = null;
+    }
+
     public int getMaxHp() {
         return maxHp;
     }

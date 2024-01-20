@@ -42,29 +42,36 @@ public class FightManager {
     public void endFight(Fight fight) {
         Character combatantOne = fight.getCombatantOne();
         Character combatantTwo = fight.getCombatantTwo();
+        int enemyLevel = 0;
         if (combatantOne instanceof EnemyCharacter) {
             ((EnemyCharacter) combatantOne).dropExperience((PlayableCharacter) combatantTwo);
-            int enemylevel = ((EnemyCharacter) combatantOne).getDangerLevel();
-            int itemLevel = 1;
-            switch (enemylevel) {
-                case 2:
-                    itemLevel = 2;
-                    break;
-                case 3, 4:
-                    itemLevel = 3;
-                    break;
-                case 5, 6:
-                    itemLevel = 4;
-                    break;
-                case 7, 8:
-                    itemLevel = 5;
-                    break;
-            }
-            Room room = combatantOne.getCurrentRoom();
-            room.setItem(ItemFactory.createRandomItem(itemLevel));
+            enemyLevel = ((EnemyCharacter) combatantOne).getDangerLevel();
+
         } else {
-            ((EnemyCharacter) combatantTwo).dropExperience((PlayableCharacter) combatantOne);
+            if(combatantTwo instanceof EnemyCharacter) {
+                ((EnemyCharacter) combatantTwo).dropExperience((PlayableCharacter) combatantOne);
+                enemyLevel = ((EnemyCharacter) combatantTwo).getDangerLevel();
+            }
         }
+        int itemLevel = 1;
+        switch (enemyLevel) {
+            case 2:
+                itemLevel = 2;
+                break;
+            case 3, 4:
+                itemLevel = 3;
+                break;
+            case 5, 6:
+                itemLevel = 4;
+                break;
+            case 7, 8:
+                itemLevel = 5;
+                break;
+        }
+        Room room = combatantOne.getCurrentRoom();
+        room.setItem(ItemFactory.createRandomItem(itemLevel));
+        this.activeCombatants.remove(combatantOne);
+        this.activeCombatants.remove(combatantTwo);
         this.activeFights.remove(fight);
     }
 

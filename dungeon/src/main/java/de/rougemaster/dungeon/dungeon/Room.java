@@ -110,6 +110,12 @@ abstract public class Room {
         return characters;
     }
 
+    public void removeCharacter(Character character){
+        if (characters.contains(character)){
+            characters.remove(character);
+        }
+    }
+
     /**
      * Retrieves the total number of Room instances created.
      *

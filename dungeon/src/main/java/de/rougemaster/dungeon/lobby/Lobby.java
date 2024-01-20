@@ -157,6 +157,16 @@ public class Lobby {
         //TODO: Remove Character from Game
     }
 
+
+    public void killCharacter(Character character){
+        if(!characterMap.containsValue(character)){
+            return;
+        }
+        character.getCurrentRoom().removeCharacter(character);
+        character.die();
+        game.removeCharacter(character);
+        //TODO: remove from lobyfacade
+    }
     /**
      * Sends the next Turn signal to LobbyFacade.
      */
