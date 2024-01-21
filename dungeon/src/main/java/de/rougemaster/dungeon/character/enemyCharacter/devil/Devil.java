@@ -5,22 +5,17 @@ import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 
 public class Devil extends EnemyCharacter {
 
-    private DevilState state;
-    private static final int flameDamage = 50;
+    private static final int flameDamage = 10;
 
     public Devil() {
         super(0);
         id = ++idCounter;
-        int dangerLvl = 15;
+        this.dangerLevel = 15;
 
-        this.attack= 100;
-        this.defense=80;
+        this.attack=85;
+        this.defense=65;
         this.maxHp=150;
         this.hp=150;
-        for(int i = dangerLvl; i>1; i--){
-            attack += 10;
-            defense += 5;
-        }
     }
 
     /**
@@ -28,7 +23,8 @@ public class Devil extends EnemyCharacter {
      * @param character enemy character
      */
     public void flameSwordAttack(Character character){
-        character.setHp(character.getHp()-(this.attack + flameDamage - character.getDefense()));
+        int netDamage = this.attack + flameDamage - character.getDefense();
+        character.setHp(character.getHp()- netDamage<0?0:netDamage);
     }
 
     /**
@@ -36,7 +32,8 @@ public class Devil extends EnemyCharacter {
      * @param character enemy character
      */
     public void swordAttack(Character character){
-        character.setHp(character.getHp()-(this.attack - character.getDefense()));
+        int netDamage = this.attack - character.getDefense();
+        character.setHp(character.getHp()-netDamage<0?0:netDamage);
     }
 
     /**
@@ -80,23 +77,4 @@ public class Devil extends EnemyCharacter {
         this.attack=105;
         this.defense=70;
     }
-
-    /**
-     * Gives you the next action of Devil inside a fight
-     * @return the action in form of a DevilState
-     */
-    public DevilState getFightAction(){
-        state = state.fight(this);
-        return state;
-    }
-
-    /**
-     * Gives you the next Action of Devil that is roaming
-     * @return the Action in form of a DevilState
-     */
-    public DevilState getRoamAction(){
-        state = state.roam();
-        return state;
-    }
-
 }

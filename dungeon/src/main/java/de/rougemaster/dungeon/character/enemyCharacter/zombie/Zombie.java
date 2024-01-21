@@ -12,12 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Zombie extends EnemyCharacter {
-
-
     private static final int ExpDropAmount = 10;
     private static final int biteBonusDamage = 5;
-
-    private ZombieState state;
 
     public Zombie(int dangerLvl){
         super(ExpDropAmount);
@@ -31,7 +27,6 @@ public class Zombie extends EnemyCharacter {
         }
 
         if(dangerLvl < 5){
-
             this.attack= 4;
             this.defense=2;
             this.maxHp=4;
@@ -63,7 +58,8 @@ public class Zombie extends EnemyCharacter {
      * @param character enemy character
      */
     public void clawAttack(Character character) {
-        character.setHp(character.getHp()-(this.attack - character.getDefense()));
+        int netDamage = this.attack - character.getDefense();
+        character.setHp(character.getHp()-netDamage<0?0:netDamage);
     }
 
     /**
@@ -71,8 +67,8 @@ public class Zombie extends EnemyCharacter {
      * @param character enemy character
      */
     public void biteAttack(Character character){
-
-        character.setHp(character.getHp()-(this.attack + biteBonusDamage - character.getDefense()));
+        int netDamage = this.attack + biteBonusDamage*(dangerLevel/2) - character.getDefense();
+        character.setHp(character.getHp()-netDamage<0?0:netDamage);
     }
 
     /**
@@ -107,23 +103,4 @@ public class Zombie extends EnemyCharacter {
             move(potentialRoom);
         }
     }
-
-    /**
-     * Gives you the next action of zombie inside a fight
-     * @return the action in form of a ZombieState
-     */
-    public ZombieState getFightAction(){
-        state = state.fight(this);
-        return state;
-    }
-
-    /**
-     * Gives you the next Action of Zombie that is roaming
-     * @return the Action in form of a ZombieState
-     */
-    public ZombieState getRoamAction(){
-        state = state.roam();
-        return state;
-    }
-
 }

@@ -5,10 +5,7 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.DataForView.ItemData;
-import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.DropAction;
-import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.GoBackAction;
-import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.ItemAction;
-import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.UseAction;
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -60,7 +57,9 @@ public class InventoryView extends ViewComponent {
                 case USE_CONSUMABLE:
                     displayUseConsumableOptions(tg);
                     break;
-                // Other cases as needed
+                case EQUIP_ITEM:
+                    displayEquipItemOptions(tg);
+                    break;
             }
 
             // Display player stats
@@ -70,6 +69,23 @@ public class InventoryView extends ViewComponent {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void displayEquipItemOptions(TextGraphics tg) {
+        equipItemOptionMappings.clear();
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
+        AtomicInteger optionNumber = new AtomicInteger(1);
+        tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to equip");
+        for (ItemData item : gameState.getInventoryItems()) {
+            if ((item.getTyp().equals("Weapon") || item.getTyp().equals("Armor")
+            && item.getId() != gameState.getLocalPlayer().getArmorSlot().getId() && item.getId() != gameState.getLocalPlayer().getWeaponSlot().getId())) {
+                String optionText = optionNumber.get() + ". Equip " + optionNumber.get();
+                equipItemOptionMappings.put(optionNumber.getAndIncrement(), new EquipAction(item.getId()));
+                tg.putString(2, optionsStartY.getAndIncrement(), optionText);
+            }
+        }
+        tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
+        equipItemOptionMappings.put(optionNumber.get(), new GoBackAction());
     }
 
     /**
@@ -135,6 +151,16 @@ public class InventoryView extends ViewComponent {
             tg.putString(2, optionsStartY.getAndIncrement(), useConsumableOption);
             optionMappings.put(optionNumber.getAndIncrement(), "Use Consumable");
         }
+        // Display 'Equip Item' option only if inventory has weapons or armor other than equipped
+        long equipableCount = gameState.getInventoryItems().stream()
+                .filter(item -> item.getTyp().equals("Weapon") || item.getTyp().equals("Armor"))
+                .filter(item -> item.getId() != gameState.getLocalPlayer().getArmorSlot().getId() && item.getId() != gameState.getLocalPlayer().getWeaponSlot().getId())
+                .count();
+        if (equipableCount > 0) {
+            String equipItemOption = optionNumber + ". Equip Item";
+            tg.putString(2, optionsStartY.getAndIncrement(), equipItemOption);
+            optionMappings.put(optionNumber.getAndIncrement(), "Equip Item");
+        }
 
     }
 
@@ -174,7 +200,7 @@ public class InventoryView extends ViewComponent {
         for (ItemData item : gameState.getInventoryItems()) {
             if (item.getDescription().contains("Potion") || item.getDescription().contains("Book")) {
                 String itemType = item.getDescription().contains("Potion") ? "Potion" : "Book";
-                String optionText = optionNumber.get() + ". Use " + itemType;
+                String optionText = optionNumber.get() + ". Use " + itemType + " " + optionNumber.get();
                 useConsumableOptionMappings.put(optionNumber.getAndIncrement(), new UseAction(item.getId()));
                 tg.putString(2, optionsStartY.getAndIncrement(), optionText);
             }
@@ -199,5 +225,9 @@ public class InventoryView extends ViewComponent {
 
     public Map<Integer, ItemAction> getUseConsumableOptionMappings() {
         return useConsumableOptionMappings;
+    }
+
+    public Map<Integer, ItemAction> getEquipItemOptionMappings() {
+        return equipItemOptionMappings;
     }
 }

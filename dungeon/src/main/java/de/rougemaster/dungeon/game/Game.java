@@ -90,7 +90,12 @@ public class Game {
      */
     public EnemyCharacter addEnemy(LobbyCharType enemyType) {;
         EnemyCharacterFactory enemyFactory = new EnemyCharacterFactory();
-        EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType));
+        int playlerlevelSum =0;
+        for(Character character: playerList){
+            playlerlevelSum+= ((PlayableCharacter) character).getLevel();
+        }
+        int playlerlevelAvg = playlerlevelSum / playerList.size();
+        EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType), playlerlevelAvg);
 
         if(enemyType ==LobbyCharType.Devil){
             enemy.teleport(findBossRoom());

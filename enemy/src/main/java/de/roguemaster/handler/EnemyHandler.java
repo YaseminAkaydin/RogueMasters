@@ -55,7 +55,7 @@ public class EnemyHandler {
         GameStateMessage gameStateMessage = jsonManager.read(response.getMessage());
         EnemyMessage selfEnemyMesssage =  searchSelfEnemyMessage(gameStateMessage.getEnemyList());
         if(selfEnemyMesssage == null || selfEnemyMesssage.getHp() <= 0) {
-            System.out.println("Enemy is dead");
+            System.out.println("Enemy is dead"); // TODO: ???
             return;
         }
 

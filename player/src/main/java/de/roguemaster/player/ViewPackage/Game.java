@@ -80,7 +80,7 @@ public class Game {
             try {
                 currentView.display();
 
-                if ((currentView instanceof StartingLobbyView) && (gameState == null) && !(currentView instanceof GameOverView)) {
+                if (currentView instanceof StartingLobbyView && gameState == null) {
                     initializeGame();
                 }
                 Thread.sleep(10);
@@ -211,7 +211,6 @@ public class Game {
         } else if (currentView instanceof InventoryView) {
             processInventoryViewInput(keyStroke);
         }
-
         if (gameStarted.get()) {
             processGlobalInput(keyStroke);
         }
@@ -336,13 +335,18 @@ public class Game {
 
         if (currentView.getCurrentState() == ViewComponent.State.DROP_ITEM) {
             Map<Integer, ItemAction> dropItemOptionMappings = inventoryView.getDropItemOptionMappings();
-            processDropAndUse(selectedOption, dropItemOptionMappings);
+            processItemAction(selectedOption, dropItemOptionMappings);
         }
         if (inventoryView.getCurrentState() == InventoryView.State.USE_CONSUMABLE) {
             Map<Integer, ItemAction> useConsumableOptionMappings = inventoryView.getUseConsumableOptionMappings();
-            processDropAndUse(selectedOption, useConsumableOptionMappings);
-
+            processItemAction(selectedOption, useConsumableOptionMappings);
         }
+        if (inventoryView.getCurrentState() == InventoryView.State.EQUIP_ITEM) {
+            Map<Integer, ItemAction> equipItemOptionMappings = inventoryView.getEquipItemOptionMappings();
+            processItemAction(selectedOption, equipItemOptionMappings);
+        }
+
+
         // Handles the menu state within inventory view
         Map<Integer, String> options = inventoryView.getOptionMappings();
         if (inventoryView.getCurrentState() == InventoryView.State.MAIN_OPTIONS && (options.containsKey(selectedOption))) {
@@ -353,6 +357,9 @@ public class Game {
                     break;
                 case "Use Consumable":
                     inventoryView.setCurrentState(ViewComponent.State.USE_CONSUMABLE);
+                    break;
+                case "Equip Item":
+                    inventoryView.setCurrentState(ViewComponent.State.EQUIP_ITEM);
                     break;
                 default:
                     logger.info("Default: Do Nothing MAINOPTIONS");
@@ -367,11 +374,11 @@ public class Game {
      * internal actions directly or adds external command actions to the command queue.
      *
      * @param selectedOption The selected option index.
-     * @param ItemOptionMappings A map of item actions indexed by option numbers.
+     * @param itemOptionMappings A map of item actions indexed by option numbers.
      */
-    private void processDropAndUse(int selectedOption, Map<Integer, ItemAction> ItemOptionMappings) {
-        if (ItemOptionMappings.containsKey(selectedOption)) {
-            ItemAction action = ItemOptionMappings.get(selectedOption);
+    private void processItemAction(int selectedOption, Map<Integer, ItemAction> itemOptionMappings) {
+        if (itemOptionMappings.containsKey(selectedOption)) {
+            ItemAction action = itemOptionMappings.get(selectedOption);
             if (action.isInternalAction()) {
                 if (action instanceof GoBackAction) {
                     ((GoBackAction) action).execute(inventoryView);

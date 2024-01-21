@@ -11,7 +11,7 @@ public class Command {
     }
     public Command(String command) {
         this.command = command;
-        this.target = "/";
+        this.target = "";
     }
     //new builder
     public static Command newBuilder() {
@@ -43,11 +43,17 @@ public class Command {
     public static Command initialize( ) {
         return new Command("initialize");
     }
+    public static Command defend( ) {
+        return new Command("defend");
+    }
     public static Command joinLobby(String lobbyCode) {
         return new Command(lobbyCode);
     }
     public static Command dropItemCommand(int itemId) {
         return new Command("dropItem", "i" + itemId);
+    }
+    public static Command equipItemCommand(int itemId) {
+        return new Command("equipItem", "i" + itemId);
     }
 
     // Getters

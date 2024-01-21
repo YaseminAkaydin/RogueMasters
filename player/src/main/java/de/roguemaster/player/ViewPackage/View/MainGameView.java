@@ -3,10 +3,8 @@ package de.roguemaster.player.ViewPackage.View;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
 import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
-import de.roguemaster.player.ViewPackage.DataForView.RoomData;
 import de.roguemaster.player.ViewPackage.View.MainActions.*;
 
 
@@ -288,6 +286,12 @@ public class MainGameView extends ViewComponent {
                 optionMappings.put(optionNumber.getAndIncrement(), new AttackAction(player.getId()));
             }
         });
+        // Display "Defend" if there is a monster or another player in the room
+        if (gameState.getRoomData().getEnemy() != null || gameState.getRoomData().getPlayers().size() > 1) {
+            tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), optionNumber + ". Defend");
+            optionMappings.put(optionNumber.getAndIncrement(), new DefendAction());
+        }
+
 
 
         // Display movement options based on available doors, Display "Flee" instead of move if there is another player in the room

@@ -69,9 +69,15 @@ public class TurnManager {
      */
     private Map<Character, GameCommand> startTurn() {
         Map<Character, GameCommand> copyCommandMap = commandMap;
+        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()){
+            if(entry.getValue().equals("flee")){
+                fightManager.endFight(fightManager.getFight(entry.getKey()));
+            }
+        }
         List<Character> allCharactersInFights = fightManager.getAllCharactersInFights();
         setAllFightActions(allCharactersInFights, copyCommandMap);
         fightManager.executeAllTurns();
+
         for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
             Character currentCharacter = entry.getKey();
             if (allCharactersInFights.contains(currentCharacter)) {
@@ -182,6 +188,11 @@ public class TurnManager {
 
     public void setCharacterTurn(Character character, GameCommand command) {
         commandMap.put(character, command);
+    }
+
+    public void reset(){
+        this.commandMap=null;
+        this.fightManager=null;
     }
 
 }

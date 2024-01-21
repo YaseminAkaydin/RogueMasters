@@ -41,13 +41,14 @@ public class ItemData {
     public int getAttributes(){
         return this.itemAttribute;
     }
+
     public String getAttributeType(){
         // Weapon/Bomb = damagae, Armor = defense, Consumable = heal, Book = experience
         if (typ.equals("Weapon") || typ.equals("Bomb")){
             return "Damage";
         } else if (typ.equals("Armor")){
             return "Defense";
-        } else if (typ.equals("Consumable")){
+        } else if (typ.equals("Potion")){
             return "Heal";
         } else if (typ.equals("Book")){
             return "Experience";
@@ -56,4 +57,7 @@ public class ItemData {
         }
     }
 
+    public String getTyp() {
+        return typ;
+    }
 }

@@ -26,12 +26,11 @@ public class PlayableCharacter extends Character {
         weaponSlot = ItemFactory.createWeapon(1);
         inventory.add(armorSlot);
         inventory.add(weaponSlot);
-        hp = 3;
+        hp = 5;
         attack = 2;
-        defense =2;
-        maxHp = 3;
+        defense = 3;
+        maxHp = 5;
         level = 1;
-
     }
 
     /**
@@ -42,7 +41,7 @@ public class PlayableCharacter extends Character {
         int attackDamage = weaponSlot == null ? this.attack : this.attack + weaponSlot.getDamage();
         int netDamage = attackDamage - character.getDefense();
         if (netDamage > 0) {
-            character.setHp(character.getHp() - netDamage);
+            character.setHp(character.getHp() - netDamage<0?0:netDamage);
         }
     }
 
@@ -205,9 +204,8 @@ public class PlayableCharacter extends Character {
         if(!inventory.contains(item)) {
             throw new InventoryItemMissingException();
         }
-        //TODO: Check if item is equipable.
 
-        if (item instanceof Weapon) {
+        if (item instanceof Weapon ) {
             weaponSlot = (Weapon) item;
         } else if (item instanceof Armor) {
             armorSlot = (Armor) item;

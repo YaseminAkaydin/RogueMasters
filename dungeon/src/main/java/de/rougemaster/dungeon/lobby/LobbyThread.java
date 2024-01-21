@@ -14,7 +14,7 @@ import static java.lang.System.currentTimeMillis;
 public class LobbyThread implements Runnable{
     Lobby lobby;
 
-    //TODO: Testen !!!
+
     public LobbyThread(Lobby lobby) {
         this.lobby = lobby;
     }
@@ -23,6 +23,15 @@ public class LobbyThread implements Runnable{
     public void run() {
         lobby.startGame();
         while (true) {
+            if(lobby.getGame().getPlayerLits().isEmpty()){
+                //Turnmanager und Fightmanager aus Game clearen
+                //Lobby unregistern
+                //LobbyThread beenden
+                lobby.getGame().getTurnManager().reset();
+                LobbyFacade lobbyFacade= LobbyFacade.getInstance();
+                lobbyFacade.lobbyBroker.getLobbyBrokerRegister().removeLobby(lobby.getLobbyId());
+                Thread.currentThread().interrupt();
+            }
             long startTime = currentTimeMillis(); // Aufnahme der Startzeit
             Game game = lobby.getGame();
             List<Character> charactersToKill = game.searchAndRemoveAllDeadPlayableCharacters();

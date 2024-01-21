@@ -76,15 +76,19 @@ public class FightManager {
         Room room;
         if(combatantOne.getHp()<=0){
             room = combatantTwo.getCurrentRoom();
-        }else{
+            room.setItem(ItemFactory.createRandomItem(itemLevel));
+        }else if(combatantTwo.getHp()<=0){
             room = combatantOne.getCurrentRoom();
+            room.setItem(ItemFactory.createRandomItem(itemLevel));
         }
 
-        room.setItem(ItemFactory.createRandomItem(itemLevel));
+
         this.activeCombatants.remove(combatantOne);
         this.activeCombatants.remove(combatantTwo);
         this.activeFights.remove(fight);
     }
+
+
 
     /**
      * Executes the next turn for all fights. Should be called once every 5 seconds by TurnManager.
