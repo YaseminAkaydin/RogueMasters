@@ -7,10 +7,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.ViewPackage.Command;
 import de.roguemaster.player.ViewPackage.Game;
 
-import io.grpc.Channel;
-import io.grpc.Grpc;
-import io.grpc.InsecureChannelCredentials;
-import io.grpc.ManagedChannel;
+import io.grpc.*;
 import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
@@ -144,10 +141,16 @@ public class SimpleClient {
         }
     }
 
+    // Main Accepts one target, with following syntax: [hostname]:[port]
     public static void main(String[] args) throws InterruptedException {
-        String target = "localhost:8811";
-        ManagedChannel asyncChannel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
-        ManagedChannel blockingChannel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
+        String target = "127.0.0.1:8811";
+
+        ManagedChannel asyncChannel = ManagedChannelBuilder.forAddress(args[0], Integer.parseInt(args[1]))
+                .usePlaintext()
+                .build();
+        ManagedChannel blockingChannel = ManagedChannelBuilder.forAddress(args[0], Integer.parseInt(args[1]))
+                .usePlaintext()
+                .build();
 
         try {
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();

@@ -1,6 +1,15 @@
 plugins {
 	id 'java'
 	id 'com.google.protobuf' version '0.9.4'
+	id 'com.github.johnrengelman.shadow' version '7.1.0'
+}
+shadowJar {
+	archiveBaseName.set('player')
+	archiveVersion.set('1')
+	archiveClassifier.set('')
+	manifest {
+		attributes 'Main-Class': 'de.roguemaster.player.SimpleClient'
+	}
 }
 repositories {
 	maven { // The google mirror is less flaky than mavenCentral()
@@ -9,14 +18,11 @@ repositories {
 	mavenLocal()
 }
 
-def grpcVersion = '1.60.0' // CURRENT_GRPC_VERSION
-def protobufVersion = '3.24.0'
+def grpcVersion = '1.61.0' // CURRENT_GRPC_VERSION
+def protobufVersion = '3.25.2'
 def protocVersion = protobufVersion
 
 dependencies {
-
-
-
 	// gRPC
 	implementation "io.grpc:grpc-protobuf:${grpcVersion}"
 	implementation "io.grpc:grpc-services:${grpcVersion}"
@@ -26,10 +32,9 @@ dependencies {
 
 	implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
 
-	runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+	runtimeOnly "io.grpc:grpc-okhttp:${grpcVersion}"
 
-	// Testing
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+	implementation 'com.googlecode.lanterna:lanterna:3.1.1'
 
 	// JSON
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
@@ -71,7 +76,8 @@ configurations {
 }
 
 
+/*
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
+}*/

@@ -15,8 +15,12 @@ public class PlayerData {
     private int id;
     private ItemData armorSlot;
     private ItemData weaponSlot;
+    private int currentRoomId;
 
-    public PlayerData(int level, int hp, int experience, List<ItemData> inventory, int maxHp, int id, ItemData armorSlot, ItemData weaponSlot) {
+    public PlayerData(int level, int hp, int experience,
+                      List<ItemData> inventory, int maxHp,
+                      int id, ItemData armorSlot, ItemData weaponSlot,
+                      int currentRoomId) {
         this.level = level;
         this.hp = hp;
         this.experience = experience;
@@ -25,14 +29,11 @@ public class PlayerData {
         this.id = id;
         this.armorSlot = armorSlot;
         this.weaponSlot = weaponSlot;
+        this.currentRoomId = currentRoomId;
     }
 
     public int getLevel() {
         return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
     }
 
     public int getHp() {
@@ -53,6 +54,10 @@ public class PlayerData {
 
     public int getId() {
         return id;
+    }
+
+    public int getCurrentRoomId() {
+        return currentRoomId;
     }
 }
 

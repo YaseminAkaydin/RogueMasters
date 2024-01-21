@@ -31,8 +31,8 @@ public class GameState {
 
         this.playerRoomMap = new HashMap<>();
         initPlayerRoomMap();
-        this.roomData = findRoomById(getCurrentRoomId());
         this.playerData = getLocalPlayer();
+        this.roomData = findRoomById(playerData.getCurrentRoomId());
         this.inventoryItems = playerData.getInventory();
     }
 
