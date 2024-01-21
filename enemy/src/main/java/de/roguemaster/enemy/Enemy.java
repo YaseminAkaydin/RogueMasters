@@ -20,4 +20,12 @@ public abstract class Enemy {
     public int getMaxHp() {
         return maxHp;
     }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public void setMaxHp(int maxHp) {
+        this.maxHp = maxHp;
+    }
 }

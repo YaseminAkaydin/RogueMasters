@@ -63,7 +63,7 @@ public class GrpcEnemyClient {
             public void onNext(GameCommandResponse response) { // Das ruft der Server aus!
                 // Handle incoming game state
                 // UpdateGamestete hier
-                enemyHandler.nextCommand();
+                enemyHandler.nextCommand(response);
             }
 
             @Override
@@ -86,4 +86,7 @@ public class GrpcEnemyClient {
     }
 
 
+    public void shutdown() {
+        requestObserver.onCompleted();
+    }
 }

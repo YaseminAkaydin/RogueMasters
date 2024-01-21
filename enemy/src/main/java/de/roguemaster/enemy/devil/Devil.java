@@ -2,9 +2,14 @@ package de.roguemaster.enemy.devil;
 
 import de.roguemaster.enemy.CommandHolder;
 import de.roguemaster.enemy.Enemy;
+import de.roguemaster.enemy.devil.devilState.DevilSleep;
 
 public class Devil extends Enemy {
     DevilState state;
+
+    public Devil() {
+        this.state = new DevilSleep();
+    }
 
     @Override
     public CommandHolder getNextTurn(boolean isFighting){
