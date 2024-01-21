@@ -10,15 +10,15 @@ public class Skeleton extends Enemy {
     public Skeleton() {
         this.state = new SkeletonHide();
     }
+
     @Override
     public CommandHolder getNextTurn(boolean isFighting) {
         if(isFighting) {
-            state.fight(this);
-            return state.createCommand();
+            state = state.fight(this);
         }else {
-            state.roam();
-            return state.createCommand();
+            state = state.roam();
         }
+        return state.createCommand();
     }
 
     @Override

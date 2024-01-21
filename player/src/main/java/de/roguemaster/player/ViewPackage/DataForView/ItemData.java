@@ -38,12 +38,22 @@ public class ItemData {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public int getAttributes(){
         return this.itemAttribute;
+    }
+    public String getAttributeType(){
+        // Weapon/Bomb = damagae, Armor = defense, Consumable = heal, Book = experience
+        if (typ.equals("Weapon") || typ.equals("Bomb")){
+            return "Damage";
+        } else if (typ.equals("Armor")){
+            return "Defense";
+        } else if (typ.equals("Consumable")){
+            return "Heal";
+        } else if (typ.equals("Book")){
+            return "Experience";
+        } else {
+            return "Unkonwn";
+        }
     }
 
 }

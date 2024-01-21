@@ -128,10 +128,10 @@ public class MainGameView extends ViewComponent {
         if (gameState.getRoomData().getEnemy() == null) {
             return;
         }
-        int statsStartY = terminal.getTerminalSize().getRows() - 3; // Below the room
+        int statsStartY = terminal.getTerminalSize().getRows() - 5; // Below the room
         tg.setForegroundColor(TextColor.ANSI.RED);
         // print NAME HP: hp/MaxHP, Danger-Level: dangerLevel
-        tg.putString(1, statsStartY, "MONSTER INFO: " + gameState.getRoomData().getEnemy().getName() +
+        tg.putString(1, statsStartY, gameState.getRoomData().getEnemy().getName() +
                 "- " + gameState.getRoomData().getEnemy().getHp() +
                 "/" + gameState.getRoomData().getEnemy().getMaxHp() +
                 "HP - Danger-Level: " + gameState.getRoomData().getEnemy().getDangerLevel() +
@@ -151,13 +151,13 @@ public class MainGameView extends ViewComponent {
         if (gameState.getRoomData().getItem() == null) {
             return;
         }
-        int statsStartY = terminal.getTerminalSize().getRows() - 2; // Below the room
+        int statsStartY = terminal.getTerminalSize().getRows() - 4; // Below the room
         tg.setForegroundColor(TextColor.ANSI.YELLOW);
         // print NAME HP: hp/MaxHP, Danger-Level: dangerLevel
-        tg.putString(1, statsStartY, "ITEM INFO: " + gameState.getRoomData().getItem().getName() +
+        tg.putString(1, statsStartY, gameState.getRoomData().getItem().getName() +
                 " - " + gameState.getRoomData().getItem().getDescription() +
-                " - Attribute: " + gameState.getRoomData().getItem().getAttributeName() +
-                " " + gameState.getRoomData().getItem().getAttributes());
+                " - " + gameState.getRoomData().getItem().getAttributeType() +
+                ": " + gameState.getRoomData().getItem().getAttributes());
 
     }
 

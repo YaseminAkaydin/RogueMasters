@@ -29,7 +29,7 @@ public class InventoryView extends ViewComponent {
      * Constructs a new InventoryView with the specified Terminal and GameState. Initializes
      * the current state of the inventory view to display the main options.
      *
-     * @param terminal The Terminal object used for displaying this view.
+     * @param terminal  The Terminal object used for displaying this view.
      * @param gameState The current state of the game, containing all necessary information about the inventory.
      */
     public InventoryView(Terminal terminal, GameState gameState) {
@@ -79,7 +79,7 @@ public class InventoryView extends ViewComponent {
      */
     private void drawTitle(TextGraphics tg) {
         // Display inventory title
-        String title = "Inventory";
+        String title = "Inventory - Green items are equipped";
         tg.putString(2, 1, title); // Adjust the position as needed
     }
 
@@ -90,14 +90,20 @@ public class InventoryView extends ViewComponent {
      * @param tg TextGraphics object used for rendering text on the terminal.
      */
     private void drawItemList(TextGraphics tg) {
-        // Display the list of inventory items
-        int startY = 3; // Adjust the starting Y position as needed
+        int startY = 3;
         for (int i = 0; i < gameState.getInventoryItems().size(); i++) {
+            if ((gameState.getInventoryItems().get(i).getId() == gameState.getLocalPlayer().getArmorSlot().getId()) ||
+            (gameState.getInventoryItems().get(i).getId() == gameState.getLocalPlayer().getWeaponSlot().getId())){
+                tg.setForegroundColor(TextColor.ANSI.GREEN);
+            } else{
+                tg.setForegroundColor(TextColor.ANSI.WHITE);
+            }
             String itemString = (i + 1) + ". " +
-                    gameState.getInventoryItems().get(i).getName() +
-                    ": " + gameState.getInventoryItems().get(i).getDescription() +
-                    " | Attribute: " + gameState.getInventoryItems().get(i).getAttributes();
+                    gameState.getInventoryItems().get(i).getAttributeName() +
+                    " | " + gameState.getInventoryItems().get(i).getDescription() +
+                    " | " + gameState.getInventoryItems().get(i).getAttributeType() +": " + gameState.getInventoryItems().get(i).getAttributes();
             tg.putString(2, startY + i, itemString);
+            tg.setForegroundColor(TextColor.ANSI.WHITE);
         }
     }
 

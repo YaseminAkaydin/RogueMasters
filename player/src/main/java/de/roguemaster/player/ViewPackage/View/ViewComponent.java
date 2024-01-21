@@ -32,7 +32,8 @@ public abstract class ViewComponent {
 
     protected final Random random = new Random();
 
-    protected static final String asciiArt = "\n" +            " (                              *                                   \n" +
+    protected static final String asciiArt = "\n" +
+            " (                              *                                   \n" +
             " )\\ )                         (  `                 )                \n" +
             "(()/(      (  (     (     (   )\\))(      )      ( /(   (   (        \n" +
             " /(_)) (   )\\))(   ))\\   ))\\ ((_)()\\  ( /(  (   )\\()) ))\\  )(   (   \n" +
@@ -80,13 +81,17 @@ public abstract class ViewComponent {
      */
     protected void displayPlayerStats(TextGraphics tg) throws IOException {
         int statsStartY = terminal.getTerminalSize().getRows() - 1; // Below the room
+        tg.setForegroundColor(TextColor.ANSI.WHITE);
+        tg.putString(1, statsStartY,"'M' OR 'D' for Map -- 'I' for Inventory -- 'S' for RoomView");
         tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(1, statsStartY,
+        tg.putString(1, statsStartY-1,
                 "LEVEL: " + gameState.getLocalPlayer().getLevel() +
-                " - " + gameState.getLocalPlayer().getHp() +
-                "/" + gameState.getLocalPlayer().getMaxHp() +
-                "HP - EXP: " + gameState.getLocalPlayer().getExperience() +
-                "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
+                        " - " + gameState.getLocalPlayer().getHp() +
+                        "/" + gameState.getLocalPlayer().getMaxHp() +
+                        "HP - EXP: " + gameState.getLocalPlayer().getExperience() +
+                        " - Attack: " + gameState.getLocalPlayer().getAttack() +
+                        " - Defense: " + gameState.getLocalPlayer().getDefense()+
+                        " - PlayerID: " + gameState.getLocalPlayer().getId());
     }
 
     /**
