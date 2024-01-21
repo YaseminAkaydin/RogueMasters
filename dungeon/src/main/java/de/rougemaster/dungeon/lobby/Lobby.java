@@ -20,6 +20,7 @@ import de.rougemaster.dungeon.item.Item;
 import java.util.HashMap;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class Lobby {
@@ -45,10 +46,14 @@ public class Lobby {
         if (lobbyMessage == null) {
             throw new IllegalArgumentException("LobbyCommand can't be null.");
         }
-
+        int id;
         Room room= null;
         Item item= null;
-        int id = Integer.parseInt(lobbyMessage.getTarget().substring(1));
+        if (!Objects.equals(lobbyMessage.getTarget(), "")) {
+            id = Integer.parseInt(lobbyMessage.getTarget().substring(1));
+        } else {
+            id = -1;
+        }
         if (lobbyMessage.getTarget().startsWith("r")) {
             room = game
                     .getDungeon()

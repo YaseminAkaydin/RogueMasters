@@ -99,7 +99,7 @@ public class DungeonApplication {
                     System.out.println("Received command: " + request.getCommand() + " " + request.getTarget() + " " + request.getUserId());
 
 
-                    if (request.getCommand().equals("initialize") && lobbyFacade.isClientIdExisting(request.getUserId())) { // TODO: Mobs mit in die Liste clientToStreamConnection aufnehmen
+                    if (request.getCommand().equals("initialize") && lobbyFacade.isClientIdExisting(request.getUserId())) {
                         userId = request.getUserId();
                         clientToStreamConnection.put(userId, responseObserver);
                     } else if (clientToStreamConnection.containsKey(request.getUserId())) {

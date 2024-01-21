@@ -20,7 +20,7 @@ public class GrpcEnemyClient {
     private StreamObserver<GameCommandRequest> requestObserver;
 
     private final int lobbyID;
-    private int mobID;
+    private int clientID;
 
     private EnemyHandler enemyHandler;
 
@@ -50,7 +50,7 @@ public class GrpcEnemyClient {
         return GameCommandRequest.newBuilder().
                 setCommand(command).
                 setTarget(target).
-                setUserId(mobID).
+                setUserId(clientID).
                 build();
     }
 
@@ -88,5 +88,9 @@ public class GrpcEnemyClient {
 
     public void shutdown() {
         requestObserver.onCompleted();
+    }
+
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
     }
 }

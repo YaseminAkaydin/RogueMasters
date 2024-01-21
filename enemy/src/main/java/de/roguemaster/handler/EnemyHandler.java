@@ -18,7 +18,7 @@ public class EnemyHandler {
     Enemy enemy;
 
     private final int lobbyID;
-    private int mobID;
+    private int localCharId;
     private int clientID;
     private boolean success;
 
@@ -54,7 +54,6 @@ public class EnemyHandler {
         JSONManager<GameStateMessage> jsonManager = new JSONManager<>(new TypeToken<>(){});
         GameStateMessage gameStateMessage = jsonManager.read(response.getMessage());
         EnemyMessage selfEnemyMesssage =  searchSelfEnemyMessage(gameStateMessage.getEnemyList());
-        System.out.println(gameStateMessage);
         if(selfEnemyMesssage == null || selfEnemyMesssage.getHp() <= 0) {
             System.out.println("Enemy is dead");
             //TODO: SELFDESTRUCTIONG VIA ENEMYFACADE
@@ -66,7 +65,7 @@ public class EnemyHandler {
         enemy.setMaxHp(selfEnemyMesssage.getMaxHp());
 
         //Send Next Command
-        CommandHolder nextCommand = enemy.getNextTurn(gameStateMessage.getFightMap().containsKey(mobID));
+        CommandHolder nextCommand = enemy.getNextTurn(gameStateMessage.getFightMap().containsKey(localCharId));
         grpcEnemieClient.sendCommand(nextCommand);
     }
 
@@ -76,9 +75,10 @@ public class EnemyHandler {
         do{
             System.out.println("Sending " + counter + " join request for " + typ.toString());
             joinResponse = grpcEnemieClient.sendJoinLobbyRequest(lobbyID, typ.toString());
-            this.mobID = joinResponse.getCharacterID();
-            this.clientID = joinResponse.getUserID();
+            this.localCharId = joinResponse.getCharacterID();
             this.success = joinResponse.getSuccess();
+            this.clientID = joinResponse.getUserID();
+            grpcEnemieClient.setClientID(clientID);
             counter++;
             if(counter > 10) {
                 System.out.println("Couldn't Connect");
@@ -89,7 +89,7 @@ public class EnemyHandler {
 
     private EnemyMessage searchSelfEnemyMessage(List<EnemyMessage> enemyMessageList){
         for(EnemyMessage enemyMessage : enemyMessageList) {
-            if(enemyMessage.getId() == mobID) {
+            if(enemyMessage.getId() == localCharId) {
                 return enemyMessage;
             }
         }
