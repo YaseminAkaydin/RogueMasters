@@ -3,9 +3,7 @@ package de.rougemaster.dungeon.game;
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
-import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
-import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.ItemManager;
 import de.rougemaster.dungeon.dungeon.Room;
@@ -96,13 +94,7 @@ public class Game {
         return turnManager;
     }
 
-    /**
-     * Starts the game
-     */
-    private void startGame() {
-        turnManagerThread.run();
-        //TODO: Start Game in TurnManager
-    }
+
 
     /**
      * Ends the game
@@ -169,16 +161,18 @@ public class Game {
         }
     }
 
-    public List<Character> searchAndRemoveAllDeadCharacters(){
+    public List<Character> searchAndRemoveAllDeadPlayableCharacters(){
         Map<Character, GameCommand> commandMap = turnManager.getCommandMap();
-        List<Character> charactersToRemove = new ArrayList<>();
+        List<Character> playableCharactersToRemove = new ArrayList<>();
         for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
             if (entry.getKey().getHp() <= 0) {
-                charactersToRemove.add(entry.getKey());
+                playableCharactersToRemove.add(entry.getKey());
             }
         }
-        return charactersToRemove;
+        return playableCharactersToRemove;
     }
+    
+
 
     public void createTurnManagerThread (LobbyThread turnManagerThread) {
         this.turnManagerThread = turnManagerThread;

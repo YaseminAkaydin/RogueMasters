@@ -3,6 +3,7 @@ package de.rougemaster.dungeon.lobby;
 import com.example.grpc.GameCommandResponse;
 import com.google.gson.reflect.TypeToken;
 import de.rougemaster.dungeon.DungeonApplication;
+import de.rougemaster.dungeon.enemy.EnemyFacade;
 import de.rougemaster.dungeon.game.GameState;
 import de.rougemaster.dungeon.lobby.messageData.GameStateMessage;
 import de.rougemaster.dungeon.lobby.messageData.JoinLobbyResponseMessage;
@@ -17,6 +18,7 @@ public class LobbyFacade {
     private static LobbyFacade instance = null;
     private final LobbyBroker lobbyBroker;
     private final LobbyFactory lobbyFactory;
+    static int i = 1;
 
     private List<Integer> clientIds = new ArrayList<>();
 

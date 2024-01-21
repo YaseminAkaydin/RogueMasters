@@ -11,7 +11,6 @@ public class Devil extends EnemyCharacter {
     public Devil() {
         super(0);
         int dangerLvl = 15;
-
         this.attack= 100;
         this.defense=80;
         this.maxHp=150;

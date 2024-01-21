@@ -12,7 +12,7 @@ public class EnemyRESTFacade {
     private static EnemyRESTFacade instance = null;
     private final HashMap<Integer, EnemyHandler> map;
 
-    private final int port = 50518;
+    private final int port = 8812;
 
     private EnemyRESTFacade() {
         map = new HashMap<>();
@@ -27,9 +27,9 @@ public class EnemyRESTFacade {
 
     public void createEnemy(int lobbyID,EnemyTyp typ) {
         Enemy enemy = switch (typ) {
-            case DEVIL -> new Devil();
-            case ZOMBIE -> new Zombie();
-            case SKELETON -> new Skeleton();
+            case Devil -> new Devil();
+            case Zombie -> new Zombie();
+            case Skeleton -> new Skeleton();
             default -> throw new IllegalArgumentException("Invalid enemy type: " + typ);};
 
         EnemyHandler enemyHandler = new EnemyHandler(enemy,lobbyID ,port);

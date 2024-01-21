@@ -120,6 +120,7 @@ public class SimpleClient {
     private JoinLobbyRequest convertToJoinLobbyRequest(Command command) {
         return JoinLobbyRequest.newBuilder().
                 setLobbyID(Integer.parseInt(command.getCommand())).
+                setClientTyp("Player").
                 build();
     }
 

@@ -1,5 +1,7 @@
 package de.roguemaster.enemy;
 
+import de.roguemaster.facade.EnemyTyp;
+
 public abstract class Enemy {
     //max hp plus getter
 
@@ -28,4 +30,6 @@ public abstract class Enemy {
     public void setMaxHp(int maxHp) {
         this.maxHp = maxHp;
     }
+
+    public abstract EnemyTyp getTyp();
 }

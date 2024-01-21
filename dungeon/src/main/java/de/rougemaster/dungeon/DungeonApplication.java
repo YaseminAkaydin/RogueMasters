@@ -1,19 +1,11 @@
 package de.rougemaster.dungeon;
 
 import com.example.grpc.*;
-import com.google.gson.reflect.TypeToken;
-import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
-import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
-import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
-import de.rougemaster.dungeon.dungeon.Dungeon;
-import de.rougemaster.dungeon.game.GameState;
-import de.rougemaster.dungeon.lobby.JSONManager;
+import de.rougemaster.dungeon.enemy.EnemyFacade;
 import de.rougemaster.dungeon.lobby.LobbyCharType;
 import de.rougemaster.dungeon.lobby.LobbyFacade;
 import de.rougemaster.dungeon.lobby.LobbyMessage;
-import de.rougemaster.dungeon.lobby.messageData.GameStateMessage;
 import de.rougemaster.dungeon.lobby.messageData.JoinLobbyResponseMessage;
-import de.rougemaster.dungeon.lobby.messageData.RoomMessage;
 import io.grpc.Grpc;
 import io.grpc.InsecureServerCredentials;
 import io.grpc.Server;
@@ -21,11 +13,8 @@ import io.grpc.stub.StreamObserver;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,7 +77,7 @@ public class DungeonApplication {
      */
     public static class GameServiceImpl extends GameServiceGrpc.GameServiceImplBase {
         private final CopyOnWriteArrayList<StreamObserver<GameCommandResponse>> clients = new CopyOnWriteArrayList<>();
-        private final Map<Integer,StreamObserver<GameCommandResponse>> clientToStreamConnection = new HashMap<>();
+        private final Map<Integer, StreamObserver<GameCommandResponse>> clientToStreamConnection = new HashMap<>();
         private LobbyFacade lobbyFacade;
 
 
@@ -110,10 +99,10 @@ public class DungeonApplication {
                     System.out.println("Received command: " + request.getCommand() + " " + request.getTarget());
 
 
-                    if(request.getCommand().equals("initialize") && lobbyFacade.isClientIdExisting(request.getUserId())){
+                    if (request.getCommand().equals("initialize") && lobbyFacade.isClientIdExisting(request.getUserId())) {
                         userId = request.getUserId();
                         clientToStreamConnection.put(userId, responseObserver);
-                    } else if(clientToStreamConnection.containsKey(request.getUserId())) {
+                    } else if (clientToStreamConnection.containsKey(request.getUserId())) {
                         lobbyFacade.setGameCommand(request.getUserId(), new LobbyMessage(request.getCommand(), request.getTarget()));
                     }
 
@@ -147,6 +136,7 @@ public class DungeonApplication {
     static class ManageServiceImpl extends ManageServiceGrpc.ManageServiceImplBase {
         private LobbyFacade lobbyFacade;
         private JoinLobbyResponseMessage lobbyResponseMessage;
+        EnemyFacade enemyFacade = EnemyFacade.getInstance();
 
         public ManageServiceImpl(LobbyFacade lobbyFacade) {
             this.lobbyFacade = lobbyFacade;
@@ -157,7 +147,14 @@ public class DungeonApplication {
             System.out.println("Received joinLobby request: " + request.getLobbyID());
 
             try {
-                lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID(), LobbyCharType.PlayableCharacter);
+                switch (request.getClientTyp()){
+                    case ("Skeleton") -> lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID(), LobbyCharType.Skeleton);
+                    case ("Zombie") -> lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID(), LobbyCharType.Zombie);
+                    case ("Devil") -> lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID(), LobbyCharType.Devil);
+                    case ("Player") -> lobbyResponseMessage = lobbyFacade.joinLobby(request.getLobbyID(), LobbyCharType.PlayableCharacter);
+                    default -> throw new IllegalArgumentException("request.getClientTyp()");
+                }
+
             } catch (Throwable e) {
                 e.printStackTrace();
             }

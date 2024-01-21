@@ -32,15 +32,16 @@ public class GrpcEnemyClient {
     }
 
 
-    public JoinLobbyResponse sendJoinLobbyRequest(int lobbyID) {
-        JoinLobbyRequest request = convertToJoinLobbyRequest(lobbyID);
+    public JoinLobbyResponse sendJoinLobbyRequest(int lobbyID, String clientTyp) {
+        JoinLobbyRequest request = convertToJoinLobbyRequest(lobbyID, clientTyp);
         return blockingStub.joinLobby(request);
     }
 
     // Method to convert a Command to a JoinLobbyRequest
-    private JoinLobbyRequest convertToJoinLobbyRequest(int lobbyID) {
+    private JoinLobbyRequest convertToJoinLobbyRequest(int lobbyID, String clientTyp) {
         return JoinLobbyRequest.newBuilder().
                 setLobbyID(lobbyID).
+                setClientTyp(clientTyp).
                 build();
     }
 
@@ -54,7 +55,7 @@ public class GrpcEnemyClient {
     }
 
     public void initStream() {
-        if (requestObserver != null){
+        if (requestObserver != null) {
             logger.info("Stream already initialized");
         }
         System.out.println("Creating MOB stream to server");

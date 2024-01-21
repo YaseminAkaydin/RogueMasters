@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public class DevilCDService {
     @PostMapping(value = "/{lobbyId}")
     public ResponseEntity<Object> createSkeleton(@PathVariable("lobbyId") String lobbyId) {
-        EnemyRESTFacade.getInstance().createEnemy(Integer.parseInt(lobbyId), EnemyTyp.DEVIL);
+        EnemyRESTFacade.getInstance().createEnemy(Integer.parseInt(lobbyId), EnemyTyp.Devil);
         return ResponseEntity.ok().build();
     }
 

@@ -1,5 +1,6 @@
 package de.rougemaster.dungeon.lobby;
 
+import de.rougemaster.dungeon.enemy.EnemyFacade;
 import de.rougemaster.dungeon.game.Game;
 
 public class LobbyFactory {
@@ -17,10 +18,10 @@ public class LobbyFactory {
             }while (!lobbyIdValid);
             lobby.setLobbyId(lobbyId);
 
-            //enemyfacade.requestEnemy(lobbyId, EnemyTyp.SKELETON);
-            //enemyfacade.requestEnemy(lobbyId, EnemyTyp.ZOMBIE);
-            //TODO: Send EnemyFacade request for EnemyAI
-            // EnemyAi registers itself in Lobby and Game
+            /*EnemyFacade enemyFacade = EnemyFacade.getInstance();
+            enemyFacade.requestEnemy(lobbyId, LobbyCharType.Devil);*/
+            /*enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
+            enemyFacade.requestEnemy(lobbyId, LobbyCharType.Zombie);*/
 
             return lobby;
         }

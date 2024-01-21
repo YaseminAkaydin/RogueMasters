@@ -4,6 +4,7 @@ import com.example.grpc.*;
 import com.google.gson.reflect.TypeToken;
 import de.roguemaster.enemy.CommandHolder;
 import de.roguemaster.enemy.Enemy;
+import de.roguemaster.facade.EnemyTyp;
 import de.roguemaster.handler.messageData.EnemyMessage;
 import de.roguemaster.handler.messageData.GameStateMessage;
 import io.grpc.Grpc;
@@ -19,6 +20,7 @@ public class EnemyHandler {
     private final int lobbyID;
     private int mobID;
     private int clientID;
+    private boolean success;
 
     private final int port;
 
@@ -43,7 +45,7 @@ public class EnemyHandler {
 
     public void initializeConnection () {
         createConnection();
-        tryConnecting();
+        tryConnecting(enemy.getTyp());
         grpcEnemieClient.initStream();
         grpcEnemieClient.sendCommand(new CommandHolder("initialize", ""));
     }
@@ -68,13 +70,14 @@ public class EnemyHandler {
         grpcEnemieClient.sendCommand(nextCommand);
     }
 
-    public void tryConnecting() {
+    public void tryConnecting(EnemyTyp typ) {
         int counter = 0;
         JoinLobbyResponse joinResponse;
         do{
-            joinResponse = grpcEnemieClient.sendJoinLobbyRequest(lobbyID);
+            joinResponse = grpcEnemieClient.sendJoinLobbyRequest(lobbyID, typ.toString());
             this.mobID = joinResponse.getCharacterID();
             this.clientID = joinResponse.getUserID();
+            this.success = joinResponse.getSuccess();
             counter++;
             if(counter > 10) {
                 System.out.println("Couldn't Connect");

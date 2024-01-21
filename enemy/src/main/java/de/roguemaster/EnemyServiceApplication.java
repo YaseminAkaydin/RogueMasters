@@ -1,4 +1,4 @@
-package de.roguemaster.spring;
+package de.roguemaster;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

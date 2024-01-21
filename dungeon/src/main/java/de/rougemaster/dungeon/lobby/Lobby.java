@@ -6,6 +6,7 @@ import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
+import de.rougemaster.dungeon.enemy.EnemyFacade;
 import de.rougemaster.dungeon.game.Game;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
@@ -175,6 +176,11 @@ public class Lobby {
         character.die();
         game.removeCharacter(character);
         //TODO: remove from lobyfacade
+    }
+
+    public void startGame(){
+        EnemyFacade enemyFacade = EnemyFacade.getInstance();
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Devil);
     }
     /**
      * Sends the next Turn signal to LobbyFacade.

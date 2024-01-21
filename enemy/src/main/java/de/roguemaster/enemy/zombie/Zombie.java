@@ -3,6 +3,7 @@ package de.roguemaster.enemy.zombie;
 import de.roguemaster.enemy.CommandHolder;
 import de.roguemaster.enemy.Enemy;
 import de.roguemaster.enemy.zombie.zombieStates.ZombieSearch;
+import de.roguemaster.facade.EnemyTyp;
 
 public class Zombie extends Enemy {
     private ZombieState state;
@@ -20,5 +21,10 @@ public class Zombie extends Enemy {
             state.roam();
             return state.createCommand();
         }
+    }
+
+    @Override
+    public EnemyTyp getTyp() {
+        return EnemyTyp.Zombie;
     }
 }
