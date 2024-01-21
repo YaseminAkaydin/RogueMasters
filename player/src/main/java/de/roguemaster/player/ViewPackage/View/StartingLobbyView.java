@@ -6,7 +6,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 
 /**
- * Dummy Platzhalter für die "Lobby"
+ * The StartingLobbyView class is responsible for displaying the Starting Lobby view on the terminal.
  */
 public class StartingLobbyView extends ViewComponent {
 
@@ -16,12 +16,19 @@ public class StartingLobbyView extends ViewComponent {
             "Loading the Game..."
     };
 
+    /**
+     * Constructs a new StartingLobbyView with the specified Terminal.
+     *
+     * @param terminal The Terminal object used for displaying this view.
+     */
     public StartingLobbyView(Terminal terminal) {
         super(terminal);
     }
 
     /**
-     *
+     * Displays the Starting Lobby View. Clears the screen, draws the title, and shows a loading
+     * animation. The method handles IOExceptions internally. Note: The Thread.sleep call for the
+     * animation is currently commented out.
      */
     @Override
     public void display() {
@@ -42,9 +49,7 @@ public class StartingLobbyView extends ViewComponent {
             terminal.flush();
         } catch (IOException e) {
             e.printStackTrace();
-        } /*catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }*/
+        }
     }
 }
 

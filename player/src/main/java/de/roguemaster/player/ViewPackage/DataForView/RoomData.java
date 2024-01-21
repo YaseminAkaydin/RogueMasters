@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Erste Dummy Version der Räume.
+ * RoomData. Used in ViewBuilder to create the View.
  */
 public class RoomData {
     private String roomType; // DungeonRoom, BossRoom, TreasureRoom
@@ -36,17 +36,9 @@ public class RoomData {
         this.adjacentRooms = new HashMap<>(adjacentRooms);
     }
 
-
+    // Getter & Setter
     public String getRoomType() {
         return roomType;
-    }
-
-    public void addAdjacentRoom(String direction, int roomId) {
-        adjacentRooms.put(direction, roomId);
-    }
-
-    public void setRoomType(String roomType) {
-        this.roomType = roomType;
     }
 
     public List<PlayerData> getPlayers() {
@@ -57,16 +49,8 @@ public class RoomData {
         return enemy;
     }
 
-    public void setEnemy(MonsterData enemy) {
-        this.enemy = enemy;
-    }
-
     public ItemData getItem() {
         return item;
-    }
-
-    public void setItem(ItemData item) {
-        this.item = item;
     }
 
     public int getId() {
@@ -77,9 +61,6 @@ public class RoomData {
         return adjacentRooms;
     }
 
-    public void setPlayers(List<PlayerData> players) {
-        this.players = players;
-    }
 
 
 

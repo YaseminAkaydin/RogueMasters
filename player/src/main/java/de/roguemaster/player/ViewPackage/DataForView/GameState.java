@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * GameState. Gets PlayerData, MonsterData and RoomData via constructor and creates a HashMap with RoomData and PlayerData.
+ */
 public class GameState {
 
 
@@ -27,15 +30,30 @@ public class GameState {
 
     }
 
+    /**
+     * Initializes the game state. This includes initializing the player-room map, setting the local
+     * player data, finding the room data for the player's current room, and retrieving the inventory
+     * items of the local player.
+     */
     public void initGameState() {
-
         this.playerRoomMap = new HashMap<>();
         initPlayerRoomMap();
         this.playerData = getLocalPlayer();
+        if (playerData == null) {
+            System.out.println("Local player died");
+            return;
+        }
         this.roomData = findRoomById(playerData.getCurrentRoomId());
         this.inventoryItems = playerData.getInventory();
     }
 
+    /**
+     * Finds and returns the RoomData for a specified room ID. If the room is not found, a message is
+     * printed, and null is returned. An exception can be thrown instead if the room ID is not found.
+     *
+     * @param roomId The ID of the room to find.
+     * @return The RoomData for the specified room ID, or null if the room is not found.
+     */
     private RoomData findRoomById(int roomId) {
         for (RoomData room : roomList) {
             if (room.getId() == roomId) {
@@ -47,7 +65,8 @@ public class GameState {
     }
 
     /**
-     * Creates a HashMap with RoomData and PlayerData.
+     * Initializes the player-room map. The map is created to associate each room with the list of players
+     * present in that room.
      */
     public void initPlayerRoomMap() {
         playerRoomMap = new HashMap<>();
@@ -57,23 +76,7 @@ public class GameState {
         }
     }
 
-
     // Getter & Setter
-    public int getCurrentRoomId() {
-        for (Map.Entry<RoomData, List<PlayerData>> entry : playerRoomMap.entrySet()) {
-            RoomData room = entry.getKey();
-            List<PlayerData> players = entry.getValue();
-
-            for (PlayerData player : players) {
-                if (player.getId() == localPlayerID) { // Assuming PlayerData has a getUserId() method that returns the player's userID
-                    //System.out.println("Current Room ID: " + room.getId());
-                    return room.getId(); // Assuming RoomData has a getRoomId() method
-                }
-            }
-        }
-        return -1; // Return -1 or throw an exception if the player with the given userID is not found in any room
-    }
-
     public PlayerData getLocalPlayer() {
         for (PlayerData player : playerList) {
             if (player.getId() == localPlayerID) {
@@ -85,14 +88,6 @@ public class GameState {
 
     public List<RoomData> getRoomList() {
         return roomList;
-    }
-
-    public HashMap<RoomData, List<PlayerData>> getPlayerRoomMap() {
-        return playerRoomMap;
-    }
-
-    public int getLocalPlayerID() {
-        return localPlayerID;
     }
 
     public void setLocalPlayerID(int localPlayerID) {

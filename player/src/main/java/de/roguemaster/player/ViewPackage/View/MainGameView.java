@@ -18,7 +18,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+/**
+ * The MainGameView class is responsible for displaying the main game view on the terminal. The main game
+ */
 public class MainGameView extends ViewComponent {
 
     private final Map<Integer, MainAction> optionMappings;
@@ -35,6 +37,13 @@ public class MainGameView extends ViewComponent {
 
     private Set<Point> uniqueCoordinates;
 
+    /**
+     * Constructs a new MainGameView with the specified Terminal and GameState. Initializes
+     * the option mappings and generates unique coordinates for display elements within the room.
+     *
+     * @param terminal The Terminal object used for displaying this view.
+     * @param gameState The current state of the game, containing all necessary information.
+     */
     public MainGameView(Terminal terminal, GameState gameState) {
         super(terminal, gameState);
         optionMappings = new HashMap<>();
@@ -42,6 +51,18 @@ public class MainGameView extends ViewComponent {
 
     }
 
+    /**
+     * Generates a set of unique coordinates within a specified area. The area is defined by its width,
+     * height, and start coordinates. This method is used to position elements like players or items
+     * within the game view.
+     *
+     * @param count The number of unique coordinates to generate.
+     * @param width The width of the area.
+     * @param height The height of the area.
+     * @param startX The starting X coordinate of the area.
+     * @param startY The starting Y coordinate of the area.
+     * @return A Set of Point objects representing the unique coordinates.
+     */
     private Set<Point> generateUniqueCoordinates(int count, int width, int height, int startX, int startY) {
         Set<Point> coordinates = new HashSet<>();
         while (coordinates.size() < count) {
@@ -52,6 +73,11 @@ public class MainGameView extends ViewComponent {
         return coordinates;
     }
 
+    /**
+     * Displays the main game view. This includes drawing the room, local player, other players,
+     * monsters, doors, items, and displaying game options and player stats. The method handles
+     * IOExceptions internally.
+     */
     @Override
     public void display() {
         try {
@@ -72,6 +98,12 @@ public class MainGameView extends ViewComponent {
         }
     }
 
+    /**
+     * Draws other players in the room on the terminal. Players are represented by symbols at unique
+     * coordinates, excluding the local player.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawPlayers(TextGraphics tg) {
         tg.setForegroundColor(TextColor.ANSI.WHITE_BRIGHT);
         int i = 0;
@@ -85,6 +117,13 @@ public class MainGameView extends ViewComponent {
         }
     }
 
+    /**
+     * Displays information about the monster in the room, if present. This includes the monster's
+     * name, health, danger level, attack, and defense stats.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     * @throws IOException If an I/O error occurs.
+     */
     private void drawMonserInfo(TextGraphics tg) throws IOException {
         if (gameState.getRoomData().getEnemy() == null) {
             return;
@@ -101,6 +140,13 @@ public class MainGameView extends ViewComponent {
 
     }
 
+    /**
+     * Displays information about the item in the room, if present. This includes the item's name,
+     * description, and attributes.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     * @throws IOException If an I/O error occurs.
+     */
     private void drawItemInfo(TextGraphics tg) throws IOException {
         if (gameState.getRoomData().getItem() == null) {
             return;
@@ -115,6 +161,12 @@ public class MainGameView extends ViewComponent {
 
     }
 
+    /**
+     * Draws the room on the terminal using ASCII characters. The room is defined by its start
+     * coordinates and dimensions.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawRoom(TextGraphics tg) {
         for (int y = ROOM_START_Y; y < ROOM_START_Y + ROOM_HEIGHT; y++) {
             for (int x = ROOM_START_X; x < ROOM_START_X + ROOM_WIDTH; x++) {
@@ -125,6 +177,11 @@ public class MainGameView extends ViewComponent {
         }
     }
 
+    /**
+     * Draws the local player in the center of the room on the terminal.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawLocalPlayer(TextGraphics tg) {
         int playerX = ROOM_START_X + ROOM_WIDTH / 2;
         int playerY = ROOM_START_Y + ROOM_HEIGHT / 2;
@@ -132,6 +189,11 @@ public class MainGameView extends ViewComponent {
         tg.putString(playerX, playerY, "X");
     }
 
+    /**
+     * Draws the monster in the room, if present, using specific symbols based on the monster type.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawMonster(TextGraphics tg) {
         tg.setForegroundColor(TextColor.ANSI.RED);
         if (gameState.getRoomData().getEnemy() != null) {
@@ -145,6 +207,11 @@ public class MainGameView extends ViewComponent {
         }
     }
 
+    /**
+     * Draws doors in the room on the terminal, indicating directions to adjacent rooms.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawDoors(TextGraphics tg) {
         tg.setForegroundColor(TextColor.ANSI.CYAN);
         gameState.getRoomData().getAdjacentRooms().forEach((direction, adjacentRoomId) -> {
@@ -169,6 +236,11 @@ public class MainGameView extends ViewComponent {
         });
     }
 
+    /**
+     * Draws items in the room, if present, on the terminal.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawItems(TextGraphics tg) {
         if (gameState.getRoomData().getItem() != null) {
             tg.setForegroundColor(TextColor.ANSI.YELLOW);
@@ -176,6 +248,13 @@ public class MainGameView extends ViewComponent {
         }
     }
 
+    /**
+     * Displays available game options on the terminal based on the current game state. This includes
+     * options for attacking, moving, fleeing, and picking up items. Updates the option mappings for
+     * user input processing.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void displayOptions(TextGraphics tg) {
         AtomicInteger optionsStartY = new AtomicInteger(OPTIONS_START_Y);
         AtomicInteger optionNumber = new AtomicInteger(1); // Start with option number 1
@@ -234,6 +313,7 @@ public class MainGameView extends ViewComponent {
         }
     }
 
+    // Getters and Setters
     public Map<Integer, MainAction> getOptionMappings() {
         return optionMappings;
     }

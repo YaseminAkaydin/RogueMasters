@@ -1,5 +1,8 @@
 package de.roguemaster.player.ViewPackage.DataForView;
 
+/**
+ * ItemData. Used in ViewBuilder to create the View.
+ */
 public class ItemData {
     private int id;
     private String name;

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Erste Dummy Version der PlayerDaten
+ * PlayerData. Used in ViewBuilder to create the View.
  */
 public class PlayerData {
     private int level;

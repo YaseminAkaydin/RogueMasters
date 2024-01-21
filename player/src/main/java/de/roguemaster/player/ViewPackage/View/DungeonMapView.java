@@ -9,15 +9,66 @@ import de.roguemaster.player.ViewPackage.DataForView.RoomData;
 import java.io.IOException;
 import java.util.*;
 
-
+/**
+ * Displays the dungeon map view. The map is drawn based on the current dungeon layout and the player's
+ */
 public class DungeonMapView extends ViewComponent {
+
+    /**
+     * Represents a point in a 2D space with x and y coordinates.
+     */
+    private static class Point {
+        int x, y;
+
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Point point = (Point) o;
+            return x == point.x && y == point.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
+    }
+
+    /**
+     * Represents a corridor in the dungeon, defined by its start and end points.
+     */
+    private static class Corridor {
+        Point start;
+        Point end;
+
+        Corridor(Point start, Point end) {
+            this.start = start;
+            this.end = end;
+        }
+
+    }
 
     private final Set<Corridor> corridors = new HashSet<>();
 
+    /**
+     * Constructs a new DungeonMapView with the specified Terminal and GameState.
+     *
+     * @param terminal The Terminal object used for displaying this view.
+     * @param gameState The current state of the game, containing all necessary information about the dungeon.
+     */
     public DungeonMapView(Terminal terminal, GameState gameState) {
         super(terminal, gameState);
     }
 
+    /**
+     * Displays the dungeon map view. Clears the screen, calculates room positions, draws the map and
+     * player stats. The method handles IOExceptions and throws a RuntimeException in case of display errors.
+     */
     @Override
     public void display() {
         try {
@@ -31,6 +82,12 @@ public class DungeonMapView extends ViewComponent {
         }
     }
 
+    /**
+     * Draws the dungeon map on the terminal. It adjusts the starting position based on the map extents
+     * and draws each room and corridors connecting them.
+     *
+     * @param roomPositions A map of room positions and corresponding room data.
+     */
     private void drawMap(Map<Point, RoomData> roomPositions) {
         int additionalOffset = 5;
         // Find the extents of the map
@@ -52,6 +109,12 @@ public class DungeonMapView extends ViewComponent {
         drawCorridors(tg, offsetX, offsetY);
     }
 
+    /**
+     * Calculates the positions of all rooms in the dungeon. It uses a recursive method to position each
+     * room based on its relative position to adjacent rooms.
+     *
+     * @return A map of Point objects representing room positions and corresponding RoomData.
+     */
     private Map<Point, RoomData> calculateRoomPositions() {
         Map<Point, RoomData> roomPositions = new HashMap<>();
         Set<Integer> visitedRooms = new HashSet<>();
@@ -61,6 +124,18 @@ public class DungeonMapView extends ViewComponent {
         return roomPositions;
     }
 
+    /**
+     * Recursively calculates the positions of rooms in the dungeon. It traverses the dungeon layout
+     * starting from a given room and marks rooms as visited to avoid duplication.
+     *
+     * @param room The current room data.
+     * @param x The x coordinate for the current room.
+     * @param y The y coordinate for the current room.
+     * @param visitedRooms A set of visited room IDs.
+     * @param roomPositions A map to store calculated room positions.
+     * @param horizontalSpacing The spacing between rooms horizontally.
+     * @param verticalSpacing The spacing between rooms vertically.
+     */
     private void calculatePositionsRecursive(RoomData room, int x, int y, Set<Integer> visitedRooms,
                                              Map<Point, RoomData> roomPositions, int horizontalSpacing, int verticalSpacing) {
         // Wenn der aktuelle Raum bereits besucht wurde, beenden wir die Rekursion für diesen Pfad.
@@ -125,8 +200,17 @@ public class DungeonMapView extends ViewComponent {
         }
     }
 
+    /**
+     * Draws a single room on the terminal at the specified coordinates. The appearance of the room
+     * changes based on its type and whether it's the current room.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     * @param room The room data to be drawn.
+     * @param x The x coordinate where the room is to be drawn.
+     * @param y The y coordinate where the room is to be drawn.
+     */
     private void drawRoom(TextGraphics tg, RoomData room, int x, int y) {
-        if (room.getId() == gameState.getCurrentRoomId()) tg.setForegroundColor(TextColor.ANSI.CYAN);
+        if (room.getId() == gameState.getLocalPlayer().getCurrentRoomId()) tg.setForegroundColor(TextColor.ANSI.CYAN);
         else setColorBasedOnRoomType(tg, room.getRoomType());
 
 
@@ -146,6 +230,13 @@ public class DungeonMapView extends ViewComponent {
         tg.setForegroundColor(TextColor.ANSI.DEFAULT);
     }
 
+    /**
+     * Draws corridors on the terminal, connecting rooms based on their positions.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     * @param offsetX The offset on the x-axis for drawing.
+     * @param offsetY The offset on the y-axis for drawing.
+     */
     private void drawCorridors(TextGraphics tg, int offsetX, int offsetY) {
         for (Corridor corridor : corridors) {
             Point start = corridor.start;
@@ -154,6 +245,12 @@ public class DungeonMapView extends ViewComponent {
         }
     }
 
+    /**
+     * Sets the color for drawing a room based on its type (e.g., BossRoom, TreasureRoom).
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     * @param roomType The type of the room.
+     */
     private void setColorBasedOnRoomType(TextGraphics tg, String roomType) {
 
         // Set color based on room type
@@ -170,6 +267,12 @@ public class DungeonMapView extends ViewComponent {
         }
     }
 
+    /**
+     * Finds a room in the game state by its ID.
+     *
+     * @param id The ID of the room to find.
+     * @return The RoomData for the specified ID, or null if not found.
+     */
     private RoomData findRoomById(int id) {
         for (RoomData room : gameState.getRoomList()) {
             if (room.getId() == id) {
@@ -181,36 +284,5 @@ public class DungeonMapView extends ViewComponent {
 
 
 
-    private static class Point {
-        int x, y;
 
-        Point(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Point point = (Point) o;
-            return x == point.x && y == point.y;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y);
-        }
-    }
-
-    private static class Corridor {
-        Point start;
-        Point end;
-
-        Corridor(Point start, Point end) {
-            this.start = start;
-            this.end = end;
-        }
-
-    }
 }

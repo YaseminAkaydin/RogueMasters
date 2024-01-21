@@ -18,14 +18,7 @@ public class Command {
         return new Command("","");
     }
 
-    // Getters
-    public String getCommand() { return command; }
-    public String getTarget() { return target; }
-
-    public void setTarget(String target) { this.target = target;}
-    public void setCommand(String command) {this.command = command; }
-
-    // Factory methods for different game actions
+// Getter
     public static Command attackCommand(int attackedId) {
         return new Command("attackUsingEquipment", "a" + attackedId);
     }
@@ -56,5 +49,11 @@ public class Command {
     public static Command dropItemCommand(int itemId) {
         return new Command("dropItem", "i" + itemId);
     }
+
+    // Getters
+    public String getCommand() { return command; }
+    public String getTarget() { return target; }
+    public void setTarget(String target) { this.target = target;}
+    public void setCommand(String command) {this.command = command; }
 }
 

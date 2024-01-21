@@ -56,7 +56,6 @@ public class EnemyHandler {
         EnemyMessage selfEnemyMesssage =  searchSelfEnemyMessage(gameStateMessage.getEnemyList());
         if(selfEnemyMesssage == null || selfEnemyMesssage.getHp() <= 0) {
             System.out.println("Enemy is dead");
-            //TODO: SELFDESTRUCTIONG VIA ENEMYFACADE
             return;
         }
 

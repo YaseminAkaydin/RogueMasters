@@ -1,6 +1,7 @@
 package de.roguemaster.player;
 
 import com.example.grpc.*;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
@@ -15,12 +16,15 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+/**
+ * Main CLient class
+ */
 public class SimpleClient {
     private static final Logger logger = Logger.getLogger(SimpleClient.class.getName());
 
     private final Game game;
     private Thread gameThread;
-    private int userID; // Id der Clients zum befehle verarbeiten
+    private int userID; // id to process commands
 
     private final GameServiceGrpc.GameServiceStub asyncStub; // Async stub, for commands and 5sekGamestate from server
     private final ManageServiceGrpc.ManageServiceBlockingStub blockingStub; // For joining lobbies/creating lobbies
@@ -33,8 +37,12 @@ public class SimpleClient {
         this.asyncStub = GameServiceGrpc.newStub(asyncChannel);
     }
 
+    /**
+     * Method to start the game and the client, starts the Game as a Thread, runs the ClientLoop while the game is
+     * started, meanwhile it checks for incoming commands from the game and sends them to the server
+     */
     public void startGame() {
-        // Start the g ame in a new thread
+        // Start the game in a new thread
         startGameAsThread();
         System.out.println("Game started!\n");
 
@@ -47,13 +55,15 @@ public class SimpleClient {
             }
             if (requestObserver != null && !game.getRunning()) {
                 System.out.println("Client shutting down, sending complete");
-                stopGame();
+                /*stopGame();*/
                 requestObserver.onCompleted(); // Complete the request stream
             }
         }
     }
 
-    // Erstellen den Stream erst NUR wenn wir auch in einem game starten
+    /**
+     * Method to check if the game has started and create a stream to the server
+     */
     private void checkGameStarted() {
         if (requestObserver == null && game.getRunning()) {
             System.out.println("Creating stream to server");
@@ -63,7 +73,12 @@ public class SimpleClient {
                     // Handle incoming game state
                     new Thread(() -> {
                         try {
-                            game.updateGameState(response.getMessage());
+                            boolean updateStatus = game.updateGameState(response.getMessage());
+                            if (!updateStatus) {
+                                System.out.println("Game Over: \n");
+                                // Close the stream
+                                requestObserver.onCompleted();
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -86,7 +101,11 @@ public class SimpleClient {
         }
     }
 
-    // Method to check if the command is a joinlobby or a gamecommand and send it to the server
+    /**
+     * Method to check and send commands to the server
+     *
+     * @param command
+     */
     private void checkAndSendCommands(Command command) {
 
         if (Objects.equals(command.getCommand(), "0") || command.getCommand().length() == 5) {
@@ -116,7 +135,13 @@ public class SimpleClient {
             requestObserver.onNext(request);
         }
     }
-    // Method to convert a Command to a JoinLobbyRequest
+
+    /**
+     * Method to convert a Command to a JoinLobbyRequest
+     *
+     * @param command
+     * @return
+     */
     private JoinLobbyRequest convertToJoinLobbyRequest(Command command) {
         return JoinLobbyRequest.newBuilder().
                 setLobbyID(Integer.parseInt(command.getCommand())).
@@ -124,7 +149,12 @@ public class SimpleClient {
                 build();
     }
 
-    // Method to convert a Command to a GameCommandRequest
+    /**
+     * Method to convert a Command to a GameCommandRequest
+     *
+     * @param command
+     * @return
+     */
     private GameCommandRequest convertToGameCommandRequest(Command command) {
         return GameCommandRequest.newBuilder().
                 setCommand(command.getCommand()).
@@ -133,7 +163,9 @@ public class SimpleClient {
                 build();
     }
 
-    // Method to start the game in a new thread
+    /**
+     * Method to start the game as a thread
+     */
     public void startGameAsThread() {
         gameThread = new Thread(() -> {
             try {
@@ -145,19 +177,22 @@ public class SimpleClient {
         });
         gameThread.start();
     }
-    // Method to stop the game
+
+    /**
+     * Method to stop the game
+     */
     public void stopGame() {
         if (gameThread != null && gameThread.isAlive()) {
             gameThread.interrupt();
         }
     }
 
-    // Main Accepts one target, with following syntax: [hostname]:[port]
+    /**
+     * Main method, start with 2 (IP, Port, DEBUG)
+     *
+     * @param args
+     */
     public static void main(String[] args) throws InterruptedException {
-        if (args.length > 2 && "DEBUG".equals(args[2])) {
-            // Set logger to DEBUG level
-            System.out.println("Starting the application\n");
-        }
 
         ManagedChannel asyncChannel = ManagedChannelBuilder.forAddress(args[0], Integer.parseInt(args[1]))
                 .usePlaintext()
@@ -169,6 +204,7 @@ public class SimpleClient {
         try {
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
             terminalFactory.setTerminalEmulatorTitle("RogueMaster");
+            terminalFactory.setInitialTerminalSize(new TerminalSize(100, 40));
             Terminal terminal = terminalFactory.createTerminal();
             // Chane title of terminal window
             Game game = new Game(terminal);
@@ -181,9 +217,9 @@ public class SimpleClient {
             e.printStackTrace();
             System.out.println("Game crashed try in main: \n" + e.getMessage());
         } finally {
-            /*System.out.println("Shutting down Client...\n");*/
-            /*asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
-            blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);*/
+            System.out.println("Shutting down Client...\n");
+            asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
+            blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
         }
     }
 

@@ -15,22 +15,33 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * The InventoryView class is responsible for displaying the inventory view on the terminal. The inventory
+ */
 public class InventoryView extends ViewComponent {
-
-
-
 
     private final Map<Integer, String> optionMappings = new HashMap<>();
     private final Map<Integer, ItemAction> dropItemOptionMappings = new HashMap<>();
     private final Map<Integer, ItemAction> useConsumableOptionMappings = new HashMap<>();
     private final Map<Integer, ItemAction> equipItemOptionMappings = new HashMap<>();
 
-
+    /**
+     * Constructs a new InventoryView with the specified Terminal and GameState. Initializes
+     * the current state of the inventory view to display the main options.
+     *
+     * @param terminal The Terminal object used for displaying this view.
+     * @param gameState The current state of the game, containing all necessary information about the inventory.
+     */
     public InventoryView(Terminal terminal, GameState gameState) {
         super(terminal, gameState);
         this.currentState = State.MAIN_OPTIONS;
     }
 
+    /**
+     * Displays the inventory view. Clears the screen, draws the inventory title, item list, and displays
+     * options based on the current state (main options, drop item, use consumable). Also, displays player
+     * stats. The method handles IOExceptions internally.
+     */
     @Override
     public void display() {
         try {
@@ -61,12 +72,23 @@ public class InventoryView extends ViewComponent {
         }
     }
 
+    /**
+     * Draws the inventory title on the terminal.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawTitle(TextGraphics tg) {
         // Display inventory title
         String title = "Inventory";
         tg.putString(2, 1, title); // Adjust the position as needed
     }
 
+    /**
+     * Draws the list of inventory items on the terminal. Each item is displayed with its name, description,
+     * and attributes.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawItemList(TextGraphics tg) {
         // Display the list of inventory items
         int startY = 3; // Adjust the starting Y position as needed
@@ -79,6 +101,13 @@ public class InventoryView extends ViewComponent {
         }
     }
 
+    /**
+     * Displays the main inventory options on the terminal. Options include 'Drop Item' if items are present
+     * and 'Use Consumable' if any consumable items are present. Updates the option mappings for user input
+     * processing.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void displayOptions(TextGraphics tg) {
 
         AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
@@ -103,6 +132,13 @@ public class InventoryView extends ViewComponent {
 
     }
 
+    /**
+     * Displays options for dropping items from the inventory. Each item is listed with an option to drop.
+     * Also provides an option to go back to the main inventory menu. Updates the drop item option mappings
+     * for user input processing.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void displayDropItemOptions(TextGraphics tg) {
         dropItemOptionMappings.clear();
         AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
@@ -117,6 +153,13 @@ public class InventoryView extends ViewComponent {
         dropItemOptionMappings.put(optionNumber.get(), new GoBackAction());
     }
 
+    /**
+     * Displays options for using consumable items in the inventory, such as potions and books. Each
+     * consumable item is listed with an option to use. Also provides an option to go back to the main
+     * inventory menu. Updates the use consumable option mappings for user input processing.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void displayUseConsumableOptions(TextGraphics tg) {
         useConsumableOptionMappings.clear();
         AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
@@ -134,6 +177,7 @@ public class InventoryView extends ViewComponent {
         useConsumableOptionMappings.put(optionNumber.get(), new GoBackAction());
     }
 
+    // Getters and setters
     public void setCurrentState(State currentState) {
         this.currentState = currentState;
         display();
