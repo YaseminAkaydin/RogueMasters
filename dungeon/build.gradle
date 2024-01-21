@@ -4,11 +4,11 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 shadowJar {
-	archiveBaseName.set('player')
+	archiveBaseName.set('DungeonServer')
 	archiveVersion.set('1')
 	archiveClassifier.set('')
 	manifest {
-		attributes 'Main-Class': 'de.roguemaster.player.SimpleClient'
+		attributes 'Main-Class': 'de.rougemaster.dungeon.DungeonApplication'
 	}
 }
 repositories {
