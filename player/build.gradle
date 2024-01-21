@@ -7,6 +7,7 @@ shadowJar {
 	archiveBaseName.set('player')
 	archiveVersion.set('1')
 	archiveClassifier.set('')
+	mergeServiceFiles()
 	manifest {
 		attributes 'Main-Class': 'de.roguemaster.player.SimpleClient'
 	}

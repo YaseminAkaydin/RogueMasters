@@ -36,7 +36,7 @@ public class DungeonApplication {
     private LobbyFacade lobbyFacade;
 
     private void start() throws IOException {
-        int port = 8811;
+        int port = 8812;
         lobbyFacade = LobbyFacade.getInstance();
 
         GameServiceImpl gameService = new GameServiceImpl(lobbyFacade);

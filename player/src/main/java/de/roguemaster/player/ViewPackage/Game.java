@@ -211,7 +211,7 @@ public class Game {
         switch (keyStroke.getCharacter()) {
             case '1':
                 command = Command.startLobby();
-                logger.info("StartLobbyCommand sent");
+                System.out.println("StartLobbyCommand sent" + command.getCommand() + "\n");
                 break;
             case '2':
                 currentView = joiningLobbyView;

@@ -36,6 +36,7 @@ public class SimpleClient {
     public void startGame() {
         // Start the g ame in a new thread
         startGameAsThread();
+        System.out.println("Game started!\n");
 
         // Start the ClientLoop
         while (game.getRunning()) {
@@ -91,7 +92,15 @@ public class SimpleClient {
         if (Objects.equals(command.getCommand(), "0") || command.getCommand().length() == 5) {
             JoinLobbyRequest joinLobbyRequest = convertToJoinLobbyRequest(command);
             System.out.println("JoinLobbyRequest sent: " + command.getCommand() + " " + command.getTarget());
-            JoinLobbyResponse response = blockingStub.joinLobby(joinLobbyRequest);
+            System.out.println("Sent to serverIP and Port " + blockingStub.getChannel().authority() + "\n");
+            JoinLobbyResponse response = null;
+            try {
+                response = blockingStub.joinLobby(joinLobbyRequest);
+            } catch (StatusRuntimeException e) {
+                System.out.println("RPC failed: " + e.getStatus());
+                e.printStackTrace();
+            }
+
             if (response.getSuccess()) {
                 game.setSuccessJoinLobby(true);
                 System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
@@ -130,6 +139,7 @@ public class SimpleClient {
                 game.run();
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("Game crashed: \n" + e.getMessage());
             }
         });
         gameThread.start();
@@ -143,7 +153,10 @@ public class SimpleClient {
 
     // Main Accepts one target, with following syntax: [hostname]:[port]
     public static void main(String[] args) throws InterruptedException {
-        String target = "127.0.0.1:8811";
+        if (args.length > 2 && "DEBUG".equals(args[2])) {
+            // Set logger to DEBUG level
+            System.out.println("Starting the application\n");
+        }
 
         ManagedChannel asyncChannel = ManagedChannelBuilder.forAddress(args[0], Integer.parseInt(args[1]))
                 .usePlaintext()
@@ -158,17 +171,18 @@ public class SimpleClient {
             Terminal terminal = terminalFactory.createTerminal();
             // Chane title of terminal window
             Game game = new Game(terminal);
-
             SimpleClient client = new SimpleClient(asyncChannel, game, blockingChannel);
+
             client.startGame();
             client.stopGame(); // Stop the game and the game thread
             terminal.close();
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("Game crashed try in main: \n" + e.getMessage());
         } finally {
-            System.out.println("Shutting down Client...");
-            asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
-            blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
+            /*System.out.println("Shutting down Client...\n");*/
+            /*asyncChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);
+            blockingChannel.shutdownNow().awaitTermination(5L, TimeUnit.SECONDS);*/
         }
     }
 
