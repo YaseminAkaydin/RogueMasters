@@ -1,4 +1,4 @@
-package de.roguemaster.thread;
+package de.roguemaster.handler;
 
 public class DataContainer<T> {
     private T data = null;

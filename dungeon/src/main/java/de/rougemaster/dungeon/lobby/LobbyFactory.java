@@ -17,6 +17,8 @@ public class LobbyFactory {
             }while (!lobbyIdValid);
             lobby.setLobbyId(lobbyId);
 
+            //enemyfacade.requestEnemy(lobbyId, EnemyTyp.SKELETON);
+            //enemyfacade.requestEnemy(lobbyId, EnemyTyp.ZOMBIE);
             //TODO: Send EnemyFacade request for EnemyAI
             // EnemyAi registers itself in Lobby and Game
 

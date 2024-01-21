@@ -1,17 +1,16 @@
-package de.roguemaster.thread;
+package de.roguemaster.handler;
 
 import com.example.grpc.*;
 import com.google.gson.reflect.TypeToken;
 import de.roguemaster.enemy.CommandHolder;
 import de.roguemaster.enemy.Enemy;
-import de.roguemaster.thread.messageData.EnemyMessage;
-import de.roguemaster.thread.messageData.GameStateMessage;
+import de.roguemaster.handler.messageData.EnemyMessage;
+import de.roguemaster.handler.messageData.GameStateMessage;
 import io.grpc.Grpc;
 import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 
 import java.util.List;
-import java.util.Map;
 
 
 public class EnemyHandler {
@@ -21,15 +20,16 @@ public class EnemyHandler {
     private int mobID;
     private int clientID;
 
-    private final String port;
+    private final int port;
 
     ManagedChannel asyncChannel;
     ManagedChannel blockingChannel;
 
     GrpcEnemyClient grpcEnemieClient;
 
-    public EnemyHandler(Enemy enemy, int lobbyID, String port) {
+    public EnemyHandler(Enemy enemy, int lobbyID, int port) {
         this.lobbyID = lobbyID;
+        this.enemy = enemy;
         this.port = port;
 
         asyncChannel = Grpc.newChannelBuilder("localhost:" + port, InsecureChannelCredentials.create()).build();
@@ -78,11 +78,12 @@ public class EnemyHandler {
             counter++;
             if(counter > 10) {
                 System.out.println("Couldn't Connect");
+                break;
             }
         }while(!joinResponse.getSuccess());
     }
 
-    private EnemyMessage searchSelfEnemyMessage (List<EnemyMessage> enemyMessageList){
+    private EnemyMessage searchSelfEnemyMessage(List<EnemyMessage> enemyMessageList){
         for(EnemyMessage enemyMessage : enemyMessageList) {
             if(enemyMessage.getId() == mobID) {
                 return enemyMessage;

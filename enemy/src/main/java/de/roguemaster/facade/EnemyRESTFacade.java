@@ -4,7 +4,7 @@ import de.roguemaster.enemy.Enemy;
 import de.roguemaster.enemy.devil.Devil;
 import de.roguemaster.enemy.skeleton.Skeleton;
 import de.roguemaster.enemy.zombie.Zombie;
-import de.roguemaster.thread.EnemyHandler;
+import de.roguemaster.handler.EnemyHandler;
 
 import java.util.HashMap;
 
@@ -12,6 +12,7 @@ public class EnemyRESTFacade {
     private static EnemyRESTFacade instance = null;
     private final HashMap<Integer, EnemyHandler> map;
 
+    private final int port = 50518;
 
     private EnemyRESTFacade() {
         map = new HashMap<>();
@@ -24,14 +25,14 @@ public class EnemyRESTFacade {
         return instance;
     }
 
-    public void createEnemy(int port ,int lobbyID,EnemyTyp typ) {
+    public void createEnemy(int lobbyID,EnemyTyp typ) {
         Enemy enemy = switch (typ) {
             case DEVIL -> new Devil();
             case ZOMBIE -> new Zombie();
             case SKELETON -> new Skeleton();
             default -> throw new IllegalArgumentException("Invalid enemy type: " + typ);};
 
-        EnemyHandler enemyHandler = new EnemyHandler(enemy,lobbyID ,"" + port);
+        EnemyHandler enemyHandler = new EnemyHandler(enemy,lobbyID ,port);
         enemyHandler.initializeConnection();
         int counter = 0;
 
@@ -50,7 +51,7 @@ public class EnemyRESTFacade {
         map.put(enemyHandler.getClientID(),enemyHandler);
     }
 
-    public void deleteEnemy(int port ,int clientID) {
+    public void deleteEnemy(int clientID) {
         EnemyHandler enemyHandler = map.get(clientID);
         enemyHandler.shutdown();
         map.remove(clientID);

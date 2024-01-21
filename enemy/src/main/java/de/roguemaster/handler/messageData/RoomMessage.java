@@ -1,4 +1,4 @@
-package de.roguemaster.thread.messageData;
+package de.roguemaster.handler.messageData;
 
 import java.util.HashMap;
 import java.util.List;

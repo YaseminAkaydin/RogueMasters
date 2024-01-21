@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class CorsConfig {
     String URL = "http://localhost";
-    int PORT = 8099;
+    int PORT = 8089;
 
     //Allow Request from React Servers.
     @Bean

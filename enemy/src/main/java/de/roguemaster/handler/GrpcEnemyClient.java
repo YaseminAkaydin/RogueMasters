@@ -1,4 +1,4 @@
-package de.roguemaster.thread;
+package de.roguemaster.handler;
 
 import com.example.grpc.*;
 import de.roguemaster.enemy.CommandHolder;

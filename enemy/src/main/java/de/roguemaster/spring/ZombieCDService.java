@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/enemy/zombie")
 public class ZombieCDService {
-    @PostMapping(value = "/")
-    public ResponseEntity<Object> createSkeleton(@RequestBody int lobbyId, @RequestBody int port) {
-        EnemyRESTFacade.getInstance().createEnemy(port,lobbyId, EnemyTyp.ZOMBIE);
+    @PostMapping(value = "/{lobbyId}")
+    public ResponseEntity<Object> createSkeleton(@PathVariable("lobbyId") String lobbyId) {
+        EnemyRESTFacade.getInstance().createEnemy(Integer.parseInt(lobbyId), EnemyTyp.ZOMBIE);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Object> deleteSkeleton(int clientID, int port) {
+    @DeleteMapping("/{lobbyId}/{clientID}")
+    public ResponseEntity<Object> deleteSkeleton(@PathVariable("lobbyId") String lobbyId,@PathVariable("clientID") String clientID) {
         //TODO: check if clientID is valid and lobby is correct
-        EnemyRESTFacade.getInstance().deleteEnemy(port,clientID);
+        EnemyRESTFacade.getInstance().deleteEnemy(Integer.parseInt(clientID));
         return ResponseEntity.ok().build();
     }
 }

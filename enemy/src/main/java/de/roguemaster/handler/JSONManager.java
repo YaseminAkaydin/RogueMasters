@@ -1,4 +1,4 @@
-package de.roguemaster.thread;
+package de.roguemaster.handler;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
