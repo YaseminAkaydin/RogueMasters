@@ -89,14 +89,14 @@ public class DungeonApplication {
         @Override
         public StreamObserver<GameCommandRequest> sendGameCommand(StreamObserver<GameCommandResponse> responseObserver) {
             clients.add(responseObserver);
-            System.out.println("Client connected, total clients: " + clients.size());
+            /*System.out.println("Client connected, total clients: " + clients.size());*/
 
             return new StreamObserver<GameCommandRequest>() {
                 private Integer userId = null;
 
                 @Override
                 public void onNext(GameCommandRequest request) {
-                    System.out.println("Received command: " + request.getCommand() + " " + request.getTarget());
+                    System.out.println("Received command: " + request.getCommand() + " " + request.getTarget() + " " + request.getUserId());
 
 
                     if (request.getCommand().equals("initialize") && lobbyFacade.isClientIdExisting(request.getUserId())) {
@@ -170,7 +170,7 @@ public class DungeonApplication {
             // Send the response back to the client
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-            System.out.println("Sent joinLobby response: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID() + " " + response.getUserID());
+            System.out.println("Sent joinLobby response: LOBBYID:" + response.getLobbyID() + " SUCCESS:" + response.getSuccess() + " CHARID:" + response.getCharacterID() + " USERID:" + response.getUserID());
         }
     }
 }

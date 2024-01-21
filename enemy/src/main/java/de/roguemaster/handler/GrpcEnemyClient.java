@@ -58,7 +58,6 @@ public class GrpcEnemyClient {
         if (requestObserver != null) {
             logger.info("Stream already initialized");
         }
-        System.out.println("Creating MOB stream to server");
         requestObserver = asyncStub.sendGameCommand(new StreamObserver<GameCommandResponse>() {
             @Override
             public void onNext(GameCommandResponse response) { // Das ruft der Server aus!

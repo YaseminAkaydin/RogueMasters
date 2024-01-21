@@ -9,7 +9,7 @@ public abstract class EnemyCharacter extends Character {
     protected int dangerLevel;
 
     public EnemyCharacter(int baseExpDropAmount){
-        baseExpDropAmount = baseExpDropAmount;
+        this.baseExpDropAmount = baseExpDropAmount;
     }
 
     /**

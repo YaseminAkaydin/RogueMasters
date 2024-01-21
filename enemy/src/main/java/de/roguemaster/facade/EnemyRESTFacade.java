@@ -33,6 +33,7 @@ public class EnemyRESTFacade {
             default -> throw new IllegalArgumentException("Invalid enemy type: " + typ);};
 
         EnemyHandler enemyHandler = new EnemyHandler(enemy,lobbyID ,port);
+        System.out.println("Starting initialization of enemy: " + typ.toString().toLowerCase() + " in lobby: " + lobbyID);
         enemyHandler.initializeConnection();
         int counter = 0;
 

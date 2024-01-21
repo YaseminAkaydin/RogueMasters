@@ -14,13 +14,14 @@ import java.util.Map;
 public class Zombie extends EnemyCharacter {
 
 
-    private static final int baseExpDropAmount = 10;
+    private static final int ExpDropAmount = 10;
     private static final int biteBonusDamage = 5;
 
     private ZombieState state;
 
     public Zombie(int dangerLvl){
-        super(baseExpDropAmount);
+        super(ExpDropAmount);
+        id = ++idCounter;
         this.dangerLevel = dangerLvl;
         if(dangerLvl <= 0) {
             dangerLvl = 1;
@@ -30,6 +31,7 @@ public class Zombie extends EnemyCharacter {
         }
 
         if(dangerLvl < 5){
+
             this.attack= 4;
             this.defense=2;
             this.maxHp=4;

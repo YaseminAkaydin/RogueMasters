@@ -26,7 +26,8 @@ public class EnemyFacade {
 
     public void requestEnemy(int lobbyId, LobbyCharType enemyTyp) {
         HttpClient client = HttpClient.newHttpClient();
-        String url = "http://localhost:8080/enemy/devil/" + lobbyId;
+        /*String url = "http://localhost:8080/enemy/devil/" + lobbyId;*/
+        String url = "http://localhost:8080/enemy/" + enemyTyp.toString().toLowerCase() + "/" + lobbyId;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -36,20 +37,27 @@ public class EnemyFacade {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println("Response status code: " + response.statusCode());
-            System.out.println("Response body: " + response.body());
+            System.out.println("MOB generated: " + enemyTyp.toString().toLowerCase());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        /*case (EnemyCharacterFactory.EnemyTyp.Devil):
-        request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/enemy/devil/" + lobbyId))
-                .POST(HttpRequest.BodyPublishers.noBody())
-                .build();
-        case (EnemyCharacterFactory.EnemyTyp
-                .Zombie):
-        case (EnemyCharacterFactory.EnemyTyp
-                .Skeleton):
-        default -> throw new IllegalArgumentException("Invalid enemy type: " + enemyTyp);*/
+    }
+
+    ///client/{clientID}"
+    public void deleteEnemy(int clientID, LobbyCharType enemyTyp){
+        HttpClient client = HttpClient.newHttpClient();
+        String url = "http://localhost:8080/enemy/" + enemyTyp.toString().toLowerCase() + "/client/" + clientID;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .DELETE().build();
+
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Response status code: " + response.statusCode());
+            System.out.println("Response body: " + response.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -83,7 +83,7 @@ public class Game {
                     currentView = mainGameView;
                 }
 
-                Thread.sleep(100);
+                Thread.sleep(10);
 
             } catch (InterruptedException e) {
                 logger.log(java.util.logging.Level.SEVERE, "Interrupted while sleeping", e);

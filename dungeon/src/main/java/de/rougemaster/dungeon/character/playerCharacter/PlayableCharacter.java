@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlayableCharacter extends Character {
-    private static int idCounter = 0;
     private int level;
     private int experience;
 
@@ -27,9 +26,12 @@ public class PlayableCharacter extends Character {
         weaponSlot = ItemFactory.createWeapon(1);
         inventory.add(armorSlot);
         inventory.add(weaponSlot);
-        hp = 10;
-        attack = 10;
-        maxHp = 10;
+        hp = 3;
+        attack = 2;
+        defense =2;
+        maxHp = 3;
+        level = 1;
+
     }
 
     /**
@@ -83,8 +85,13 @@ public class PlayableCharacter extends Character {
         }else if (item instanceof Book){
             Book book = (Book) item;
             gainExperience(book.getExtraPoints());
+            inventory.remove(book);
         }else if (item instanceof Potion){
             hp+= ((Potion) item).use();
+            if(hp>maxHp){
+                hp = maxHp;
+            }
+            inventory.remove(item);
         }else if (item instanceof Weapon){
             equipItem(item);
         }
@@ -105,14 +112,60 @@ public class PlayableCharacter extends Character {
         }
 
         experience += exp;
+        boolean levelup = false;
 
         //Check if level up is possible and calculate level up
         while(experience >= (int)Math.pow(level, 1.5)) {
             experience -= (int)Math.pow(level, 1.5);
             level++;
+            levelup = true;
         }
 
-        //TODO: Increase Stats
+
+        if(level <= 0) {
+            level = 1;
+        }
+        if(level > 15) {
+            level = 15;
+        }
+
+        if(level < 5){
+            this.attack= 2;
+            this.defense=2;
+            this.maxHp=3;
+
+            for(int i = level; i>1; i--){
+                attack += 2;
+                defense += 2;
+                maxHp +=  3;
+            }
+        }
+
+        if(level < 10 && level >= 5 ){
+            this.attack= 10;
+            this.defense=10;
+            this.maxHp=15;
+            for(int i = level; i>1; i--){
+                attack += 3;
+                defense += 3;
+                maxHp +=  5;
+            }
+        }
+
+        if(level >= 10){
+            this.attack= 25;
+            this.defense=25;
+            this.maxHp=40;
+            for(int i = level; i>1; i--){
+                attack += 4;
+                defense += 4;
+                maxHp +=  8;
+            }
+        }
+        if(levelup){
+            this.hp=maxHp;
+        }
+
     }
 
     /**

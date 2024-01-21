@@ -34,9 +34,6 @@ public class LobbyThread implements Runnable{
                         enemyFacade.requestEnemy(lobby.getLobbyId(),LobbyCharType.Skeleton);
                     } else if (character instanceof Zombie) {
                         enemyFacade.requestEnemy(lobby.getLobbyId(),LobbyCharType.Zombie);
-
-                    }else {
-                        enemyFacade.requestEnemy(lobby.getLobbyId(),LobbyCharType.Devil);
                     }
                 }
                 int clientId = lobby.getClienID(character);
@@ -48,7 +45,7 @@ public class LobbyThread implements Runnable{
 
             long executionTime = endTime - startTime; // Berechnung der Ausführungszeit
 
-            System.out.println("ExecuteTurn() hat " + executionTime + " Millisekunden gedauert.");
+            /*System.out.println("ExecuteTurn() hat " + executionTime + " Millisekunden gedauert.");*/
             lobby.nextTurn();
             try {
                 Thread.sleep(5000);

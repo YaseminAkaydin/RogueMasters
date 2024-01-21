@@ -95,7 +95,9 @@ public class MainGameView extends ViewComponent {
         tg.putString(1, statsStartY, "MONSTER INFO: " + gameState.getRoomData().getEnemy().getName() +
                 "- " + gameState.getRoomData().getEnemy().getHp() +
                 "/" + gameState.getRoomData().getEnemy().getMaxHp() +
-                "HP - Danger-Level: " + gameState.getRoomData().getEnemy().getDangerLevel());
+                "HP - Danger-Level: " + gameState.getRoomData().getEnemy().getDangerLevel() +
+                " - Attack: " + gameState.getRoomData().getEnemy().getAttack() +
+                " - Defense: " + gameState.getRoomData().getEnemy().getDefense());
 
     }
 
@@ -136,7 +138,7 @@ public class MainGameView extends ViewComponent {
             String monsterSymbol = switch (gameState.getRoomData().getEnemy().getName()) {
                 case "Skeleton" -> "S";
                 case "Zombie" -> "Z";
-                case "Boss" -> "B";
+                case "Devil" -> "B";
                 default -> "?";
             };
             tg.putString(uniqueCoordinates.stream().toList().get(3).x, uniqueCoordinates.stream().toList().get(3).y, monsterSymbol);
@@ -212,7 +214,7 @@ public class MainGameView extends ViewComponent {
         // Display movement options based on available doors, Display "Flee" instead of move if there is another player in the room
         gameState.getRoomData().getAdjacentRooms().forEach((direction, adjacentRoomId) -> {
             if (adjacentRoomId != -1) {
-                if (gameState.getRoomData().getPlayers().size() > 1) {
+                if (gameState.getRoomData().getPlayers().size() > 1 || gameState.getRoomData().getEnemy() != null) {
                     String moveOptionText = optionNumber + ". Flee " + direction; // 'N', 'S', 'E', 'W'
                     tg.putString(OPTIONS_START_X, optionsStartY.getAndIncrement(), moveOptionText);
                     optionMappings.put(optionNumber.getAndIncrement(), new FleeAction(adjacentRoomId));

@@ -6,6 +6,7 @@ import java.util.Random;
 
 public abstract class Character {
 
+    protected static int idCounter = 0;
     protected int maxHp;
     protected int hp;
     protected String name;

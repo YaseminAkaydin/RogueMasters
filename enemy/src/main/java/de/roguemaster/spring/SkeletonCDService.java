@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/enemy/skeleton")
 public class SkeletonCDService {
-    @PostMapping(value = "/lobby/{lobbyId}")
+    @PostMapping(value = "/{lobbyId}")
     public ResponseEntity<Object> createSkeleton(@PathVariable("lobbyId") String lobbyId) {
         EnemyRESTFacade.getInstance().createEnemy(Integer.parseInt(lobbyId), EnemyTyp.Skeleton);
         return ResponseEntity.ok().build();

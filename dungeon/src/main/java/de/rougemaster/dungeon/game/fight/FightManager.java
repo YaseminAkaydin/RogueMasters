@@ -43,14 +43,19 @@ public class FightManager {
         Character combatantOne = fight.getCombatantOne();
         Character combatantTwo = fight.getCombatantTwo();
         int enemyLevel = 0;
+        //TODO: dont drop exp twice
         if (combatantOne instanceof EnemyCharacter) {
-            ((EnemyCharacter) combatantOne).dropExperience((PlayableCharacter) combatantTwo);
-            enemyLevel = ((EnemyCharacter) combatantOne).getDangerLevel();
+            if(combatantOne.getHp()<=0){
+                ((EnemyCharacter) combatantOne).dropExperience((PlayableCharacter) combatantTwo);
+                enemyLevel = ((EnemyCharacter) combatantOne).getDangerLevel();
+            }
 
         } else {
             if(combatantTwo instanceof EnemyCharacter) {
-                ((EnemyCharacter) combatantTwo).dropExperience((PlayableCharacter) combatantOne);
-                enemyLevel = ((EnemyCharacter) combatantTwo).getDangerLevel();
+                if(combatantOne.getHp()<=0) {
+                    ((EnemyCharacter) combatantTwo).dropExperience((PlayableCharacter) combatantOne);
+                    enemyLevel = ((EnemyCharacter) combatantTwo).getDangerLevel();
+                }
             }
         }
         int itemLevel = 1;

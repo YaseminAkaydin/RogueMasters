@@ -4,6 +4,7 @@ import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacterFactory;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.dungeon.BossRoom;
 import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.ItemManager;
 import de.rougemaster.dungeon.dungeon.Room;
@@ -56,8 +57,12 @@ public class Game {
     }
 
     public Room findFreeRoom(){
+        // TODO: Fall Devil !!
+
         List<Room> allRooms = dungeon.getRoomList();
         List<Room> notAvailableRooms= new ArrayList<>();
+        notAvailableRooms.add(findBossRoom());
+
         for (PlayableCharacter playableCharacter: playerList) {
             notAvailableRooms.add(playableCharacter.getCurrentRoom());
         }
@@ -67,13 +72,16 @@ public class Game {
         Set<Room> mergedSet= new HashSet<>(allRooms);
         mergedSet.removeAll(notAvailableRooms);
 
-        Room firstRoom=null;
-        Iterator<Room> iterator = mergedSet.iterator();
-        if (iterator.hasNext()) {
-            firstRoom = iterator.next();
+        List<Room> roomList = new ArrayList<>(mergedSet);
+        Room firstRoom = null;
+        if (!roomList.isEmpty()) {
+            Random random = new Random();
+            firstRoom = roomList.get(random.nextInt(roomList.size())); // -1 an size vllt
         }
         return firstRoom;
     }
+
+
 
 
     /**
@@ -81,13 +89,32 @@ public class Game {
      * @param enemyType the enemytype that is to be added
      */
     public EnemyCharacter addEnemy(LobbyCharType enemyType) {
+        int num=0;
         EnemyCharacterFactory enemyFactory = new EnemyCharacterFactory();
         EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType));
 
-        enemy.teleport(findFreeRoom());
+        if(enemyType ==LobbyCharType.Devil){
+            enemy.teleport(findBossRoom());
+        }else {
+            num++;
+            System.out.printf("Enemy wird in seinen Raum katapultiert: " + num + "x");
+            enemy.teleport(findFreeRoom());
+        }
         setCharacterTurn(new doNothingGameCommand(enemy), enemy);
         enemyList.add(enemy);
         return enemy;
+    }
+
+    public Room findBossRoom(){
+        Room bossRoom =null;
+        List<Room> allRooms = dungeon.getRoomList();
+        for (Room room: allRooms){
+            if(room instanceof BossRoom){
+                bossRoom = room;
+            }
+        }
+
+        return bossRoom;
     }
 
     public TurnManager getTurnManager() {
@@ -171,7 +198,7 @@ public class Game {
         }
         return playableCharactersToRemove;
     }
-    
+
 
 
     public void createTurnManagerThread (LobbyThread turnManagerThread) {

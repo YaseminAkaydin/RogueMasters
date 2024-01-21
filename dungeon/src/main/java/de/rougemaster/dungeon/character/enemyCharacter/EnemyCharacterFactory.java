@@ -16,11 +16,13 @@ public class EnemyCharacterFactory {
         switch (enemyTyp){
             case Zombie:
                 // Dangerlevel random number between 1 and 8
-                dangerLevel = (int) (Math.random() * 8 + 1);
+                dangerLevel =1;
+                //dangerLevel = (int) (Math.random() * 8 + 1);
                 return new Zombie(dangerLevel);
             case Skeleton:
+                dangerLevel =1;
                 // Dangerlevel random number between 1 and 13
-                dangerLevel = (int) (Math.random() * 13 + 1);
+                //dangerLevel = (int) (Math.random() * 13 + 1);
                 return new Skeleton(dangerLevel);
             case Devil:
                 return new Devil();

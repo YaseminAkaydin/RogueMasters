@@ -23,6 +23,7 @@ public class InventoryView extends ViewComponent {
     private final Map<Integer, String> optionMappings = new HashMap<>();
     private final Map<Integer, ItemAction> dropItemOptionMappings = new HashMap<>();
     private final Map<Integer, ItemAction> useConsumableOptionMappings = new HashMap<>();
+    private final Map<Integer, ItemAction> equipItemOptionMappings = new HashMap<>();
 
 
     public InventoryView(Terminal terminal, GameState gameState) {

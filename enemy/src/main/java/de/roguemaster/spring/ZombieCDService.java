@@ -14,7 +14,7 @@ public class ZombieCDService {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{lobbyId}/{clientID}")
+    @DeleteMapping("/client/{clientID}")
     public ResponseEntity<Object> deleteSkeleton(@PathVariable("lobbyId") String lobbyId,@PathVariable("clientID") String clientID) {
         //TODO: check if clientID is valid and lobby is correct
         EnemyRESTFacade.getInstance().deleteEnemy(Integer.parseInt(clientID));

@@ -57,7 +57,7 @@ public abstract class ViewComponent {
                 "LEVEL: " + gameState.getLocalPlayer().getLevel() +
                 " - " + gameState.getLocalPlayer().getHp() +
                 "/" + gameState.getLocalPlayer().getMaxHp() +
-                " - EXP: " + gameState.getLocalPlayer().getExperience() +
+                "HP - EXP: " + gameState.getLocalPlayer().getExperience() +
                 "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
     }
 

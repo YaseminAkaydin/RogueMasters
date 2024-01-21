@@ -16,7 +16,7 @@ import java.util.*;
 public class LobbyFacade {
     //singleton instance
     private static LobbyFacade instance = null;
-    private final LobbyBroker lobbyBroker;
+    protected final LobbyBroker lobbyBroker;
     private final LobbyFactory lobbyFactory;
     static int i = 1;
 
@@ -59,6 +59,7 @@ public class LobbyFacade {
         }
 
         lobbyBroker.unregisterUser(clientId);
+        System.out.println("LobbyId: " + lobbyId + " does not exist");
         return new JoinLobbyResponseMessage(-1, -1, lobbyId, false);
     }
 
@@ -84,7 +85,7 @@ public class LobbyFacade {
 
         for(Integer clientId: clientIds) {
             if(clientsToConnection.containsKey(clientId)){
-                System.out.println("Sending to Client: " + clientId);
+                /*System.out.println("Sending to Client: " + clientId);*/
                 clientsToConnection.get(clientId).onNext(GameCommandResponse.newBuilder().setMessage(message).build());
             }
         }

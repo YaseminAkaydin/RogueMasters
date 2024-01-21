@@ -10,6 +10,7 @@ public class Devil extends EnemyCharacter {
 
     public Devil() {
         super(0);
+        id = ++idCounter;
         int dangerLvl = 15;
 
         this.attack= 100;

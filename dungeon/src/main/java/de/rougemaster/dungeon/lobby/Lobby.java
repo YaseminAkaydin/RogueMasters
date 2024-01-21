@@ -169,18 +169,38 @@ public class Lobby {
     }
 
 
+
     public void killCharacter(Character character){
+        Integer clientID=0;
         if(!characterMap.containsValue(character)){
             return;
+        }else {
+            for (Map.Entry<Integer, Character> entry: characterMap.entrySet()){
+                if(character.equals(entry.getValue())){
+                    clientID=entry.getKey();
+                }
+            }
+            character.die();
+            game.removeCharacter(character);
+            LobbyFacade lobbyFacade= LobbyFacade.getInstance();
+            lobbyFacade.lobbyBroker.unregisterUser(clientID);
+            EnemyFacade enemyFacade= EnemyFacade.getInstance();
+            if(character instanceof Zombie){
+                enemyFacade.deleteEnemy(clientID,LobbyCharType.Zombie);
+            } else if (character instanceof Skeleton) {
+                enemyFacade.deleteEnemy(clientID,LobbyCharType.Skeleton);
+            }else if (character instanceof Devil) {
+                enemyFacade.deleteEnemy(clientID,LobbyCharType.Devil);
+            }
+
         }
-        character.die();
-        game.removeCharacter(character);
-        //TODO: remove from lobyfacade
     }
 
     public void startGame(){
         EnemyFacade enemyFacade = EnemyFacade.getInstance();
         enemyFacade.requestEnemy(lobbyId, LobbyCharType.Devil);
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Zombie);
     }
     /**
      * Sends the next Turn signal to LobbyFacade.

@@ -74,6 +74,7 @@ public class EnemyHandler {
         int counter = 0;
         JoinLobbyResponse joinResponse;
         do{
+            System.out.println("Sending " + counter + " join request for " + typ.toString());
             joinResponse = grpcEnemieClient.sendJoinLobbyRequest(lobbyID, typ.toString());
             this.mobID = joinResponse.getCharacterID();
             this.clientID = joinResponse.getUserID();

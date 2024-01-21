@@ -13,12 +13,12 @@ import java.util.Map;
 public class Skeleton extends EnemyCharacter {
 
     SkeletonState state;
-    private static final int baseExpDropAmount = 20;
-
+    private static final int ExpDropAmount = 20;
     private static final int boneAttackBonusDamage = 5;
 
     public Skeleton(int dangerLevel) {
-        super(baseExpDropAmount);
+        super(ExpDropAmount);
+        id = ++idCounter;
         this.dangerLevel = dangerLevel;
 
         if(dangerLevel <= 0) {
@@ -29,6 +29,7 @@ public class Skeleton extends EnemyCharacter {
         }
 
         if(dangerLevel < 5){
+
             this.attack= 2;
             this.defense=3;
             this.maxHp=3;

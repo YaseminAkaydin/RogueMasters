@@ -18,10 +18,6 @@ public class LobbyFactory {
             }while (!lobbyIdValid);
             lobby.setLobbyId(lobbyId);
 
-            /*EnemyFacade enemyFacade = EnemyFacade.getInstance();
-            enemyFacade.requestEnemy(lobbyId, LobbyCharType.Devil);*/
-            /*enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
-            enemyFacade.requestEnemy(lobbyId, LobbyCharType.Zombie);*/
 
             return lobby;
         }
