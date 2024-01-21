@@ -89,8 +89,6 @@ public class LobbyFacade {
                 clientsToConnection.get(clientId).onNext(GameCommandResponse.newBuilder().setMessage(message).build());
             }
         }
-        //Stub.startGameStateUpdates();
-        //TODO: Send NextTurn to Client via ServerStub
     }
 
     public boolean isClientIdExisting (int clientId) {

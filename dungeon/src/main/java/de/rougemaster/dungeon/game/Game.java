@@ -88,16 +88,13 @@ public class Game {
      * Adds an enemy to the game, puts him into a room, except boss -> bossroom
      * @param enemyType the enemytype that is to be added
      */
-    public EnemyCharacter addEnemy(LobbyCharType enemyType) {
-        int num=0;
+    public EnemyCharacter addEnemy(LobbyCharType enemyType) {;
         EnemyCharacterFactory enemyFactory = new EnemyCharacterFactory();
         EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType));
 
         if(enemyType ==LobbyCharType.Devil){
             enemy.teleport(findBossRoom());
         }else {
-            num++;
-            System.out.printf("Enemy wird in seinen Raum katapultiert: " + num + "x");
             enemy.teleport(findFreeRoom());
         }
         setCharacterTurn(new doNothingGameCommand(enemy), enemy);

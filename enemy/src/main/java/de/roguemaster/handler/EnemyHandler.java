@@ -54,7 +54,7 @@ public class EnemyHandler {
         JSONManager<GameStateMessage> jsonManager = new JSONManager<>(new TypeToken<>(){});
         GameStateMessage gameStateMessage = jsonManager.read(response.getMessage());
         EnemyMessage selfEnemyMesssage =  searchSelfEnemyMessage(gameStateMessage.getEnemyList());
-
+        System.out.println(gameStateMessage);
         if(selfEnemyMesssage == null || selfEnemyMesssage.getHp() <= 0) {
             System.out.println("Enemy is dead");
             //TODO: SELFDESTRUCTIONG VIA ENEMYFACADE
