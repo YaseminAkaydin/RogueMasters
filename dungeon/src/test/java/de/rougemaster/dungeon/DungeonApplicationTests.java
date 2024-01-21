@@ -163,9 +163,69 @@ class DungeonApplicationTests {
 
 
 	}
+
+	public static void testThreeCharactersInFight(){
+		Game game = new Game(10,1);
+		PlayableCharacter player = game.addPlayer();
+		EnemyCharacter zombie = game.addEnemy(LobbyCharType.Zombie);
+		PlayableCharacter player2= game.addPlayer();
+
+
+		System.out.println("###########TEST START###########");
+		System.out.println("Player Raum:" + player.getCurrentRoom());
+		System.out.println("Zombie Raum:" + zombie.getCurrentRoom());
+		System.out.println("Player2 Raum:" + zombie.getCurrentRoom());
+
+
+		Room char2Room = zombie.getCurrentRoom();
+
+
+		Map<RoomCardinalDirection, Room> rooms = zombie.getCurrentRoom().getAdjacentRooms();
+		Room adjacentRoomToMoveTo = null;
+		if(rooms.get(RoomCardinalDirection.East)!=null){
+			adjacentRoomToMoveTo = rooms.get(RoomCardinalDirection.East);
+		}else if(rooms.get(RoomCardinalDirection.North)!=null){
+			adjacentRoomToMoveTo = rooms.get(RoomCardinalDirection.North);
+		}else if (rooms.get(RoomCardinalDirection.South)!=null){
+			adjacentRoomToMoveTo = rooms.get(RoomCardinalDirection.South);
+		}else if (rooms.get(RoomCardinalDirection.West)!=null){
+			adjacentRoomToMoveTo = rooms.get(RoomCardinalDirection.West);
+		}
+		player.teleport(adjacentRoomToMoveTo);
+		GameCommand moveGameCommand= new moveGameCommand(player, char2Room);
+		GameCommand doNothingComman= new doNothingGameCommand(zombie);
+		game.setCharacterTurn(moveGameCommand, player);
+		game.setCharacterTurn(doNothingComman, zombie);
+		game.setCharacterTurn(doNothingComman, player2);
+
+		game.getTurnManager().executeTurn();
+		System.out.println("TURN WIRD AUSGEFÜHRT"+player.getCurrentRoom());
+		System.out.println("Player Raum nach Turn:"+player.getCurrentRoom());
+		System.out.println("Zombie Raum nach Turn"+zombie.getCurrentRoom());
+		System.out.println("Player 2 Raum nach Turn"+zombie.getCurrentRoom());
+		System.out.println("----------------------------"+player.getCurrentRoom());
+		System.out.println("Fights of Player: " + game.getTurnManager().getFightManager().getFight(player));
+		System.out.println("Fights of Zombie: " + game.getTurnManager().getFightManager().getFight(zombie) +"\n\n\n");
+		System.out.println("Fights of Player2: " + game.getTurnManager().getFightManager().getFight(player2) +"\n\n\n");
+
+		GameCommand moveGameCommandForPlayer2= new moveGameCommand(player2, char2Room);
+		GameCommand doNothingCommanPlayer= new doNothingGameCommand(player);
+		game.setCharacterTurn(moveGameCommandForPlayer2, player2);
+		game.getTurnManager().executeTurn();
+		System.out.println("PLAYER 2 IST JETZT AUCH IM RAUM"+player.getCurrentRoom());
+		System.out.println("Player 2 Raum nach Turn"+zombie.getCurrentRoom());
+		game.getTurnManager().executeTurn();
+		System.out.printf("FIGHT-LISTE");
+		System.out.println("Fights of Player: " + game.getTurnManager().getFightManager().getFight(player));
+		System.out.println("Fights of Zombie: " + game.getTurnManager().getFightManager().getFight(zombie) +"\n\n\n");
+		System.out.println("Fights of Player2: " + game.getTurnManager().getFightManager().getFight(player2) +"\n\n\n");
+
+
+	}
     public static void main(String[] args) {
         //testFight();
-		removeDeadCharacter();
+		//removeDeadCharacter();
+		testThreeCharactersInFight();
 
     }
 //

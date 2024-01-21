@@ -6,9 +6,9 @@ import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.CombatAction;
 import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.fight.FightManager;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.fleeGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
-import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilFlameSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilPlayerKillerAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilSpikeShieldCommand;
@@ -22,9 +22,9 @@ import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonSwordAtt
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
 
-
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TurnManager {
     FightManager fightManager;
@@ -165,8 +165,7 @@ public class TurnManager {
                 if (fightingCharacters.contains(character1) || fightingCharacters.contains(character2)) {
                     continue;
                 }
-
-                if (room1==room2 && character1!=character2) {
+                if (room1.equals(room2) && !character1.equals(character2)) {
                     fightManager.startFight(character1, character2);
                 }
 

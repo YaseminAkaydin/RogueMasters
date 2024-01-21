@@ -2,6 +2,13 @@ package de.rougemaster.dungeon.character.enemyCharacter.skeleton;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
+import de.rougemaster.dungeon.dungeon.Dungeon;
+import de.rougemaster.dungeon.dungeon.DungeonRoom;
+import de.rougemaster.dungeon.dungeon.Room;
+import de.rougemaster.dungeon.dungeon.RoomCardinalDirection;
+
+import java.util.List;
+import java.util.Map;
 
 public class Skeleton extends EnemyCharacter {
 
@@ -86,6 +93,17 @@ public class Skeleton extends EnemyCharacter {
      */
     public void bonesplosionAttack(Character character){
         character.setHp(character.getHp()-((int)(this.attack * 2.5) - character.getDefense()));
+    }
+
+    /**
+     * Teleports the Skelton after a fight into a room, where no Characters are in
+     */
+    public void skeletonRoam(List<Room> rooms){
+        for (Room room : rooms){
+            if(room.getCharacters().isEmpty()){
+                this.teleport(room);
+            }
+        }
     }
 
     /**

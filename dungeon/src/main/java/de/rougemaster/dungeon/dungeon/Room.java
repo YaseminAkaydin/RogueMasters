@@ -4,6 +4,8 @@ import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.item.Item;
 
 import java.util.*;
+import java.util.stream.Collectors;
+//TODO: Import Items und EnemyCharacter (durch NullType ersetzen), prüfen ob Typen von Klassenvariablen korrekt sind, Kommentare
 
 
 abstract public class Room {
@@ -11,11 +13,13 @@ abstract public class Room {
     static int instanceCounter = 0;
     private int id;
     protected Item item;
+    protected List<Character> characters;
     private final Map<RoomCardinalDirection, Room> adjacentRooms;
 
     public Room() {
         instanceCounter++;
         this.id = instanceCounter;
+        this.characters = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
         adjacentRooms.put(RoomCardinalDirection.North, null);
         adjacentRooms.put(RoomCardinalDirection.South, null);
@@ -77,6 +81,16 @@ abstract public class Room {
         return adjacentRooms.containsValue(room);
     }
 
+    public RoomCardinalDirection getRandomAvailableDirection(Room room) {
+        List<RoomCardinalDirection> availableDirections = room.getAdjacentRooms().entrySet().stream().filter(entry -> entry.getValue() == null).map(Map.Entry::getKey).toList();
+        Random random = new Random();
+        if (availableDirections.isEmpty()) {
+            return null;
+        }
+        int randomIndex = random.nextInt(availableDirections.size());
+        return availableDirections.get(randomIndex);
+    }
+
     /**
      * Retrieves the item in this room.
      *
@@ -99,6 +113,14 @@ abstract public class Room {
      */
     public void removeItem() {this.item = null;}
 
+    /**
+     * Retrieves the list of characters present in this room.
+     *
+     * @return The list of characters in the room.
+     */
+    public List<Character> getCharacters() {
+        return characters;
+    }
 
     /**
      * Retrieves the total number of Room instances created.
