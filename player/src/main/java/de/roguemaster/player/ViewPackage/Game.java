@@ -86,15 +86,12 @@ public class Game {
                 Thread.sleep(10);
 
             } catch (InterruptedException e) {
-                logger.log(java.util.logging.Level.SEVERE, "Interrupted while sleeping", e);
-                inputThread.interrupt();
-                terminal.close();
                 running.set(false);
+                Thread.currentThread().interrupt();
+
             }
         }
-
         inputThread.interrupt();
-        terminal.close();
     }
 
     /**
