@@ -110,6 +110,7 @@ public class Game {
         this.inventoryView = new InventoryView(terminal, this.gameState);
         gameState.setLocalPlayerID(localPlayerID);
         gameState.setLobbyID(lobbyID);
+
         gameStarted.set(true);
         currentView = mainGameView;
     }
@@ -160,6 +161,7 @@ public class Game {
         });
         this.gameState = jsonManager.read(gameState);
         this.gameState.setLocalPlayerID(localPlayerID);
+        this.gameState.setLobbyID(lobbyID);
         this.gameState.initGameState();
         if (this.gameState.getLocalPlayer() == null){
             currentView = gameOverView;
