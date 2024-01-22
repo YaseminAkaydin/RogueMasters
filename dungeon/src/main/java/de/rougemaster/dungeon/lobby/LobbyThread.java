@@ -25,7 +25,7 @@ public class LobbyThread implements Runnable {
         lobby.startGame();
         while (true) {
             if (game.getPlayerList().isEmpty()) {
-                sendDeleteToAllEnemies();
+                /*sendDeleteToAllEnemies();*/
                 lobby.getGame().getTurnManager().reset();
                 LobbyFacade lobbyFacade = LobbyFacade.getInstance();
                 lobbyFacade.lobbyBroker.getLobbyBrokerRegister().removeLobby(lobby.getLobbyId());
