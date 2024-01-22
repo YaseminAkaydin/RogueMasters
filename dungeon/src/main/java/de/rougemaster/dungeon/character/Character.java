@@ -2,10 +2,11 @@ package de.rougemaster.dungeon.character;
 
 import de.rougemaster.dungeon.dungeon.Room;
 
+import java.util.Objects;
 import java.util.Random;
 
 public abstract class Character {
-
+    protected static int idCounter = 0;
     protected int maxHp;
     protected int hp;
     protected String name;
@@ -14,6 +15,19 @@ public abstract class Character {
     protected int id;
 
     protected Room currentRoom;
+
+
+    /**
+     * Returns the level of the Character
+     * @return the amount EXP that the character drops when killed
+     */
+    public abstract int getEXP();
+
+    /**
+     * Returns the level of the Character
+     * @return the level of the Character
+     */
+    public abstract int getLevel();
 
     /**
      * move u to the given adjacent Room
@@ -37,14 +51,9 @@ public abstract class Character {
      * Makes you flee into a given to adjacent Room.
      * Only usable in a fight.
      * @param room the room you want to move to.
-     * @return if fleeing was successful.
      */
-    public boolean flee(Room room){
-        if(new Random().nextBoolean()){
-            move(room);
-            return true;
-        }
-        return false;
+    public void flee(Room room){
+        move(room);
     }
 
     /**
@@ -58,6 +67,12 @@ public abstract class Character {
 
     public void setHp(int hp) {
         this.hp = hp;
+    }
+
+
+    public void die(){
+        hp = 0;
+        currentRoom = null;
     }
 
     public int getMaxHp() {
@@ -87,4 +102,12 @@ public abstract class Character {
     public String getName() {
         return name;
     }
+
+    @Override
+    //hashcode und equals für die LobbyMap
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
 }

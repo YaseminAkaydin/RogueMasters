@@ -3,77 +3,122 @@ package de.roguemaster.player.ViewPackage.View;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
-import de.roguemaster.player.ViewPackage.DataForView.DungeonData;
-import de.roguemaster.player.ViewPackage.DataForView.ItemData;
-import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
-import de.roguemaster.player.ViewPackage.DataForView.RoomData;
+import de.roguemaster.player.ViewPackage.DataForView.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 
+/**
+ * The ViewComponent class is the abstract superclass for all views. It defines the basic structure
+ */
 public abstract class ViewComponent {
-    // ALl
+
+    protected State currentState;
+
+    /**
+     * The State enum represents the different states of the view. The view can be in the main options
+     * state, the drop item state, or the use consumable state.
+     */
+    public enum State {
+        MAIN_OPTIONS,
+        DROP_ITEM,
+        USE_CONSUMABLE,
+        EQUIP_ITEM
+    }
+
     protected final Terminal terminal;
     protected TextGraphics tg;
 
-    // MGV, IV
-    protected RoomData roomData;
-    protected PlayerData playerData;
-    protected DungeonData dungeonData;
     protected final Random random = new Random();
-    protected List<ItemData> inventoryItems;
-    // DMV
-    protected List<RoomData> rooms;
 
+    protected static final String asciiArt = "\n" +
+            " (                              *                                   \n" +
+            " )\\ )                         (  `                 )                \n" +
+            "(()/(      (  (     (     (   )\\))(      )      ( /(   (   (        \n" +
+            " /(_)) (   )\\))(   ))\\   ))\\ ((_)()\\  ( /(  (   )\\()) ))\\  )(   (   \n" +
+            "(_))   )\\ ((_))\\  /((_) /((_)(_()((_) )(_)) )\\ (_))/ /((_)(()\\  )\\  \n" +
+            "| _ \\ ((_) (()(_)(_))( (_))  |  \\/  |((_)_ ((_)| |_ (_))   ((_)((_) \n" +
+            "|   // _ \\/ _` | | || |/ -_) | |\\/| |/ _` |(_-<|  _|/ -_) | '_|(_-< \n" +
+            "|_|_\\\\___/\\__, |  \\_,_|\\___| |_|  |_|\\__,_|/__/ \\__|\\___| |_|  /__/ \n" +
+            "          |___/                                                     \n";
+
+
+    protected GameState gameState;
+
+    /**
+     * Abstract method to display the current view. Must be implemented by subclasses to define
+     * how each specific view is rendered on the screen.
+     */
     public abstract void display();
 
-    // For MGV
-    protected ViewComponent(Terminal terminal, RoomData roomData, PlayerData playerData, DungeonData dungeonData) {
+    /**
+     * Constructs a ViewComponent with a reference to the Terminal and the current GameState.
+     *
+     * @param terminal The Terminal object used for displaying the view.
+     * @param gameState The current state of the game, containing all necessary information.
+     */
+    protected ViewComponent(Terminal terminal, GameState gameState) {
         this.terminal = terminal;
-        this.roomData = roomData;
-        this.playerData = playerData;
-        this.dungeonData = dungeonData;
-        this.rooms = dungeonData.getRooms();
-        this.inventoryItems = playerData.getInventory();
-
+        this.gameState = gameState;
     }
 
-    // For DMV
-    protected ViewComponent(Terminal terminal, PlayerData playerData, DungeonData dungeonData) {
-        this.terminal = terminal;
-        this.playerData = playerData;
-        this.dungeonData = dungeonData;
-        this.rooms = dungeonData.getRooms();
-        this.inventoryItems = playerData.getInventory();
-
-    }
-
-    // For IV
-    protected ViewComponent(Terminal terminal, PlayerData playerData) {
-        this.terminal = terminal;
-        this.playerData = playerData;
-        this.inventoryItems = playerData.getInventory();
-    }
-
+    /**
+     * Constructs a ViewComponent with a reference to the Terminal.
+     *
+     * @param terminal The Terminal object used for displaying the view.
+     */
     protected ViewComponent(Terminal terminal) {
         this.terminal = terminal;
     }
 
+    /**
+     * Displays player statistics such as level, health, experience, and available actions ('M' for Map,
+     * 'I' for Inventory, 'S' for RoomView) at the bottom of the screen.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     * @throws IOException If an I/O error occurs.
+     */
     protected void displayPlayerStats(TextGraphics tg) throws IOException {
         int statsStartY = terminal.getTerminalSize().getRows() - 1; // Below the room
+        tg.setForegroundColor(TextColor.ANSI.WHITE);
+        tg.putString(1, statsStartY,"'M' OR 'D' for Map -- 'I' for Inventory -- 'S' for RoomView");
         tg.setForegroundColor(TextColor.ANSI.CYAN);
-        tg.putString(1, statsStartY,
-                "LEVEL: " + playerData.getLevel() +
-                " - " + playerData.getHp() +
-                "/" + playerData.getMaxHp() +
-                " - EXP: " + playerData.getExperience() +
-                "  -- 'M' = Map -- 'I' = Inventory -- 'S' = RoomView");
+        tg.putString(1, statsStartY-1,
+                "LEVEL: " + gameState.getLocalPlayer().getLevel() +
+                        " - " + gameState.getLocalPlayer().getHp() +
+                        "/" + gameState.getLocalPlayer().getMaxHp() +
+                        "HP - EXP: " + gameState.getLocalPlayer().getExperience() +
+                        " - Attack: " + gameState.getLocalPlayer().getAttack() +
+                        " - Defense: " + gameState.getLocalPlayer().getDefense()+
+                        " - PlayerID: " + gameState.getLocalPlayer().getId()+
+                        " - Round: " + RoundCounter.getInstance().getRoundCounter());
     }
 
+    /**
+     * Clears the screen and initializes a new TextGraphics object for drawing on the terminal.
+     *
+     * @throws IOException If an I/O error occurs during screen clearing or TextGraphics initialization.
+     */
     protected void clearAndInitializeGraphics() throws IOException {
         terminal.clearScreen();
         tg = terminal.newTextGraphics();
     }
 
+    /**
+     * Draws the title in the specified text color. The title is represented by ASCII art stored in a string.
+     *
+     * @param textColor The color to be used for the title text.
+     */
+    protected void drawTitle(TextColor textColor) {
+        tg.setForegroundColor(textColor);
+        String[] lines = asciiArt.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            tg.putString(2, 2 + i, lines[i]);
+        }
+    }
+
+    // Getter
+    public State getCurrentState() {
+        return currentState;
+    }
 }

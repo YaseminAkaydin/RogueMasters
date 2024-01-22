@@ -6,15 +6,17 @@ package com.example.grpc;
 message GameCommandRequest {
   string command = 1;
   string target = 2;
+  int32 userId = 3;
 }
 
 // The response message containing the result of the command.
 message GameCommandResponse {
-  string message = 2;
+  string message = 1;
 }
 
 message JoinLobbyRequest {
   int32 lobbyID = 1; // 0 = "Start Lobby", fünstelligezahl = "Join Lobby"
+  string clientTyp = 2; // "player" oder "mob"
 }
 
 message JoinLobbyResponse {

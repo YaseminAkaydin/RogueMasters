@@ -63,6 +63,15 @@ public class LobbyBroker {
     }
 
     /**
+     * Checks if the User is registerd
+     * @param clientId the clientId of the User
+     * @return true if the User is registered
+     */
+    public boolean isUserRegisterd(int clientId) {
+        return userMap.keySet().contains(clientId);
+    }
+
+    /**
      * Unregisters a User from their Lobby.
      * @param clientId the Identifikator of the Client
      */

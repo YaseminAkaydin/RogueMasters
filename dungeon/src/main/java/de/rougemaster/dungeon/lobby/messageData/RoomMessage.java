@@ -15,30 +15,33 @@ import java.util.Map;
 
 public class RoomMessage {
     private int id;
-    private Item item;
+    private ItemMessage item;
     private EnemyMessage enemy;
     private List<PlayerMessage> players;
     private final Map<RoomCardinalDirection, Integer> adjacentRooms;
+    private String roomType;
 
     public RoomMessage (Room room) {
         this(
                 room.getId(),
                 room.getItem(),
-                getEnemies(room.getCharacters()),
-                getPlayers(room.getCharacters()),
                 room.getAdjacentRoom(RoomCardinalDirection.North) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.North).getId(),
                 room.getAdjacentRoom(RoomCardinalDirection.South) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.South).getId(),
                 room.getAdjacentRoom(RoomCardinalDirection.West) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.West).getId(),
-                room.getAdjacentRoom(RoomCardinalDirection.East) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.East).getId()
+                room.getAdjacentRoom(RoomCardinalDirection.East) == null ? -1 : room.getAdjacentRoom(RoomCardinalDirection.East).getId(),
+                room.getRoomType()
         );
     }
 
-    public RoomMessage(int id, Item item, EnemyMessage enemies, List<PlayerMessage> players, int roomNorth, int roomSouth, int roomWest, int roomEast) {
+    public RoomMessage(int id, Item item, int roomNorth, int roomSouth, int roomWest, int roomEast, String roomType) {
         this.id = id;
-        this.item = item;
-        this.enemy = enemies;
-        this.players = players;
+        if (item != null){
+            this.item = new ItemMessage(item);
+        }
+        this.enemy = null;
+        this.players = new ArrayList<>();
         this.adjacentRooms = new HashMap<>();
+        this.roomType = roomType;
         adjacentRooms.put(RoomCardinalDirection.North, roomNorth);
         adjacentRooms.put(RoomCardinalDirection.South, roomSouth);
         adjacentRooms.put(RoomCardinalDirection.East, roomEast);

@@ -1,11 +1,13 @@
 package de.rougemaster.dungeon.lobby;
 import de.rougemaster.dungeon.character.Character;
 
+import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
+import de.rougemaster.dungeon.enemy.EnemyFacade;
 import de.rougemaster.dungeon.game.Game;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
@@ -16,18 +18,20 @@ import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.*;
 import de.rougemaster.dungeon.item.Item;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Lobby {
     private final Map<Integer, Character> characterMap;
     private final Game game;
 
     private int lobbyId;
+    private LobbyThread lobbyThread;
 
     public Lobby(Game game) {
         characterMap = new HashMap<>();
         this.game = game;
+        this.lobbyThread = new LobbyThread(this);
+        new Thread(lobbyThread).start();
     }
 
     /**
@@ -36,13 +40,21 @@ public class Lobby {
      * @return The Translated Game command
      */
     private GameCommand translateCommand(Character character, LobbyMessage lobbyMessage) {
+
         if (lobbyMessage == null) {
             throw new IllegalArgumentException("LobbyCommand can't be null.");
         }
 
+        int id;
         Room room= null;
         Item item= null;
-        int id = Integer.parseInt(lobbyMessage.getTarget().substring(1));
+
+        if (!Objects.equals(lobbyMessage.getTarget(), "")) {
+            id = Integer.parseInt(lobbyMessage.getTarget().substring(1));
+        } else {
+            id = -1;
+        }
+
         if (lobbyMessage.getTarget().startsWith("r")) {
             room = game
                     .getDungeon()
@@ -54,18 +66,24 @@ public class Lobby {
             Room roomOfCharacter = character.getCurrentRoom();
             item = roomOfCharacter.getItem();
         }
+        if (lobbyMessage.getCommand().startsWith("drop") || lobbyMessage.getCommand().startsWith("use") || lobbyMessage.getCommand().startsWith("equip")) {
+            PlayableCharacter player = (PlayableCharacter) character;
+            item = player.getInventory().stream().filter(item1 -> item1.getId() == id).toList().get(0);
+        }
+
 
         if (character instanceof PlayableCharacter) {
             switch (lobbyMessage.getCommand()) {
-                case "move" -> {return new moveGameCommand(character, character.getCurrentRoom());}
-                case "doNothing" -> {return new doNothingGameCommand(character);}
-                case "flee" -> {return new fleeGameCommand(character, room);}
+                case "move" -> {return new moveGameCommand(character, room);} // passt
+                case "doNothing" -> {return new doNothingGameCommand(character);} // juckt erstmal nicht
+                case "flee" -> {return new fleeGameCommand(character, room);} // passt
                 case "attackUsingEquipment" -> {return new attackUsingEquipmentCommand();}
                 case "defend" -> {return new defendingPlayerCommand();}
                 case "equipItem" -> {return new equipItemGameCommand((PlayableCharacter) character, item);}
                 case "takeItem" -> {return new takeItemInRoomGameCommand((PlayableCharacter) character, item);}
                 case "useItem" -> {return new useItemGameCommand((PlayableCharacter) character, item);}
                 case "useItemInFight" -> {return new inspectRoomGameCommand((PlayableCharacter) character, room);}
+                case "dropItem" -> {return new deleteItemGameCommand((PlayableCharacter)character,item);}
             }
         }
 
@@ -80,8 +98,8 @@ public class Lobby {
             switch (lobbyMessage.getCommand()) {
                 case ("defend") -> {return new defendingSkeletonCommand();}
                 case ("boneAttack") -> {return new skeletonBoneAttackCommand();}
-                case ("bonesPlosion") -> {return new skeletonBonesplosionAttackCommand();}
-                case ("swordAttack") -> {return new skeletonSwordAttackCommand();}
+                case ("bonesExplosion") -> {return new skeletonBonesplosionAttackCommand();}
+                case ("skeletonSwordAttack") -> {return new skeletonSwordAttackCommand();}
             }
         }
 
@@ -89,6 +107,7 @@ public class Lobby {
             switch (lobbyMessage.getCommand()) {
                 case ("defend") -> {return new devilDefendCommand();}
                 case ("flameSwordAttack") -> {return new devilFlameSwordAttackCommand();}
+                case ("devilSwordAttack") -> {return new devilSwordAttackCommand();}
                 case ("playerKillerAttack") -> {return new devilPlayerKillerAttackCommand();}
                 case ("spikeShield") -> {return new devilSpikeShieldCommand();}
             }
@@ -107,6 +126,16 @@ public class Lobby {
         game.setCharacterTurn(clientGameCommand, clientCharacter);
     }
 
+    public int getClientID(Character character){
+        int result=-1;
+        for (Map.Entry<Integer, Character> entry: characterMap.entrySet()) {
+            if(entry.getValue().equals(character)){
+                result=entry.getKey();
+            }
+        }
+        return result;
+    }
+
     /**
      * Registers a User to the Lobby
      * @param clientId The Identifikator of the client
@@ -122,19 +151,19 @@ public class Lobby {
         if(characterMap.containsKey(clientId)){
             return -1;
         }
-
         Character joinedCharacter;
-       if(lobbyCharType == LobbyCharType.PlayableCharacter) {
-           joinedCharacter = game.addPlayer();
-       }else{
-           joinedCharacter = game.addEnemy(lobbyCharType);
-       }
+        if(lobbyCharType == LobbyCharType.PlayableCharacter) {
+            joinedCharacter = game.addPlayer();
+        }else{
+            joinedCharacter = game.addEnemy(lobbyCharType);
+        }
+        characterMap.put(clientId, joinedCharacter);
 
-       return joinedCharacter.getId();
+        return joinedCharacter.getId();
     }
 
     /**
-     * Unregisters a User from the Lobby
+     * Removes a User from the Lobby
      * @param clientId The Identifikator of the client
      */
     public void leaveClientLobby(int clientId){
@@ -142,30 +171,42 @@ public class Lobby {
         if(!characterMap.containsKey(clientId)){
             return;
         }
-        //TODO: Remove Character from Game
+        game.removeCharacter(characterMap.get(clientId));
+    }
+
+
+    /**
+     * Character dies and is removed from the game
+     * @param character The character that is to be removed
+     */
+    public void killCharacter(Character character){
+        EnemyFacade enemyFacade= EnemyFacade.getInstance();
+        if(!characterMap.containsValue(character)){
+            return;
+        }
+        character.die();
+        game.removeCharacter(character);
+
+    }
+
+    /**
+     * Starts the game
+     */
+    public void startGame(){
+        EnemyFacade enemyFacade = EnemyFacade.getInstance();
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Devil);
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
+        //enemyFacade.requestEnemy(lobbyId, LobbyCharType.Zombie);
     }
 
     /**
      * Sends the next Turn signal to LobbyFacade.
-     * @param gameState the current GameState
      */
-    public void nextTurn(GameState gameState){
-        //TODO: Trigger nextTurn method in LobbyFacade with all clientIds
+    public void nextTurn(){
         GameState gameStateCopy = game.getGameState();
-        for (Integer clientId: characterMap.keySet()) {
-            LobbyFacade.getInstance().sendNextTurn(clientId, gameStateCopy);
-        }
-    }
-
-    /**
-     * Creates a new Character and adds it to the Game
-     * @param clientID the id of the client
-     * @return the id of the character
-     */
-    public int createCharacter(int clientID){
-        PlayableCharacter playableCharacter = game.addPlayer();
-        characterMap.put(clientID, playableCharacter);
-        return playableCharacter.getId();
+        LobbyFacade.getInstance().sendNextTurn(characterMap.keySet(), gameStateCopy);
     }
 
     public void setLobbyId(int lobbyId) {
@@ -178,5 +219,13 @@ public class Lobby {
 
     public GameState getGameState() {
         return game.getGameState();
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public Set<Integer> getLobbyIds () {
+        return characterMap.keySet();
     }
 }

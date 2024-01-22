@@ -12,13 +12,12 @@ import java.util.Map;
 
 public class Skeleton extends EnemyCharacter {
 
-    SkeletonState state;
-    private static final int baseExpDropAmount = 20;
-
+    private static final int ExpDropAmount = 5;
     private static final int boneAttackBonusDamage = 5;
 
     public Skeleton(int dangerLevel) {
-        super(baseExpDropAmount);
+        super(ExpDropAmount);
+        id = ++idCounter;
         this.dangerLevel = dangerLevel;
 
         if(dangerLevel <= 0) {
@@ -61,7 +60,8 @@ public class Skeleton extends EnemyCharacter {
      * @param character enemy character
      */
     public void swordAttack(Character character){
-        character.setHp(character.getHp()-(this.attack - character.getDefense()));
+        int netDamage = this.attack - character.getDefense();
+        character.setHp(character.getHp()-(Math.max(0, netDamage)));
     }
 
     /**
@@ -84,7 +84,8 @@ public class Skeleton extends EnemyCharacter {
      * @param character enemy character
      */
     public void boneAttack(Character character){
-        character.setHp(character.getHp()-(this.attack + boneAttackBonusDamage - character.getDefense()));
+        int netDamage = this.attack + boneAttackBonusDamage*((int)dangerLevel/3) - character.getDefense();
+        character.setHp(character.getHp()-Math.max(0, netDamage));
     }
 
     /**
@@ -92,35 +93,15 @@ public class Skeleton extends EnemyCharacter {
      * @param character enemy character
      */
     public void bonesplosionAttack(Character character){
-        character.setHp(character.getHp()-((int)(this.attack * 2.5) - character.getDefense()));
+        int netDamage = (int)(this.attack * 2.5) - character.getDefense();
+        character.setHp(character.getHp()-Math.max(0, netDamage));
+        this.setHp(0);
     }
 
     /**
      * Teleports the Skelton after a fight into a room, where no Characters are in
      */
-    public void skeletonRoam(List<Room> rooms){
-        for (Room room : rooms){
-            if(room.getCharacters().isEmpty()){
-                this.teleport(room);
-            }
-        }
-    }
-
-    /**
-     * Gives you the next action of Skeleton inside a fight
-     * @return the action in form of a SkeletonState
-     */
-    public SkeletonState getFightAction(){
-        state = state.fight(this);
-        return state;
-    }
-
-    /**
-     * Gives you the next Action of Skeleton that is roaming
-     * @return the Action in form of a SkeletonState
-     */
-    public SkeletonState getRoamAction(){
-        state = state.roam();
-        return state;
+    public void skeletonRoam(){
+        this.teleport(this.getCurrentRoom().getAdjacentRooms().get(0));
     }
 }

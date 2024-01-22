@@ -6,75 +6,63 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Erste Dummy Version der Räume.
+ * RoomData. Used in ViewBuilder to create the View.
  */
 public class RoomData {
     private String roomType; // DungeonRoom, BossRoom, TreasureRoom
-    private List<PlayerData> characters; // Spieler
-    private MonsterData monster; // Skeleton, Zombie, Boss
-    private ItemData items; // Sword, Shield, Potion, Book
-    private final int roomID;
+    private List<PlayerData> players; // Spieler
+    private MonsterData enemy; // Skeleton, Zombie, Boss
+    private ItemData item; // Sword, Shield, Potion, Book
+    private final int id;
     private final Map<String, Integer> adjacentRooms;
 
 
-    public RoomData(String roomType, MonsterData monster,
-                    ItemData items,int roomID, Map<String, Integer> adjacentRooms, List<PlayerData> characters) {
+    public RoomData(String roomType, MonsterData enemy,
+                    ItemData item, int id, Map<String, Integer> adjacentRooms, List<PlayerData> players) {
         this.roomType = roomType;
-        this.monster = monster;
-        this.characters = characters;
-        this.items = items; // Max 2 Items, haben wir so entschieden
-        this.roomID = roomID;
+        this.enemy = enemy;
+        this.players = players;
+        this.item = item; // Max 2 Items, haben wir so entschieden
+        this.id = id;
         this.adjacentRooms = new HashMap<>(adjacentRooms);
     }
-    public RoomData(String roomType, MonsterData monster,
-                    ItemData items,int roomID, Map<String, Integer> adjacentRooms) {
+    public RoomData(String roomType, MonsterData enemy,
+                    ItemData item, int id, Map<String, Integer> adjacentRooms) {
         this.roomType = roomType;
-        this.monster = monster;
-        this.characters = new ArrayList<>();
-        this.items = items; // Max 2 Items, haben wir so entschieden
-        this.roomID = roomID;
+        this.enemy = enemy;
+        this.players = new ArrayList<>();
+        this.item = item; // Max 2 Items, haben wir so entschieden
+        this.id = id;
         this.adjacentRooms = new HashMap<>(adjacentRooms);
     }
 
-
+    // Getter & Setter
     public String getRoomType() {
         return roomType;
     }
 
-    public void addAdjacentRoom(String direction, int roomId) {
-        adjacentRooms.put(direction, roomId);
+    public List<PlayerData> getPlayers() {
+        return players;
     }
 
-    public void setRoomType(String roomType) {
-        this.roomType = roomType;
+    public MonsterData getEnemy() {
+        return enemy;
     }
 
-    public List<PlayerData> getCharacters() {
-        return characters;
-    }
-
-    public MonsterData getMonster() {
-        return monster;
-    }
-
-    public void setMonster(MonsterData monster) {
-        this.monster = monster;
-    }
-
-    public ItemData getItems() {
-        return items;
-    }
-
-    public void setItems(ItemData items) {
-        this.items = items;
+    public ItemData getItem() {
+        return item;
     }
 
     public int getId() {
-        return roomID;
+        return id;
     }
 
     public Map<String, Integer> getAdjacentRooms() {
         return adjacentRooms;
     }
+
+
+
+
 
 }

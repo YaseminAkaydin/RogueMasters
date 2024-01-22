@@ -6,12 +6,13 @@ import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.CombatAction;
 import de.rougemaster.dungeon.game.fight.Fight;
 import de.rougemaster.dungeon.game.fight.FightManager;
+import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.fleeGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
-import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilFlameSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilPlayerKillerAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilSpikeShieldCommand;
+import de.rougemaster.dungeon.game.gameCommand.devilCommands.devilSwordAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.attackUsingEquipmentCommand;
 import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.defendingPlayerCommand;
 import de.rougemaster.dungeon.game.gameCommand.playableCharacterCommands.useItemInFightCommand;
@@ -21,9 +22,10 @@ import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.skeletonSwordAtt
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCommand;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
 
-
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class TurnManager {
     FightManager fightManager;
@@ -59,50 +61,111 @@ public class TurnManager {
     }
 
     public void executeTurn() {
-        startTurn();
         handleCharacterInput();
+    }
+
+    /**
+     * Iterates through the command map and executes the commands.
+     */
+    private void handleCharacterInput() {
+        //COPY COMMAND MAP
+        Map<Character, GameCommand> copyCommandMap = startTurn();
+
+        //EXECUTE COMMANDS
+        for (GameCommand gameCommand : copyCommandMap.values()) {
+            gameCommand.execute();
+        }
+
+        //HANDLE FIGHTS
+        setAllFightActions(copyCommandMap);
+        fightManager.executeAllTurns();
+
+        //Remove all character that are already dead or already have a fight
+        for (Character character : commandMap.keySet()) {
+            if (character.getHp() <= 0 || fightManager.getAllCharactersInFights().contains(character)) {
+                copyCommandMap.remove(character);
+            }
+        }
+
+        for (Character character1 : copyCommandMap.keySet()) {
+            Room room1 = character1.getCurrentRoom();
+            for (Character character2: copyCommandMap.keySet()) {
+                Room room2 = character2.getCurrentRoom();
+
+                if(character1.equals(character2)){
+                    continue;
+                }
+
+                //Check if characters are in the same room
+                if(room1 != null && room2 != null && (room1.equals(room2) && !character1.equals(character2))) {
+                    fightManager.startFight(character1, character2);
+                }
+            }
+        }
+
+        //CLEAN COMMAND MAP
+        cleanCommandMap();
     }
 
 
     /**
-     * Kopiert die aktuelle Command Map mit den aktuellen Commands pro Character.
+     * Iterates through the command map and executes the commands.
      */
     private Map<Character, GameCommand> startTurn() {
+        // Copy Command map
+        Map<Character, GameCommand> returnCM =  new HashMap<>(commandMap);
 
-        Map<Character, GameCommand> copyCommandMap = commandMap;
-        List<Character> allCharactersInFights = fightManager.getAllCharactersInFights();
-        setAllFightActions(allCharactersInFights, copyCommandMap);
-        fightManager.executeAllTurns();
-        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
-            Character currentCharacter = entry.getKey();
-            if (allCharactersInFights.contains(currentCharacter)) {
-                doNothingGameCommand newCommand = new doNothingGameCommand(currentCharacter);
-                entry.setValue(newCommand);
+        Map<Character, GameCommand> beforeFleeCM =  new HashMap<>(commandMap);
+        //EXECUTE FLEE
+        for (Map.Entry<Character, GameCommand> entry : beforeFleeCM.entrySet()) {
+            Character character = entry.getKey();
+            GameCommand command = entry.getValue();
+
+            if (command instanceof fleeGameCommand fleeCommand) {
+                //Check if Character is in a fight
+                if (!fightManager.getAllCharactersInFights().contains(character)) {
+                    continue;
+                }
+
+                fleeCommand.execute();
+
+                //Stop fight and remove commands from command map if character flees
+                Fight fight = fightManager.getFight(character);
+                returnCM.remove(fight.getCombatantTwo());
+                returnCM.remove(fight.getCombatantOne());
+                fightManager.stopFight(fight);
             }
         }
-
-        return copyCommandMap;
+        return returnCM;
     }
 
+    private void setAllFightActions(Map<Character, GameCommand> copyCommandMap) {
+        List<Character> allFighters = fightManager.getAllCharactersInFights();
 
-
-    private void setAllFightActions(List<Character> allFighters, Map<Character, GameCommand> copyCommandMap) {
+        //SET FIGHT ACTIONS
         for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
-            Character currentCharacter = entry.getKey();
+            Character character = entry.getKey();
             GameCommand command = entry.getValue();
-            if (allFighters.contains(currentCharacter)) {
-                Fight fight = fightManager.getFight(currentCharacter);
+
+            //Check if character is in a fight
+            if (allFighters.contains(character)) {
+
+                Fight fight = fightManager.getFight(character);
                 Character combatantOne = fight.getCombatantOne();
                 Character combatantTwo = fight.getCombatantTwo();
-                if (currentCharacter == combatantOne) {
-                    handleFightAction(fight, combatantOne, command);
-                } else {
-                    handleFightAction(fight, combatantTwo, command);
-                }
+
+                Character targetCombatant = (character == combatantOne) ? combatantOne : combatantTwo;
+                handleFightAction(fight, targetCombatant, command);
             }
         }
     }
 
+    /**
+     * Handles the fight actions of a character. Translates and sets the command to a combat action in FightManager.
+     * @param fight the fight
+     * @param combatant the combatant
+     * @param command the command
+     */
     private void handleFightAction(Fight fight, Character combatant, GameCommand command) {
         if (command instanceof doNothingGameCommand) {
             fight.setCombatantAction(combatant, CombatAction.DO_NOTHING);
@@ -110,9 +173,11 @@ public class TurnManager {
             fight.setCombatantAction(combatant, CombatAction.ATTACK);
         } else if (command instanceof defendingPlayerCommand) {
             fight.setCombatantAction(combatant, CombatAction.DEFEND);
-        } else if (command instanceof fleeGameCommand fleeCommand) {
+        } else if (command instanceof fleeGameCommand) {
             fight.setCombatantAction(combatant, CombatAction.FLEE);
+            fleeGameCommand fleeCommand = (fleeGameCommand) command;
             combatant.flee(fleeCommand.room);
+            fightManager.endFight(fightManager.getFight(combatant));
         } else if (command instanceof useItemInFightCommand) {
             fight.setCombatantAction(combatant, CombatAction.USE_ITEM);
         } else if (command instanceof skeletonSwordAttackCommand) {
@@ -131,51 +196,34 @@ public class TurnManager {
             fight.setCombatantAction(combatant, CombatAction.DEVIL_SPIKE_SHIELD);
         } else if (command instanceof devilPlayerKillerAttackCommand) {
             fight.setCombatantAction(combatant, CombatAction.DEVIL_PLAYER_KILLER_ATTACK);
+        } else if(command instanceof devilSwordAttackCommand){
+            fight.setCombatantAction(combatant, CombatAction.DEVIL_SWORD_ATTACK);
+        } else {
+            fight.setCombatantAction(combatant, CombatAction.DO_NOTHING);
         }
     }
 
 
     /**
-     * K端mmert sich um den konkreten Input des Caracters. Geht mit den konkreten Commands um, die ein Spieler/Gegener
-     * eingegeben hat. Sollten sich zwei Spieler in einem Raum befinden, wird an den FightManager weitergegeben.
+     * Sets all commands in the command map to do nothing.
      */
-    private void handleCharacterInput() {
-        Map<Character, GameCommand> copyCommandMap = startTurn();
-        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
-            GameCommand command = entry.getValue();
-            command.execute();
-
+    private void cleanCommandMap (){
+        for (Character character : commandMap.keySet()) {
+            doNothingGameCommand newCommand = new doNothingGameCommand(character);
+            commandMap.put(character, newCommand);
         }
-        // Iteration durch die Map, um Charactere im gleichen Raum zu finden
-        for (Map.Entry<Character, GameCommand> entry1 : copyCommandMap.entrySet()) {
-            Character character1 = entry1.getKey();
-            Room room1 = character1.getCurrentRoom();
-
-            for (Map.Entry<Character, GameCommand> entry2 : copyCommandMap.entrySet()) {
-                Character character2 = entry2.getKey();
-                Room room2 = character2.getCurrentRoom();
-
-
-                List<Character> fightingCharacters = fightManager.getAllCharactersInFights();
-                if (fightingCharacters.contains(character1) || fightingCharacters.contains(character2)) {
-                    continue;
-                }
-                if (room1.equals(room2) && !character1.equals(character2)) {
-                    fightManager.startFight(character1, character2);
-                }
-
-            }
-        }
-
-        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
-            doNothingGameCommand newCommand = new doNothingGameCommand(entry.getKey());
-            entry.setValue(newCommand);
-        }
-        commandMap=copyCommandMap;
     }
 
     public void setCharacterTurn(Character character, GameCommand command) {
         commandMap.put(character, command);
+    }
+
+    /**
+     * Resets the turn manager.
+     */
+    public void reset(){
+        this.commandMap=null;
+        this.fightManager=null;
     }
 
 }

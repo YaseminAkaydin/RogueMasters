@@ -24,5 +24,6 @@ public enum CombatAction {
     // Devil specific actions
     DEVIL_FLAME_SWORD_ATTACK,
     DEVIL_SPIKE_SHIELD,
-    DEVIL_PLAYER_KILLER_ATTACK
+    DEVIL_PLAYER_KILLER_ATTACK,
+    DEVIL_SWORD_ATTACK
 }

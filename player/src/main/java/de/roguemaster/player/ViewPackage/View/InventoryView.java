@@ -3,35 +3,42 @@ package de.roguemaster.player.ViewPackage.View;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.terminal.Terminal;
+import de.roguemaster.player.ViewPackage.DataForView.GameState;
 import de.roguemaster.player.ViewPackage.DataForView.ItemData;
-import de.roguemaster.player.ViewPackage.DataForView.PlayerData;
+import de.roguemaster.player.ViewPackage.View.Actions.InventoryActions.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * The InventoryView class is responsible for displaying the inventory view on the terminal. The inventory
+ */
 public class InventoryView extends ViewComponent {
-    // Define the states for InventoryView
-    public enum State {
-        MAIN_OPTIONS,
-        DROP_ITEM,
-        USE_CONSUMABLE
-        // Add other states as needed
-    }
-
-    private State currentState;
 
     private final Map<Integer, String> optionMappings = new HashMap<>();
-    private final Map<Integer, String> dropItemOptionMappings = new HashMap<>();
-    private final Map<Integer, String> useConsumableOptionMappings = new HashMap<>();
+    private final Map<Integer, ItemAction> dropItemOptionMappings = new HashMap<>();
+    private final Map<Integer, ItemAction> useConsumableOptionMappings = new HashMap<>();
+    private final Map<Integer, ItemAction> equipItemOptionMappings = new HashMap<>();
 
-
-    public InventoryView(Terminal terminal, PlayerData playerData) {
-        super(terminal, playerData);
+    /**
+     * Constructs a new InventoryView with the specified Terminal and GameState. Initializes
+     * the current state of the inventory view to display the main options.
+     *
+     * @param terminal  The Terminal object used for displaying this view.
+     * @param gameState The current state of the game, containing all necessary information about the inventory.
+     */
+    public InventoryView(Terminal terminal, GameState gameState) {
+        super(terminal, gameState);
         this.currentState = State.MAIN_OPTIONS;
     }
 
+    /**
+     * Displays the inventory view. Clears the screen, draws the inventory title, item list, and displays
+     * options based on the current state (main options, drop item, use consumable). Also, displays player
+     * stats. The method handles IOExceptions internally.
+     */
     @Override
     public void display() {
         try {
@@ -50,7 +57,9 @@ public class InventoryView extends ViewComponent {
                 case USE_CONSUMABLE:
                     displayUseConsumableOptions(tg);
                     break;
-                // Other cases as needed
+                case EQUIP_ITEM:
+                    displayEquipItemOptions(tg);
+                    break;
             }
 
             // Display player stats
@@ -62,38 +71,79 @@ public class InventoryView extends ViewComponent {
         }
     }
 
+    private void displayEquipItemOptions(TextGraphics tg) {
+        equipItemOptionMappings.clear();
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
+        AtomicInteger optionNumber = new AtomicInteger(1);
+        tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to equip");
+        for (ItemData item : gameState.getInventoryItems()) {
+            if ((item.getTyp().equals("Weapon") || item.getTyp().equals("Armor"))
+            && item.getId() != gameState.getLocalPlayer().getArmorSlot().getId() && item.getId() != gameState.getLocalPlayer().getWeaponSlot().getId()) {
+                String optionText = optionNumber.get() + ". Equip " + optionNumber.get();
+                equipItemOptionMappings.put(optionNumber.getAndIncrement(), new EquipAction(item.getId()));
+                tg.putString(2, optionsStartY.getAndIncrement(), optionText);
+            }
+        }
+        tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
+        equipItemOptionMappings.put(optionNumber.get(), new GoBackAction());
+    }
+
+    /**
+     * Draws the inventory title on the terminal.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawTitle(TextGraphics tg) {
         // Display inventory title
-        String title = "Inventory";
+        String title = "Inventory - Green items are equipped";
         tg.putString(2, 1, title); // Adjust the position as needed
     }
 
+    /**
+     * Draws the list of inventory items on the terminal. Each item is displayed with its name, description,
+     * and attributes.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void drawItemList(TextGraphics tg) {
-        // Display the list of inventory items
-        int startY = 3; // Adjust the starting Y position as needed
-        for (int i = 0; i < inventoryItems.size(); i++) {
+        int startY = 3;
+        for (int i = 0; i < gameState.getInventoryItems().size(); i++) {
+            if ((gameState.getInventoryItems().get(i).getId() == gameState.getLocalPlayer().getArmorSlot().getId()) ||
+            (gameState.getInventoryItems().get(i).getId() == gameState.getLocalPlayer().getWeaponSlot().getId())){
+                tg.setForegroundColor(TextColor.ANSI.GREEN);
+            } else{
+                tg.setForegroundColor(TextColor.ANSI.WHITE);
+            }
             String itemString = (i + 1) + ". " +
-                    inventoryItems.get(i).getName() +
-                    ": " +
-                    inventoryItems.get(i).getDescription() + " | Attribute: " + inventoryItems.get(i).getAttributes();
+                    gameState.getInventoryItems().get(i).getAttributeName() +
+                    " | " + gameState.getInventoryItems().get(i).getDescription() +
+                    " | " + gameState.getInventoryItems().get(i).getAttributeType() +": " + gameState.getInventoryItems().get(i).getAttributes();
             tg.putString(2, startY + i, itemString);
+            tg.setForegroundColor(TextColor.ANSI.WHITE);
         }
     }
 
+    /**
+     * Displays the main inventory options on the terminal. Options include 'Drop Item' if items are present
+     * and 'Use Consumable' if any consumable items are present. Updates the option mappings for user input
+     * processing.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void displayOptions(TextGraphics tg) {
 
-        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1); // Start with option number 1
 
         // Example: Display 'Drop Item' only if inventory has items
         tg.putString(2, optionsStartY.get() - 1, "Options");
-        if (!inventoryItems.isEmpty()) {
+        if (!gameState.getInventoryItems().isEmpty()) {
             String dropItemOption = optionNumber + ". Drop Item";
             tg.putString(2, optionsStartY.getAndIncrement(), dropItemOption);
             optionMappings.put(optionNumber.getAndIncrement(), "Drop Item");
         }
         // Display 'Use Consumable' option if any consumable items are present
-        long consumableCount = inventoryItems.stream()
+        long consumableCount = gameState.getInventoryItems().stream()
                 .filter(item -> item.getDescription().contains("Potion") || item.getDescription().contains("Book"))
                 .count();
         if (consumableCount > 0) {
@@ -101,59 +151,83 @@ public class InventoryView extends ViewComponent {
             tg.putString(2, optionsStartY.getAndIncrement(), useConsumableOption);
             optionMappings.put(optionNumber.getAndIncrement(), "Use Consumable");
         }
+        // Display 'Equip Item' option only if inventory has weapons or armor other than equipped
+        long equipableCount = gameState.getInventoryItems().stream()
+                .filter(item -> item.getTyp().equals("Weapon") || item.getTyp().equals("Armor"))
+                .filter(item -> item.getId() != gameState.getLocalPlayer().getArmorSlot().getId() && item.getId() != gameState.getLocalPlayer().getWeaponSlot().getId())
+                .count();
+        if (equipableCount > 0) {
+            String equipItemOption = optionNumber + ". Equip Item";
+            tg.putString(2, optionsStartY.getAndIncrement(), equipItemOption);
+            optionMappings.put(optionNumber.getAndIncrement(), "Equip Item");
+        }
 
     }
 
+    /**
+     * Displays options for dropping items from the inventory. Each item is listed with an option to drop.
+     * Also provides an option to go back to the main inventory menu. Updates the drop item option mappings
+     * for user input processing.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void displayDropItemOptions(TextGraphics tg) {
-        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
+        dropItemOptionMappings.clear();
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
         tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to drop");
-        for (ItemData item : inventoryItems) {
+        for (ItemData item : gameState.getInventoryItems()) {
             String optionText = optionNumber.get() + ". Drop " + optionNumber.get();
-            dropItemOptionMappings.put(optionNumber.get(), "Drop " + optionNumber.getAndIncrement());
+            dropItemOptionMappings.put(optionNumber.getAndIncrement(), new DropAction(item.getId()));
             tg.putString(2, optionsStartY.getAndIncrement(), optionText);
         }
         tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
-        dropItemOptionMappings.put(optionNumber.get(), "Go back");
+        dropItemOptionMappings.put(optionNumber.get(), new GoBackAction());
     }
 
+    /**
+     * Displays options for using consumable items in the inventory, such as potions and books. Each
+     * consumable item is listed with an option to use. Also provides an option to go back to the main
+     * inventory menu. Updates the use consumable option mappings for user input processing.
+     *
+     * @param tg TextGraphics object used for rendering text on the terminal.
+     */
     private void displayUseConsumableOptions(TextGraphics tg) {
-        AtomicInteger optionsStartY = new AtomicInteger(inventoryItems.size() + 6);
+        useConsumableOptionMappings.clear();
+        AtomicInteger optionsStartY = new AtomicInteger(gameState.getInventoryItems().size() + 6);
         AtomicInteger optionNumber = new AtomicInteger(1);
         tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to use");
-        for (ItemData item : inventoryItems) {
+        for (ItemData item : gameState.getInventoryItems()) {
             if (item.getDescription().contains("Potion") || item.getDescription().contains("Book")) {
                 String itemType = item.getDescription().contains("Potion") ? "Potion" : "Book";
-                String optionText = optionNumber.get() + ". Use " + itemType;
-                useConsumableOptionMappings.put(optionNumber.get(), "Use " + itemType);
+                String optionText = optionNumber.get() + ". Use " + itemType + " " + optionNumber.get();
+                useConsumableOptionMappings.put(optionNumber.getAndIncrement(), new UseAction(item.getId()));
                 tg.putString(2, optionsStartY.getAndIncrement(), optionText);
-                optionNumber.incrementAndGet();
             }
         }
         tg.putString(2, optionsStartY.getAndIncrement(), optionNumber.get() + ". Go back");
-        useConsumableOptionMappings.put(optionNumber.get(), "Go back");
+        useConsumableOptionMappings.put(optionNumber.get(), new GoBackAction());
     }
 
-
+    // Getters and setters
     public void setCurrentState(State currentState) {
         this.currentState = currentState;
-        // Call display to refresh the view
         display();
-    }
-
-    public State getCurrentState() {
-        return currentState;
     }
 
     public Map<Integer, String> getOptionMappings() {
         return optionMappings;
     }
 
-    public Map<Integer, String> getDropItemOptionMappings() {
+    public Map<Integer, ItemAction> getDropItemOptionMappings() {
         return dropItemOptionMappings;
     }
 
-    public Map<Integer, String> getUseConsumableOptionMappings() {
+    public Map<Integer, ItemAction> getUseConsumableOptionMappings() {
         return useConsumableOptionMappings;
+    }
+
+    public Map<Integer, ItemAction> getEquipItemOptionMappings() {
+        return equipItemOptionMappings;
     }
 }

@@ -1,8 +1,7 @@
 package de.rougemaster.dungeon.character.enemyCharacter;
-
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
-import de.rougemaster.dungeon.dungeon.Room;
+
 
 public abstract class EnemyCharacter extends Character {
     protected int killCount;
@@ -10,22 +9,21 @@ public abstract class EnemyCharacter extends Character {
     protected int dangerLevel;
 
     public EnemyCharacter(int baseExpDropAmount){
-        baseExpDropAmount = baseExpDropAmount;
+        this.baseExpDropAmount = baseExpDropAmount;
     }
 
-    /**
-     * Drops the given Amount of exp to the given PlayerCharacter.
-     * @param character the PlayerCharacter that has slain the EnemyCharacter.
-     */
-    public void dropExperience(PlayableCharacter character) {
-        if(character == null){
-            throw new IllegalArgumentException("Character can't be null");
-        }
-        int amountOfExperience = (int) Math.pow(baseExpDropAmount, 1.5);
-        character.gainExperience(amountOfExperience);
+     @Override
+    public int getEXP() {
+        return (int) Math.pow(dangerLevel, 1.5)*baseExpDropAmount;
+    }
+
+    public int getLevel(){
+        return dangerLevel;
     }
 
     public int getDangerLevel() {
         return dangerLevel;
     }
+
+
 }

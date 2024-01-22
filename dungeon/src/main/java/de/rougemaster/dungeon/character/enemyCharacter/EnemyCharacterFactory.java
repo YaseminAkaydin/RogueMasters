@@ -4,28 +4,29 @@ import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 
+import java.util.Random;
+
 public class EnemyCharacterFactory {
+    private static final int SKELETON_MAX_LEVEL = 13;
+    private static final int ZOMBIE_MAX_LEVEL = 8;
 
     /**
      * Creates an enemy with the given strength
      * @param enemyTyp the corresponding enemyTyp as String
      * @return the created enemy
      */
-    public EnemyCharacter createEnemy(EnemyTyp enemyTyp){
-        int dangerLevel;
-        switch (enemyTyp){
-            case Zombie:
-                // Dangerlevel random number between 1 and 8
-                dangerLevel = (int) (Math.random() * 8 + 1);
-                return new Zombie(dangerLevel);
-            case Skeleton:
-                // Dangerlevel random number between 1 and 13
-                dangerLevel = (int) (Math.random() * 13 + 1);
-                return new Skeleton(dangerLevel);
-            case Devil:
-                return new Devil();
-        }
-        throw new IllegalArgumentException("Not Implemented yet");
+    public EnemyCharacter createEnemy(EnemyTyp enemyTyp, int averageLevel){
+        return switch (enemyTyp) {
+            case Zombie -> new Zombie(calculateRandomEnemyLevel(averageLevel, ZOMBIE_MAX_LEVEL));
+            case Skeleton -> new Skeleton(calculateRandomEnemyLevel(averageLevel, SKELETON_MAX_LEVEL));
+            case Devil -> new Devil();
+        };
+    }
+
+    private static int calculateRandomEnemyLevel(int averageLevel ,int maxLevel) {
+        int randomOffset = new Random().nextInt(5)-2;
+        int enemyLevel = Math.min(averageLevel + randomOffset, maxLevel);
+        return Math.max(enemyLevel, 1);
     }
 
     //Enum for the different enemy types

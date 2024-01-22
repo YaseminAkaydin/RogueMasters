@@ -2,16 +2,13 @@ package de.rougemaster.dungeon.character.playerCharacter;
 
 import de.rougemaster.dungeon.character.Character;
 import de.rougemaster.dungeon.character.characterExceptions.InventoryItemMissingException;
-import de.rougemaster.dungeon.item.Armor;
-import de.rougemaster.dungeon.item.Book;
-import de.rougemaster.dungeon.item.Item;
-import de.rougemaster.dungeon.item.Weapon;
+import de.rougemaster.dungeon.dungeon.ItemFactory;
+import de.rougemaster.dungeon.item.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayableCharacter extends Character {
-    private static int idCounter = 0;
     private int level;
     private int experience;
 
@@ -21,15 +18,22 @@ public class PlayableCharacter extends Character {
     private Weapon weaponSlot;
 
 
-
-    public PlayableCharacter () {
+    public PlayableCharacter() {
         //TODO: Set Stats of Character
-        id= idCounter++;
-        inventory = List.of(new Book(0, "Book", "A book that gives you 10 EXP", 10), new Weapon(1, "Sword", "A sword that gives you 10 Attack", 10), new Armor(2, "Shield", "A shield that gives you 10 Defense", 10));
-        armorSlot = null;
-        weaponSlot = null;
-        hp= 10;
-        attack=10;
+        id = ++idCounter;
+        inventory = new ArrayList<>();
+
+        hp = 5;
+        attack = 2;
+        defense = 3;
+        maxHp = 5;
+        level = 1;
+
+        equipArmor(ItemFactory.createArmor(1));
+        equipWeapon(ItemFactory.createWeapon(1));
+
+        inventory.add(armorSlot);
+        inventory.add(weaponSlot);
     }
 
     /**
@@ -37,10 +41,9 @@ public class PlayableCharacter extends Character {
      * @param character enemy character
      */
     public void attackUsingEquipment(Character character) {
-        int attackDamage = weaponSlot == null ? this.attack : this.attack + weaponSlot.getDamage();
-        int netDamage = attackDamage - character.getDefense();
+        int netDamage = attack - character.getDefense();
         if (netDamage > 0) {
-            character.setHp(character.getHp() - netDamage);
+            character.setHp(character.getHp() - Math.max(0, netDamage));
         }
     }
 
@@ -70,13 +73,29 @@ public class PlayableCharacter extends Character {
     }
 
     /**
-     * Uses a given Item on the PlayerCharacter
+     * Uses a given Item on the PlayerCharacter (bombs handled in Fight)
      * @param item the Item that is used.
      * @throws InventoryItemMissingException if inventory doesn't contain the given item.
      */
     public void useItem(Item item) throws InventoryItemMissingException{
         if(!inventory.contains(item)){
             throw new InventoryItemMissingException();
+        }
+
+        if(item instanceof Eqipable){
+            equipItem(item);
+        }
+        if (item instanceof Book){
+            Book book = (Book) item;
+            gainExperience(book.getExtraPoints());
+            inventory.remove(book);
+        }
+        if (item instanceof Potion){
+            hp+= ((Potion) item).use();
+            if(hp>maxHp){
+                hp = maxHp;
+            }
+            inventory.remove(item);
         }
         //TODO: useItem can first be implemented after Items are implemented.
     }
@@ -95,14 +114,60 @@ public class PlayableCharacter extends Character {
         }
 
         experience += exp;
+        boolean levelup = false;
 
         //Check if level up is possible and calculate level up
         while(experience >= (int)Math.pow(level, 1.5)) {
             experience -= (int)Math.pow(level, 1.5);
             level++;
+            levelup = true;
         }
 
-        //TODO: Increase Stats
+
+        if(level <= 0) {
+            level = 1;
+        }
+        if(level > 15) {
+            level = 15;
+        }
+
+        if(level < 5){
+            this.attack= 2;
+            this.defense=2;
+            this.maxHp=3;
+
+            for(int i = level; i>1; i--){
+                attack += 2;
+                defense += 2;
+                maxHp +=  3;
+            }
+        }
+
+        if(level < 10 && level >= 5 ){
+            this.attack= 10;
+            this.defense=10;
+            this.maxHp=15;
+            for(int i = level; i>1; i--){
+                attack += 3;
+                defense += 3;
+                maxHp +=  5;
+            }
+        }
+
+        if(level >= 10){
+            this.attack= 25;
+            this.defense=25;
+            this.maxHp=40;
+            for(int i = level; i>1; i--){
+                attack += 4;
+                defense += 4;
+                maxHp +=  8;
+            }
+        }
+        if(levelup){
+            this.hp=maxHp;
+        }
+
     }
 
     /**
@@ -120,8 +185,16 @@ public class PlayableCharacter extends Character {
         if(currentRoom.getItem() != null){
             currentRoom.removeItem();
             inventory.add(item);
-        }else{
+        } else {
             //TODO: throw exception
+        }
+    }
+
+    public void deleteItem(Item item) {
+        if (inventory.contains(item)) {
+            inventory.remove(item);
+        } else {
+            //TODO:throw exception
         }
     }
 
@@ -134,17 +207,30 @@ public class PlayableCharacter extends Character {
         if(!inventory.contains(item)) {
             throw new InventoryItemMissingException();
         }
-        //TODO: Check if item is equipable.
 
-        if(item instanceof Weapon){
-            weaponSlot = (Weapon) item;
+        if (item instanceof Weapon ) {
+            equipWeapon((Weapon) item);
         }
-        else if(item instanceof Armor){
-            armorSlot = (Armor) item;
+
+        if (item instanceof Armor) {
+            equipArmor((Armor) item);
         }
-        else{
-            throw new IllegalArgumentException("Item is equipable but not a weapon or a piece of armor");
+    }
+
+    private void equipWeapon(Weapon weapon) {
+        if(weaponSlot != null){
+            attack -= weaponSlot.getDamage();
         }
+        attack += weapon.getDamage();
+        weaponSlot = weapon;
+    }
+
+    private void equipArmor(Armor armor) {
+        if(armorSlot != null){
+            defense -= armorSlot.getDefense();
+        }
+        defense += armor.getDefense();
+        armorSlot = armor;
     }
 
     public int getLevel() {
@@ -155,11 +241,28 @@ public class PlayableCharacter extends Character {
         return experience;
     }
 
-    public int getMaxExperience(){
-        return (int)Math.pow(level, 1.5);
+    public int getMaxExperience() {
+        return (int) Math.pow(level, 1.5);
     }
 
     public List<Item> getInventory() {
         return inventory;
+    }
+
+    public void gainItem(Item item){
+        inventory.add(item);
+    }
+
+    public Item getArmorSlot() {
+        return armorSlot;
+    }
+
+    public Item getWeaponSlot() {
+        return weaponSlot;
+    }
+
+    @Override
+    public int getEXP() {
+        return 0;
     }
 }

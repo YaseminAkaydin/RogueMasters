@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 //TODO: Import Items und EnemyCharacter (durch NullType ersetzen), prüfen ob Typen von Klassenvariablen korrekt sind, Kommentare
 
+
 abstract public class Room {
 
     static int instanceCounter = 0;
@@ -129,5 +130,6 @@ abstract public class Room {
     public static int getInstanceCounter() {
         return instanceCounter;
     }
-    //
+
+    public abstract String getRoomType();
 }

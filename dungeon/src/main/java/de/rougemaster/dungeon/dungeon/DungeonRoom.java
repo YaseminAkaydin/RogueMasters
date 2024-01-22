@@ -17,15 +17,10 @@ public class DungeonRoom extends Room {
 
     @Override
     public void generateRoom() {
-        Random random = new Random();
-
-        // ITEMS
-        for (int i = 0; i < itemMaximumAmount; i++) {
-            boolean createItem = random.nextInt(100) < itemSpawnChanceInPercent;
-            if (createItem) {
-                //TODO: create item here?
-                break;
-            }
-        }
     }
+    @Override
+    public String getRoomType() {
+        return "DungeonRoom";
+    }
+
 }

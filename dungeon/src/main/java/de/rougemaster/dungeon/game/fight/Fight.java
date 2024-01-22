@@ -6,6 +6,8 @@ import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
+import de.rougemaster.dungeon.item.Bomb;
+import de.rougemaster.dungeon.item.Item;
 
 
 import java.util.function.Consumer;
@@ -13,6 +15,9 @@ import java.util.function.Consumer;
 public class Fight {
     private final Character combatantOne;
     private final Character combatantTwo;
+
+    private Item itemToBeUsedByOne = null;
+    private Item itemToBeUsedByTwo = null;
     private final Consumer<CombatAction> combatantOneExecutor;
     private final Consumer<CombatAction> combatantTwoExecutor;
 
@@ -56,6 +61,8 @@ public class Fight {
     private void resetActions() {
         this.combatantOneAction = CombatAction.DO_NOTHING;
         this.combatantTwoAction = CombatAction.DO_NOTHING;
+        this.itemToBeUsedByOne = null;
+        this.itemToBeUsedByTwo= null;
     }
 
 
@@ -102,12 +109,26 @@ public class Fight {
             case STOP_DEFENDING:
                 player.stopDefending();
                 break;
+            case FLEE:
+                break;
             case USE_ITEM:
-                //TODO: Implement using an item
-//                try {
-//                } catch (InventoryItemMissingException e) {
-//                    // Handle exception
-//                }
+                try {
+                    if(player.equals(combatantOne)){
+                        if (itemToBeUsedByOne instanceof Bomb){
+                            combatantTwo.setHp(combatantTwo.getHp()-((Bomb) itemToBeUsedByOne).getEffect());
+                        }else {
+                            player.useItem(itemToBeUsedByOne);
+                        }
+                    } else if (player.equals(combatantTwo)) {
+                        if (itemToBeUsedByOne instanceof Bomb){
+                            combatantOne.setHp(combatantOne.getHp()-((Bomb) itemToBeUsedByTwo).getEffect());
+                        }else {
+                            player.useItem(itemToBeUsedByTwo);
+                        }
+                    }
+                } catch (InventoryItemMissingException e) {
+                    e.printStackTrace();
+                }
                 break;
 
         }
@@ -208,6 +229,10 @@ public class Fight {
                         devil.playerKillerAttack(player);
                     }
                 }
+            case DEVIL_SWORD_ATTACK:
+                if (player != null) {
+                    devil.swordAttack(player);
+                }
                 break;
             case DEFEND:
                 devil.defend();
@@ -244,6 +269,13 @@ public class Fight {
         this.combatantTwoAction = combatantTwoAction;
     }
 
+    public void setItemToBeUsedByOne(Item item){
+        this.itemToBeUsedByOne= item;
+    }
+
+    public void setItemToBeUsedByTwo(Item item){
+        this.itemToBeUsedByOne= item;
+    }
     public Character getCombatantOne() {
         return combatantOne;
     }

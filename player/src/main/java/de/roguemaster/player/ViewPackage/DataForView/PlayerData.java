@@ -4,31 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Erste Dummy Version der PlayerDaten
+ * PlayerData. Used in ViewBuilder to create the View.
  */
 public class PlayerData {
     private int level;
     private int experience;
     private List<ItemData> inventory;
-    private int maxHp;
+    private int maxHP;
     private int hp;
     private int id;
+    private ItemData armorSlot;
+    private ItemData weaponSlot;
+    private int currentRoomId;
+    private int attack;
+    private int defense;
 
-    public PlayerData(int level, int hp, int experience, List<ItemData> inventory, int maxHp, int id) {
+    public PlayerData(int level, int hp, int experience,
+                      List<ItemData> inventory, int maxHp,
+                      int id, ItemData armorSlot, ItemData weaponSlot,
+                      int currentRoomId, int attack, int defense) {
         this.level = level;
         this.hp = hp;
         this.experience = experience;
         this.inventory = new ArrayList<>(inventory);
-        this.maxHp = maxHp;
+        this.maxHP = maxHp;
         this.id = id;
+        this.armorSlot = armorSlot;
+        this.weaponSlot = weaponSlot;
+        this.currentRoomId = currentRoomId;
+        this.attack = attack;
+        this.defense = defense;
     }
 
     public int getLevel() {
         return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
     }
 
     public int getHp() {
@@ -44,11 +53,31 @@ public class PlayerData {
     }
 
     public int getMaxHp() {
-        return maxHp;
+        return maxHP;
     }
 
     public int getId() {
         return id;
+    }
+
+    public int getCurrentRoomId() {
+        return currentRoomId;
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public int getDefense() {
+        return defense;
+    }
+
+    public ItemData getArmorSlot() {
+        return armorSlot;
+    }
+
+    public ItemData getWeaponSlot() {
+        return weaponSlot;
     }
 }
 

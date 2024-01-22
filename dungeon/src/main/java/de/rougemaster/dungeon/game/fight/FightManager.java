@@ -9,9 +9,8 @@ import de.rougemaster.dungeon.dungeon.Room;
 import java.util.*;
 
 public class FightManager {
-
-    private List<Fight> activeFights;
-    private Map<Character, Fight> activeCombatants;
+    private final List<Fight> activeFights;
+    private final Map<Character, Fight> activeCombatants;
 
     public FightManager() {
         this.activeFights = new ArrayList<>();
@@ -36,35 +35,38 @@ public class FightManager {
 
     /**
      * Ends a currently running fight and distributes the rewards.
-     *
      * @param fight fight to be ended.
      */
     public void endFight(Fight fight) {
-        Character combatantOne = fight.getCombatantOne();
-        Character combatantTwo = fight.getCombatantTwo();
-        if (combatantOne instanceof EnemyCharacter) {
-            ((EnemyCharacter) combatantOne).dropExperience((PlayableCharacter) combatantTwo);
-            int enemylevel = ((EnemyCharacter) combatantOne).getDangerLevel();
-            int itemLevel = 1;
-            switch (enemylevel) {
-                case 2:
-                    itemLevel = 2;
-                    break;
-                case 3, 4:
-                    itemLevel = 3;
-                    break;
-                case 5, 6:
-                    itemLevel = 4;
-                    break;
-                case 7, 8:
-                    itemLevel = 5;
-                    break;
-            }
-            Room room = combatantOne.getCurrentRoom();
-            room.setItem(ItemFactory.createRandomItem(itemLevel));
-        } else {
-            ((EnemyCharacter) combatantTwo).dropExperience((PlayableCharacter) combatantOne);
+        //GETTER FROM FIGHT;
+        Character winner = fight.getCombatantOne().getHp() <= 0 ? fight.getCombatantTwo() : fight.getCombatantOne();
+        Character loser = fight.getCombatantOne().getHp() <= 0 ? fight.getCombatantOne() : fight.getCombatantTwo();
+
+        if(!(winner instanceof PlayableCharacter playerWinner)){
+            return;
         }
+
+        playerWinner.gainExperience(loser.getEXP());
+
+        int itemLevel = switch (loser.getLevel()) {
+            case 2,3,4 -> 2;
+            case 5,6,7 -> 3;
+            case 8,9,10 -> 4;
+            case 11,12,13 -> 5;
+            default -> 1;
+        };
+
+        playerWinner.gainItem(ItemFactory.createRandomItem(itemLevel));
+        stopFight(fight);
+    }
+
+    /**
+     * Stops a fight.
+     * @param fight the fight to be stopped.
+     */
+    public void stopFight(Fight fight) {
+        this.activeCombatants.remove(fight.getCombatantOne());
+        this.activeCombatants.remove(fight.getCombatantTwo());
         this.activeFights.remove(fight);
     }
 
@@ -95,14 +97,17 @@ public class FightManager {
 
     /**
      * Returns a list of all characters currently involved in fights.
-     *
      * @return a List of Character objects who are currently in fights.
      */
     public List<Character> getAllCharactersInFights() {
-        List<Character> charactersInFights = new ArrayList<>();
-        for (Map.Entry<Character, Fight> entry : activeCombatants.entrySet()) {
-            charactersInFights.add(entry.getKey());
-        }
-        return charactersInFights;
+        return activeCombatants.keySet().stream().toList();
+    }
+
+    public boolean isCharacterInFight(Character character) {
+        return getAllCharactersInFights().contains(character);
+    }
+
+    public List<Fight> getActiveFights() {
+        return activeFights;
     }
 }

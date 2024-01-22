@@ -1,28 +1,43 @@
 package de.roguemaster.player.ViewPackage.View;
 
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
 
 /**
- *  View for the Leaderboard
- *  TODO: Get Leaderboard from Server and print Leaderboard vom Ding her ganz entspannt
- *  TODO: LeaderboardData Klasse erstellen, wenn wir später ein Leaderboard haben und es auch erstellen und saven
+ * The LeaderBoardView class is responsible for displaying the Leader Board view on the terminal.
  */
 public class LeaderBoardView extends ViewComponent {
 
+    /**
+     * Constructs a new LeaderBoardView with the specified Terminal.
+     *
+     * @param terminal The Terminal object used for displaying this view.
+     */
     public LeaderBoardView(Terminal terminal) {
         super(terminal);
     }
 
+    /**
+     * Displays the Leader Board View. Clears the screen, draws the title, and shows instructions
+     * to go back along with a placeholder for displaying the leaderboard. The method handles IOExceptions
+     * internally.
+     */
     @Override
     public void display() {
         try {
+            clearAndInitializeGraphics();
             terminal.clearScreen();
-            terminal.setCursorPosition(0, 0);
-            terminal.putString("Press 'B' to go back");
-            terminal.setCursorPosition(0, 2);
-            terminal.putString("Showing Leaderboard");
+
+            drawTitle(TextColor.ANSI.RED);
+            String[] lines = asciiArt.split("\n");
+
+            tg.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
+
+            tg.putString(2, lines.length + 4, "Press 'B' to go back");
+            tg.putString(2, lines.length + 5, "Showing Leaderboard");
+
             terminal.flush();
         } catch (IOException e) {
             e.printStackTrace();
