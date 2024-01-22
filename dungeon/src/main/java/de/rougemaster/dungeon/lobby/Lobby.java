@@ -186,6 +186,7 @@ public class Lobby {
         }
         character.die();
         game.removeCharacter(character);
+
     }
 
     /**
@@ -195,7 +196,9 @@ public class Lobby {
         EnemyFacade enemyFacade = EnemyFacade.getInstance();
         enemyFacade.requestEnemy(lobbyId, LobbyCharType.Devil);
         enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
-        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Zombie);
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
+        enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
+        //enemyFacade.requestEnemy(lobbyId, LobbyCharType.Zombie);
     }
 
     /**

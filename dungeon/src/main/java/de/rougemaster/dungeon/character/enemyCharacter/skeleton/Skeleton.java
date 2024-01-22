@@ -61,7 +61,7 @@ public class Skeleton extends EnemyCharacter {
      */
     public void swordAttack(Character character){
         int netDamage = this.attack - character.getDefense();
-        character.setHp(character.getHp()-Math.max(0, netDamage));
+        character.setHp(character.getHp()-(Math.max(0, netDamage)));
     }
 
     /**

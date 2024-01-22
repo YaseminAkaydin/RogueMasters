@@ -55,8 +55,6 @@ public class Game {
     }
 
     public Room findFreeRoom(){
-        // TODO: Fall Devil !!
-
         List<Room> allRooms = dungeon.getRoomList();
         List<Room> notAvailableRooms= new ArrayList<>();
         notAvailableRooms.add(findBossRoom());
@@ -68,7 +66,7 @@ public class Game {
             notAvailableRooms.add(enemyCharacter.getCurrentRoom());
         }
         Set<Room> mergedSet= new HashSet<>(allRooms);
-        mergedSet.removeAll(notAvailableRooms);
+        notAvailableRooms.forEach(mergedSet::remove);
 
         List<Room> roomList = new ArrayList<>(mergedSet);
         Room firstRoom = null;

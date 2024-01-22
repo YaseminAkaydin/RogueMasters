@@ -18,7 +18,6 @@ public class LobbyFactory {
             }while (!lobbyIdValid);
             lobby.setLobbyId(lobbyId);
 
-
             return lobby;
         }
 }

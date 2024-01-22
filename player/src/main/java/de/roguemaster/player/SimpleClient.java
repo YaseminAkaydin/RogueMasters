@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
- * Main CLient class
+ * Main Client class
  */
 public class SimpleClient {
     private static final Logger logger = Logger.getLogger(SimpleClient.class.getName());
@@ -142,9 +142,8 @@ public class SimpleClient {
 
     /**
      * Method to convert a Command to a JoinLobbyRequest
-     *
-     * @param command
-     * @return
+     * @param command Command to convert
+     * @return JoinLobbyRequest
      */
     private JoinLobbyRequest convertToJoinLobbyRequest(Command command) {
         return JoinLobbyRequest.newBuilder().
@@ -155,9 +154,8 @@ public class SimpleClient {
 
     /**
      * Method to convert a Command to a GameCommandRequest
-     *
-     * @param command
-     * @return
+     * @param command Command to convert
+     * @return GameCommandRequest
      */
     private GameCommandRequest convertToGameCommandRequest(Command command) {
         return GameCommandRequest.newBuilder().
