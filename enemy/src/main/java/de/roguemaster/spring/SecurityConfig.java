@@ -22,6 +22,14 @@ public class SecurityConfig {
     String URL = "http://localhost";
     int PORT = 8812;
 
+    /**
+     * Configures the security filter chain for the application. This method sets up CORS and CSRF configurations,
+     * session management policies, and HTTP request authorizations.
+     *
+     * @param http The HttpSecurity to configure.
+     * @return A SecurityFilterChain object configured with security settings.
+     * @throws Exception If an error occurs during the configuration.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -39,6 +47,12 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Defines a CORS configuration source for the application. Configures allowed origins, methods, and
+     * other CORS settings.
+     *
+     * @return A CorsConfigurationSource object with CORS configurations.
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

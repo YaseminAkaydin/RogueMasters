@@ -3,3 +3,4 @@
 *.bin
 /enemy/build/
 /enemy/.gradle/
+/enemy/.gradle/

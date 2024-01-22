@@ -171,8 +171,7 @@ public class Lobby {
         if(!characterMap.containsKey(clientId)){
             return;
         }
-
-        //TODO: Remove Character from Game
+        game.removeCharacter(characterMap.get(clientId));
     }
 
 

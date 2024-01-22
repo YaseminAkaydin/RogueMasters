@@ -33,9 +33,4 @@ public class SkeletonCDService {
         EnemyRESTFacade.getInstance().deleteEnemy(Integer.parseInt(clientID));
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Hello World");
-    }
 }

@@ -24,6 +24,15 @@ public class GrpcEnemyClient {
 
     private EnemyHandler enemyHandler;
 
+    /**
+     * Constructs a GrpcEnemyClient for managing enemy interactions in a game lobby. Initializes gRPC
+     * stubs for communication and sets up an enemy handler.
+     *
+     * @param lobbyID The ID of the game lobby.
+     * @param blockingChannel The gRPC blocking channel.
+     * @param asyncChannel The gRPC asynchronous channel.
+     * @param enemyHandler The handler for processing enemy actions.
+     */
     public GrpcEnemyClient(int lobbyID, Channel blockingChannel, Channel asyncChannel, EnemyHandler enemyHandler) {
         this.lobbyID = lobbyID;
         this.blockingStub = ManageServiceGrpc.newBlockingStub(blockingChannel);
@@ -31,13 +40,26 @@ public class GrpcEnemyClient {
         this.enemyHandler = enemyHandler;
     }
 
-
+    /**
+     * Sends a join lobby request to the server. Converts the lobby ID and client type into a JoinLobbyRequest
+     * and sends it using the blocking stub.
+     *
+     * @param lobbyID The ID of the lobby to join.
+     * @param clientTyp The type of client joining the lobby.
+     * @return The JoinLobbyResponse received from the server.
+     */
     public JoinLobbyResponse sendJoinLobbyRequest(int lobbyID, String clientTyp) {
         JoinLobbyRequest request = convertToJoinLobbyRequest(lobbyID, clientTyp);
         return blockingStub.joinLobby(request);
     }
 
-    // Method to convert a Command to a JoinLobbyRequest
+    /**
+     * Converts lobby ID and client type information into a JoinLobbyRequest object.
+     *
+     * @param lobbyID The ID of the lobby to join.
+     * @param clientTyp The type of client joining the lobby.
+     * @return A JoinLobbyRequest object.
+     */
     private JoinLobbyRequest convertToJoinLobbyRequest(int lobbyID, String clientTyp) {
         return JoinLobbyRequest.newBuilder().
                 setLobbyID(lobbyID).
@@ -45,7 +67,13 @@ public class GrpcEnemyClient {
                 build();
     }
 
-    // Method to convert a Command to a GameCommandRequest
+    /**
+     * Converts command and target information into a GameCommandRequest object. Includes the client ID in the request.
+     *
+     * @param command The game command to be sent.
+     * @param target The target of the command.
+     * @return A GameCommandRequest object.
+     */
     private GameCommandRequest convertToGameCommandRequest(String command, String target) {
         return GameCommandRequest.newBuilder().
                 setCommand(command).
@@ -54,6 +82,10 @@ public class GrpcEnemyClient {
                 build();
     }
 
+    /**
+     * Initializes the stream for sending game commands and receiving responses. Sets up a StreamObserver
+     * to handle incoming game command responses and connection errors.
+     */
     public void initStream() {
         if (requestObserver != null) {
             logger.info("Stream already initialized");
@@ -81,15 +113,21 @@ public class GrpcEnemyClient {
         });
     }
 
+    /**
+     * Sends a game command to the server. Converts the CommandHolder object into a GameCommandRequest
+     * and sends it using the request observer stream.
+     *
+     * @param commandHolder The holder object containing the command and target information.
+     */
     public void sendCommand(CommandHolder commandHolder) {
         requestObserver.onNext(convertToGameCommandRequest(commandHolder.getCommand(), commandHolder.getTarget()));
     }
-
 
     public void shutdown() {
         requestObserver.onCompleted();
     }
 
+    // Getter and Setter
     public void setClientID(int clientID) {
         this.clientID = clientID;
     }
