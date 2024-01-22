@@ -129,9 +129,9 @@ public class TurnManager {
 
                 //Stop fight and remove commands from command map if character flees
                 Fight fight = fightManager.getFight(character);
-                commandMap.remove(fight.getCombatantTwo());
-                commandMap.remove(fight.getCombatantOne());
-                fightManager.endFight(fight);
+                copyCommandMap.remove(fight.getCombatantTwo());
+                copyCommandMap.remove(fight.getCombatantOne());
+                fightManager.stopFight(fight);
             }
         }
 
