@@ -50,6 +50,7 @@ public class Game {
 
     private GameState gameState;
     private int localPlayerID;
+    private int lobbyID;
 
     public Game(Terminal terminal) {
         this.terminal = terminal;
@@ -108,6 +109,7 @@ public class Game {
         this.mainGameView = new MainGameView(terminal, this.gameState);
         this.inventoryView = new InventoryView(terminal, this.gameState);
         gameState.setLocalPlayerID(localPlayerID);
+        gameState.setLobbyID(lobbyID);
         gameStarted.set(true);
         currentView = mainGameView;
     }
@@ -428,4 +430,7 @@ public class Game {
         this.localPlayerID = localPlayerID;
     }
 
+    public void setLobbyID(int lobbyID) {
+        this.lobbyID = lobbyID;
+    }
 }

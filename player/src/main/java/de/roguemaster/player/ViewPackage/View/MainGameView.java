@@ -260,7 +260,8 @@ public class MainGameView extends ViewComponent {
         // Display upper MGV bar
         tg.setForegroundColor(TextColor.ANSI.WHITE);
         // Display the current room ID and adjacent room IDs
-        String roomInfo = "CurrentRoomID: " + gameState.getRoomData().getId() +
+        String roomInfo = "LobbyID: "+ gameState.getLobbyID() +
+                " CurrentRoomID: " + gameState.getRoomData().getId() +
                 "| North: " + getAdjacentRoomId("North") +
                 "| South: " + getAdjacentRoomId("South") +
                 "| East: " + getAdjacentRoomId("East") +

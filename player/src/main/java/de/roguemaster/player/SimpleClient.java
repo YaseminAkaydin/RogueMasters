@@ -31,6 +31,7 @@ public class SimpleClient {
     private final Game game;
     private Thread gameThread;
     private int userID; // id to process commands
+    // id to process commands
 
     private final GameServiceGrpc.GameServiceStub asyncStub; // Async stub, for commands and 5sekGamestate from server
     private final ManageServiceGrpc.ManageServiceBlockingStub blockingStub; // For joining lobbies/creating lobbies
@@ -132,6 +133,7 @@ public class SimpleClient {
                 game.setSuccessJoinLobby(true);
                 System.out.println("Lobby joined: " + response.getLobbyID() + " " + response.getSuccess() + " " + response.getCharacterID());
                 game.setLocalPlayerID(response.getCharacterID());
+                game.setLobbyID(response.getLobbyID());
                 this.userID = response.getUserID();
                 checkGameStarted();
                 requestObserver.onNext(convertToGameCommandRequest(new Command("initialize"))); //init direkt nach dem erstellen des streams mitsenden für Init

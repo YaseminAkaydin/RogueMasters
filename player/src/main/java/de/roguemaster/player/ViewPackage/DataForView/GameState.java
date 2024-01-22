@@ -25,6 +25,7 @@ public class GameState {
     private List<RoomData> roomList;
     private HashMap<RoomData, List<PlayerData>> playerRoomMap; // which player is in which room, in one room can be multiple players, but one player can only be in one room
     private int localPlayerID = -1;
+    private int lobbyID = -1;
 
     public GameState(List<PlayerData> playerList, List<MonsterData> enemyList, List<RoomData> roomList) {
 
@@ -100,5 +101,13 @@ public class GameState {
 
     public List<ItemData> getInventoryItems() {
         return inventoryItems;
+    }
+
+    public void setLobbyID(int lobbyID) {
+        this.lobbyID = lobbyID;
+    }
+
+    public int getLobbyID() {
+        return lobbyID;
     }
 }
