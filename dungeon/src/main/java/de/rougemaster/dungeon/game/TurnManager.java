@@ -23,6 +23,7 @@ import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieBiteAttackCo
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.zombieClawAttackCommand;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -112,10 +113,11 @@ public class TurnManager {
      */
     private Map<Character, GameCommand> startTurn() {
         // Copy Command map
-        Map<Character, GameCommand> copyCommandMap =  new HashMap<>(commandMap);
+        Map<Character, GameCommand> returnCM =  new HashMap<>(commandMap);
 
+        Map<Character, GameCommand> beforeFleeCM =  new HashMap<>(commandMap);
         //EXECUTE FLEE
-        for (Map.Entry<Character, GameCommand> entry : copyCommandMap.entrySet()) {
+        for (Map.Entry<Character, GameCommand> entry : beforeFleeCM.entrySet()) {
             Character character = entry.getKey();
             GameCommand command = entry.getValue();
 
@@ -129,13 +131,12 @@ public class TurnManager {
 
                 //Stop fight and remove commands from command map if character flees
                 Fight fight = fightManager.getFight(character);
-                copyCommandMap.remove(fight.getCombatantTwo());
-                copyCommandMap.remove(fight.getCombatantOne());
+                returnCM.remove(fight.getCombatantTwo());
+                returnCM.remove(fight.getCombatantOne());
                 fightManager.stopFight(fight);
             }
         }
-
-        return copyCommandMap;
+        return returnCM;
     }
 
     private void setAllFightActions(Map<Character, GameCommand> copyCommandMap) {
