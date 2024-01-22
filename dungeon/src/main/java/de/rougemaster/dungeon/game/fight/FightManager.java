@@ -35,7 +35,6 @@ public class FightManager {
 
     /**
      * Ends a currently running fight and distributes the rewards.
-     *
      * @param fight fight to be ended.
      */
     public void endFight(Fight fight) {
@@ -58,9 +57,16 @@ public class FightManager {
         };
 
         playerWinner.gainItem(ItemFactory.createRandomItem(itemLevel));
+        stopFight(fight);
+    }
 
-        this.activeCombatants.remove(winner);
-        this.activeCombatants.remove(loser);
+    /**
+     * Stops a fight.
+     * @param fight the fight to be stopped.
+     */
+    public void stopFight(Fight fight) {
+        this.activeCombatants.remove(fight.getCombatantOne());
+        this.activeCombatants.remove(fight.getCombatantTwo());
         this.activeFights.remove(fight);
     }
 
@@ -91,15 +97,14 @@ public class FightManager {
 
     /**
      * Returns a list of all characters currently involved in fights.
-     *
      * @return a List of Character objects who are currently in fights.
      */
     public List<Character> getAllCharactersInFights() {
-        List<Character> charactersInFights = new ArrayList<>();
-        for (Map.Entry<Character, Fight> entry : activeCombatants.entrySet()) {
-            charactersInFights.add(entry.getKey());
-        }
-        return charactersInFights;
+        return activeCombatants.keySet().stream().toList();
+    }
+
+    public boolean isCharacterInFight(Character character) {
+        return getAllCharactersInFights().contains(character);
     }
 
     public List<Fight> getActiveFights() {
