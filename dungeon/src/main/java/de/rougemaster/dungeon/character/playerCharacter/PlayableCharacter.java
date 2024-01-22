@@ -23,17 +23,17 @@ public class PlayableCharacter extends Character {
         id = ++idCounter;
         inventory = new ArrayList<>();
 
-        equipArmor(ItemFactory.createArmor(1));
-        equipWeapon(ItemFactory.createWeapon(1));
-
-        inventory.add(armorSlot);
-        inventory.add(weaponSlot);
-
         hp = 5;
         attack = 2;
         defense = 3;
         maxHp = 5;
         level = 1;
+
+        equipArmor(ItemFactory.createArmor(1));
+        equipWeapon(ItemFactory.createWeapon(1));
+
+        inventory.add(armorSlot);
+        inventory.add(weaponSlot);
     }
 
     /**
