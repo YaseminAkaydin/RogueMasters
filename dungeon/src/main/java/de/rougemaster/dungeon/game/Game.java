@@ -22,8 +22,6 @@ public class Game {
     private final List<PlayableCharacter> playerList;
     private final List<EnemyCharacter> enemyList;
     private final Dungeon dungeon;
-    private final ItemManager itemManager;
-
     private final TurnManager turnManager;
     private LobbyThread turnManagerThread;
 
@@ -36,8 +34,7 @@ public class Game {
         this.playerList = new ArrayList<>();
         this.enemyList = new ArrayList<>();
         this.dungeon = new Dungeon(dungeonRoomCount,dungeonDifficultyLevel);
-        this.itemManager= new ItemManager(dungeon);
-        itemManager.placeItem();
+        new ItemManager(dungeon).placeItem();
         this.turnManager = new TurnManager();
         this.turnManagerThread = null;
     }
@@ -175,9 +172,7 @@ public class Game {
         if(character instanceof EnemyCharacter){
             enemyList.remove(character);
         }
-
     }
-
 
     /**
      * Searches for all dead characters in the game

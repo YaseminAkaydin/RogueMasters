@@ -51,14 +51,9 @@ public abstract class Character {
      * Makes you flee into a given to adjacent Room.
      * Only usable in a fight.
      * @param room the room you want to move to.
-     * @return if fleeing was successful.
      */
-    public boolean flee(Room room){
-        if(new Random().nextBoolean()){
-            move(room);
-            return true;
-        }
-        return false;
+    public void flee(Room room){
+        move(room);
     }
 
     /**
