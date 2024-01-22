@@ -153,6 +153,7 @@ public class DungeonApplication {
                     // Remove the client from the list and the map
                     if (userId != null) {
                         clientToStreamConnection.remove(userId);
+                        lobbyFacade.deleteUser(userId);
                     }
                     clients.remove(responseObserver);
                 }
@@ -163,6 +164,7 @@ public class DungeonApplication {
                     // Remove the client from the list and the map
                     if (userId != null) {
                         clientToStreamConnection.remove(userId);
+                        lobbyFacade.deleteUser(userId);
                     }
                     clients.remove(responseObserver);
                     responseObserver.onCompleted();

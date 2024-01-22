@@ -163,7 +163,7 @@ public class Lobby {
     }
 
     /**
-     * Unregisters a User from the Lobby
+     * Removes a User from the Lobby
      * @param clientId The Identifikator of the client
      */
     public void leaveClientLobby(int clientId){
@@ -171,6 +171,7 @@ public class Lobby {
         if(!characterMap.containsKey(clientId)){
             return;
         }
+
         //TODO: Remove Character from Game
     }
 

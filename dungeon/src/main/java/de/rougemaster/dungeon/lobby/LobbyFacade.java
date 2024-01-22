@@ -104,6 +104,10 @@ public class LobbyFacade {
         return clientId;
     }
 
+    public void deleteUser(Integer userId) {
+        this.lobbyBroker.forwardToLobby(userId).leaveClientLobby(userId);
+        this.lobbyBroker.unregisterUser(userId);
+    }
 
     //------------------- Bad Design ------------------- please fix if enough time
     public GameStateMessage getGameStateMessage(int clientId){

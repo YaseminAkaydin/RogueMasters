@@ -82,9 +82,6 @@ public class Game {
         return firstRoom;
     }
 
-
-
-
     /**
      * Adds an enemy to the game, puts him into a room, except boss -> bossroom
      * @param enemyType the enemytype that is to be added
@@ -163,7 +160,6 @@ public class Game {
      * @param character the player that is to be removed
      */
     public void removeCharacter(Character character) {
-        //Check if char is in playerList or enemyList by class type
         FightManager fightManager = turnManager.getFightManager();
 
         if(fightManager.getAllCharactersInFights().contains(character)) {
