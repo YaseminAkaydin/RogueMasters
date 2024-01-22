@@ -9,8 +9,8 @@ import de.rougemaster.dungeon.dungeon.Room;
 import java.util.*;
 
 public class FightManager {
-    private List<Fight> activeFights;
-    private Map<Character, Fight> activeCombatants;
+    private final List<Fight> activeFights;
+    private final Map<Character, Fight> activeCombatants;
 
     public FightManager() {
         this.activeFights = new ArrayList<>();

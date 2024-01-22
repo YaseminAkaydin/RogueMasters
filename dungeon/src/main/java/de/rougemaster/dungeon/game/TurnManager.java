@@ -80,9 +80,9 @@ public class TurnManager {
         fightManager.executeAllTurns();
 
         //Remove all character that are already dead or already have a fight
-        for (Character character : copyCommandMap.keySet()) {
+        for (Character character : commandMap.keySet()) {
             if (character.getHp() <= 0 || fightManager.getAllCharactersInFights().contains(character)) {
-                commandMap.remove(character);
+                copyCommandMap.remove(character);
             }
         }
 
@@ -90,6 +90,10 @@ public class TurnManager {
             Room room1 = character1.getCurrentRoom();
             for (Character character2: copyCommandMap.keySet()) {
                 Room room2 = character2.getCurrentRoom();
+
+                if(character1.equals(character2)){
+                    continue;
+                }
 
                 //Check if characters are in the same room
                 if(room1 != null && room2 != null && (room1.equals(room2) && !character1.equals(character2))) {
