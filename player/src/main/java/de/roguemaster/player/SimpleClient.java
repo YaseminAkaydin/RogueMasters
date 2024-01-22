@@ -56,11 +56,11 @@ public class SimpleClient {
             if (command != null) {
                 checkAndSendCommands(command);
             }
-            if (requestObserver != null && !game.getRunning()) {
-                System.out.println("Client shutting down, sending complete");
-                /*stopGame();*/
-                requestObserver.onCompleted(); // Complete the request stream
-            }
+        }
+        if (requestObserver != null && !game.getRunning()) {
+            System.out.println("Client shutting down, sending complete");
+            /*stopGame();*/
+            requestObserver.onCompleted(); // Complete the request stream
         }
     }
 
