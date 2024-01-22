@@ -77,8 +77,8 @@ public class InventoryView extends ViewComponent {
         AtomicInteger optionNumber = new AtomicInteger(1);
         tg.putString(2, optionsStartY.get() - 1, "Choose Item ID to equip");
         for (ItemData item : gameState.getInventoryItems()) {
-            if ((item.getTyp().equals("Weapon") || item.getTyp().equals("Armor")
-            && item.getId() != gameState.getLocalPlayer().getArmorSlot().getId() && item.getId() != gameState.getLocalPlayer().getWeaponSlot().getId())) {
+            if ((item.getTyp().equals("Weapon") || item.getTyp().equals("Armor"))
+            && item.getId() != gameState.getLocalPlayer().getArmorSlot().getId() && item.getId() != gameState.getLocalPlayer().getWeaponSlot().getId()) {
                 String optionText = optionNumber.get() + ". Equip " + optionNumber.get();
                 equipItemOptionMappings.put(optionNumber.getAndIncrement(), new EquipAction(item.getId()));
                 tg.putString(2, optionsStartY.getAndIncrement(), optionText);
