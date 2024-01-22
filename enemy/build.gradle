@@ -71,7 +71,7 @@ sourceSets {
 }
 
 group = 'de.roguemaster'
-version = '0.0.2-SNAPSHOT'
+version = '1'
 
 java {
     sourceCompatibility = '17'

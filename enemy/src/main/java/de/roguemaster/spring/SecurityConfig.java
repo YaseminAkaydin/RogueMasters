@@ -20,7 +20,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
 
     String URL = "http://localhost";
-    int PORT = 8089;
+    int PORT = 8812;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

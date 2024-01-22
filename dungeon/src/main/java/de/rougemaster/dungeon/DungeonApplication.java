@@ -26,6 +26,20 @@ public class DungeonApplication {
     private static final Logger logger = Logger.getLogger(DungeonApplication.class.getName());
     private Server server;
     private LobbyFacade lobbyFacade;
+    private int port = 8812;
+        /**
+     * The main method to start the DungeonApplication server. Creates a server instance, starts it, and
+     * blocks until the server is shut down.
+     *
+     * @param args Command line arguments.
+     * @throws IOException If an I/O error occurs during server start-up.
+     * @throws InterruptedException If the shutdown process is interrupted.
+     */
+    public static void main(String[] args) throws IOException, InterruptedException {
+        DungeonApplication server = new DungeonApplication();
+        server.start();
+        server.blockUntilShutdown();
+    }
 
     /**
      * Starts the DungeonApplication server. Initializes the lobby facade and game service, sets up
@@ -34,7 +48,6 @@ public class DungeonApplication {
      * @throws IOException If an I/O error occurs during server start-up.
      */
     private void start() throws IOException {
-        int port = 8812;
         lobbyFacade = LobbyFacade.getInstance();
 
         GameServiceImpl gameService = new GameServiceImpl(lobbyFacade);
@@ -83,20 +96,6 @@ public class DungeonApplication {
         if (this.server != null) {
             this.server.awaitTermination();
         }
-    }
-
-    /**
-     * The main method to start the DungeonApplication server. Creates a server instance, starts it, and
-     * blocks until the server is shut down.
-     *
-     * @param args Command line arguments.
-     * @throws IOException If an I/O error occurs during server start-up.
-     * @throws InterruptedException If the shutdown process is interrupted.
-     */
-    public static void main(String[] args) throws IOException, InterruptedException {
-        DungeonApplication server = new DungeonApplication();
-        server.start();
-        server.blockUntilShutdown();
     }
 
     /**

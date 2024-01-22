@@ -70,17 +70,17 @@ public class Lobby {
             item = player.getInventory().stream().filter(item1 -> item1.getId() == id).toList().get(0);
         }
 
-        // TODO: Translate Programm aufräumen und funtkionalität für die Actions imeplementieren
+
         if (character instanceof PlayableCharacter) {
             switch (lobbyMessage.getCommand()) {
                 case "move" -> {return new moveGameCommand(character, room);} // passt
                 case "doNothing" -> {return new doNothingGameCommand(character);} // juckt erstmal nicht
                 case "flee" -> {return new fleeGameCommand(character, room);} // passt
-                case "attackUsingEquipment" -> {return new attackUsingEquipmentCommand();} //TODO: Implementieren: CLient schickt: ("attackUsingEquipment a+attackedId")
+                case "attackUsingEquipment" -> {return new attackUsingEquipmentCommand();}
                 case "defend" -> {return new defendingPlayerCommand();}
-                case "equipItem" -> {return new equipItemGameCommand((PlayableCharacter) character, item);} // TODO: armorSlot und weaponSlot im GameState mitschicken
+                case "equipItem" -> {return new equipItemGameCommand((PlayableCharacter) character, item);}
                 case "takeItem" -> {return new takeItemInRoomGameCommand((PlayableCharacter) character, item);}
-                case "useItem" -> {return new useItemGameCommand((PlayableCharacter) character, item);} // TODO: character.use implementieren
+                case "useItem" -> {return new useItemGameCommand((PlayableCharacter) character, item);}
                 case "useItemInFight" -> {return new inspectRoomGameCommand((PlayableCharacter) character, room);}
                 case "dropItem" -> {return new deleteItemGameCommand((PlayableCharacter)character,item);}
             }
