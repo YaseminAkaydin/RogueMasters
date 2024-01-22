@@ -2,9 +2,11 @@ package de.roguemaster.player;
 
 import com.example.grpc.*;
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 import de.roguemaster.player.ViewPackage.Command;
 import de.roguemaster.player.ViewPackage.DataForView.RoundCounter;
 import de.roguemaster.player.ViewPackage.Game;
@@ -12,6 +14,8 @@ import de.roguemaster.player.ViewPackage.Game;
 import io.grpc.*;
 import io.grpc.stub.StreamObserver;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -207,7 +211,12 @@ public class SimpleClient {
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
             terminalFactory.setTerminalEmulatorTitle("RogueMaster");
             terminalFactory.setInitialTerminalSize(new TerminalSize(100, 40));
-            Terminal terminal = terminalFactory.createTerminal();
+            TerminalScreen screen = new TerminalScreen(terminalFactory.createTerminal());
+
+            Terminal terminal1 = screen.getTerminal();
+            SwingTerminalFrame terminal = (SwingTerminalFrame)terminal1;
+            terminal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
             // Chane title of terminal window
             Game game = new Game(terminal);
             SimpleClient client = new SimpleClient(asyncChannel, game, blockingChannel);
