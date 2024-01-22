@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Zombie extends EnemyCharacter {
-    private static final int ExpDropAmount = 10;
+    private static final int ExpDropAmount = 3;
     private static final int biteBonusDamage = 5;
 
     public Zombie(int dangerLvl){
@@ -59,7 +59,7 @@ public class Zombie extends EnemyCharacter {
      */
     public void clawAttack(Character character) {
         int netDamage = this.attack - character.getDefense();
-        character.setHp(character.getHp()-netDamage<0?0:netDamage);
+        character.setHp(character.getHp()-Math.max(0, netDamage));
     }
 
     /**
@@ -67,8 +67,8 @@ public class Zombie extends EnemyCharacter {
      * @param character enemy character
      */
     public void biteAttack(Character character){
-        int netDamage = this.attack + biteBonusDamage*(dangerLevel/2) - character.getDefense();
-        character.setHp(character.getHp()-netDamage<0?0:netDamage);
+        int netDamage = this.attack + biteBonusDamage*((int)dangerLevel/3) - character.getDefense();
+        character.setHp(character.getHp()-Math.max(0, netDamage));
     }
 
     /**

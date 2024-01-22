@@ -1,6 +1,7 @@
 package de.rougemaster.dungeon.lobby;
 import de.rougemaster.dungeon.character.Character;
 
+import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
 import de.rougemaster.dungeon.character.enemyCharacter.devil.Devil;
 import de.rougemaster.dungeon.character.enemyCharacter.skeleton.Skeleton;
 import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
@@ -17,11 +18,7 @@ import de.rougemaster.dungeon.game.gameCommand.skeletonCommands.*;
 import de.rougemaster.dungeon.game.gameCommand.zombieCommands.*;
 import de.rougemaster.dungeon.item.Item;
 
-import java.util.HashMap;
-
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Lobby {
     private final Map<Integer, Character> characterMap;
@@ -43,17 +40,21 @@ public class Lobby {
      * @return The Translated Game command
      */
     private GameCommand translateCommand(Character character, LobbyMessage lobbyMessage) {
+
         if (lobbyMessage == null) {
             throw new IllegalArgumentException("LobbyCommand can't be null.");
         }
+
         int id;
         Room room= null;
         Item item= null;
+
         if (!Objects.equals(lobbyMessage.getTarget(), "")) {
             id = Integer.parseInt(lobbyMessage.getTarget().substring(1));
         } else {
             id = -1;
         }
+
         if (lobbyMessage.getTarget().startsWith("r")) {
             room = game
                     .getDungeon()
@@ -125,8 +126,8 @@ public class Lobby {
         game.setCharacterTurn(clientGameCommand, clientCharacter);
     }
 
-    public int getClienID(Character character){
-        int result=0;
+    public int getClientID(Character character){
+        int result=-1;
         for (Map.Entry<Integer, Character> entry: characterMap.entrySet()) {
             if(entry.getValue().equals(character)){
                 result=entry.getKey();
@@ -174,39 +175,29 @@ public class Lobby {
     }
 
 
-
+    /**
+     * Character dies and is removed from the game
+     * @param character The character that is to be removed
+     */
     public void killCharacter(Character character){
-        Integer clientID=0;
+        EnemyFacade enemyFacade= EnemyFacade.getInstance();
         if(!characterMap.containsValue(character)){
             return;
-        }else {
-            for (Map.Entry<Integer, Character> entry: characterMap.entrySet()){
-                if(character.equals(entry.getValue())){
-                    clientID=entry.getKey();
-                }
-            }
-            character.die();
-            game.removeCharacter(character);
-            LobbyFacade lobbyFacade= LobbyFacade.getInstance();
-            lobbyFacade.lobbyBroker.unregisterUser(clientID);
-            EnemyFacade enemyFacade= EnemyFacade.getInstance();
-            if(character instanceof Zombie){
-                enemyFacade.deleteEnemy(clientID,LobbyCharType.Zombie);
-            } else if (character instanceof Skeleton) {
-                enemyFacade.deleteEnemy(clientID,LobbyCharType.Skeleton);
-            }else if (character instanceof Devil) {
-                enemyFacade.deleteEnemy(clientID,LobbyCharType.Devil);
-            }
-
         }
+        character.die();
+        game.removeCharacter(character);
     }
 
+    /**
+     * Starts the game
+     */
     public void startGame(){
         EnemyFacade enemyFacade = EnemyFacade.getInstance();
         enemyFacade.requestEnemy(lobbyId, LobbyCharType.Devil);
         enemyFacade.requestEnemy(lobbyId, LobbyCharType.Skeleton);
         enemyFacade.requestEnemy(lobbyId, LobbyCharType.Zombie);
     }
+
     /**
      * Sends the next Turn signal to LobbyFacade.
      */

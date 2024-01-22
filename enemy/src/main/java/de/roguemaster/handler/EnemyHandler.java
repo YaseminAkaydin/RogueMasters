@@ -18,7 +18,7 @@ public class EnemyHandler {
     Enemy enemy;
 
     private final int lobbyID;
-    private int localCharId;
+    private int charID;
     private int clientID;
     private boolean success;
 
@@ -42,7 +42,9 @@ public class EnemyHandler {
         grpcEnemieClient = new GrpcEnemyClient(lobbyID,blockingChannel,asyncChannel,this);
     }
 
-
+    /**
+     * Initializes the Connection to the Server
+     */
     public void initializeConnection () {
         createConnection();
         tryConnecting(enemy.getTyp());
@@ -50,6 +52,10 @@ public class EnemyHandler {
         grpcEnemieClient.sendCommand(new CommandHolder("initialize", ""));
     }
 
+    /**
+     * Sends the next Command to the Server
+     * @param response Response from the Server
+     */
     public void nextCommand(GameCommandResponse response) {
         JSONManager<GameStateMessage> jsonManager = new JSONManager<>(new TypeToken<>(){});
         GameStateMessage gameStateMessage = jsonManager.read(response.getMessage());
@@ -64,17 +70,21 @@ public class EnemyHandler {
         enemy.setMaxHp(selfEnemyMesssage.getMaxHp());
 
         //Send Next Command
-        CommandHolder nextCommand = enemy.getNextTurn(gameStateMessage.getFightMap().containsKey(localCharId));
+        CommandHolder nextCommand = enemy.getNextTurn(gameStateMessage.getFightMap().containsKey(charID));
         grpcEnemieClient.sendCommand(nextCommand);
     }
 
+    /**
+     * Tries to connect to the server
+     * @param typ Type of the Enemy that should be connected
+     * */
     public void tryConnecting(EnemyTyp typ) {
         int counter = 0;
         JoinLobbyResponse joinResponse;
         do{
             System.out.println("Sending " + counter + " join request for " + typ.toString());
             joinResponse = grpcEnemieClient.sendJoinLobbyRequest(lobbyID, typ.toString());
-            this.localCharId = joinResponse.getCharacterID();
+            this.charID = joinResponse.getCharacterID();
             this.success = joinResponse.getSuccess();
             this.clientID = joinResponse.getUserID();
             grpcEnemieClient.setClientID(clientID);
@@ -86,9 +96,14 @@ public class EnemyHandler {
         }while(!joinResponse.getSuccess());
     }
 
+    /**
+     * Searches for the EnemyMessage in a List of EnemyMessages with the same id
+     * @param enemyMessageList List of EnemyMessages
+     * @return EnemyMessage with the same id as the EnemyHandler
+     */
     private EnemyMessage searchSelfEnemyMessage(List<EnemyMessage> enemyMessageList){
         for(EnemyMessage enemyMessage : enemyMessageList) {
-            if(enemyMessage.getId() == localCharId) {
+            if(enemyMessage.getId() == charID) {
                 return enemyMessage;
             }
         }

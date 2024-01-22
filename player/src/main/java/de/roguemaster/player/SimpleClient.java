@@ -6,6 +6,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
 import de.roguemaster.player.ViewPackage.Command;
+import de.roguemaster.player.ViewPackage.DataForView.RoundCounter;
 import de.roguemaster.player.ViewPackage.Game;
 
 import io.grpc.*;
@@ -22,6 +23,7 @@ import java.util.logging.Logger;
 public class SimpleClient {
     private static final Logger logger = Logger.getLogger(SimpleClient.class.getName());
 
+    private final RoundCounter roundCounter = RoundCounter.getInstance();
     private final Game game;
     private Thread gameThread;
     private int userID; // id to process commands
@@ -35,6 +37,7 @@ public class SimpleClient {
         this.blockingStub = ManageServiceGrpc.newBlockingStub(blockingChannel);
         this.game = game;
         this.asyncStub = GameServiceGrpc.newStub(asyncChannel);
+
     }
 
     /**
@@ -70,6 +73,7 @@ public class SimpleClient {
             requestObserver = asyncStub.sendGameCommand(new StreamObserver<GameCommandResponse>() {
                 @Override
                 public void onNext(GameCommandResponse response) {
+                    roundCounter.incrementRoundCounter();
                     // Handle incoming game state
                     new Thread(() -> {
                         try {

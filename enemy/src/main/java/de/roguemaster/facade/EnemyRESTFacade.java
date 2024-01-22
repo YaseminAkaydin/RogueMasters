@@ -18,6 +18,10 @@ public class EnemyRESTFacade {
         map = new HashMap<>();
     }
 
+    /**
+     * returns the instance of EnemyRESTFacade
+     * @return instance of EnemyRESTFacade
+     */
     public static EnemyRESTFacade getInstance() {
         if (instance == null) {
             instance = new EnemyRESTFacade();
@@ -25,6 +29,11 @@ public class EnemyRESTFacade {
         return instance;
     }
 
+    /**
+     * creates an enemy and adds it to the map
+     * @param lobbyID lobbyID of the lobby the enemy should be added to
+     * @param typ type of the enemy
+     */
     public void createEnemy(int lobbyID,EnemyTyp typ) {
         Enemy enemy = switch (typ) {
             case Devil -> new Devil();
@@ -52,6 +61,10 @@ public class EnemyRESTFacade {
         map.put(enemyHandler.getClientID(),enemyHandler);
     }
 
+    /**
+     * deletes an enemy from the map
+     * @param clientID clientID of the enemy that should be deleted
+     */
     public void deleteEnemy(int clientID) {
         EnemyHandler enemyHandler = map.get(clientID);
         enemyHandler.shutdown();

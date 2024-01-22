@@ -2,13 +2,10 @@
 package de.rougemaster.dungeon;
 
 import de.rougemaster.dungeon.character.enemyCharacter.EnemyCharacter;
-import de.rougemaster.dungeon.character.enemyCharacter.zombie.Zombie;
 import de.rougemaster.dungeon.character.playerCharacter.PlayableCharacter;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.dungeon.RoomCardinalDirection;
 import de.rougemaster.dungeon.game.Game;
-import de.rougemaster.dungeon.game.TurnManager;
-import de.rougemaster.dungeon.game.fight.FightManager;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.moveGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
@@ -154,7 +151,7 @@ class DungeonApplicationTests {
 		game.setCharacterTurn(new doNothingGameCommand(player),player);
 		System.out.println("Player HP after Attack:" + player.getHp());
 		game.getTurnManager().executeTurn();
-		if(game.getPlayerLits().contains(player)){
+		if(game.getPlayerList().contains(player)){
 			System.out.println("NOCH DA???");
 		}else {
 			System.out.println("ERFOLG !!!!");

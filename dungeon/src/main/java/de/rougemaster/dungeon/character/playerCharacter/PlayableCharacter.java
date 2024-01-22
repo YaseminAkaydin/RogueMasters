@@ -22,10 +22,13 @@ public class PlayableCharacter extends Character {
         //TODO: Set Stats of Character
         id = ++idCounter;
         inventory = new ArrayList<>();
-        armorSlot = ItemFactory.createArmor(1);
-        weaponSlot = ItemFactory.createWeapon(1);
+
+        equipArmor(ItemFactory.createArmor(1));
+        equipWeapon(ItemFactory.createWeapon(1));
+
         inventory.add(armorSlot);
         inventory.add(weaponSlot);
+
         hp = 5;
         attack = 2;
         defense = 3;
@@ -38,10 +41,9 @@ public class PlayableCharacter extends Character {
      * @param character enemy character
      */
     public void attackUsingEquipment(Character character) {
-        int attackDamage = weaponSlot == null ? this.attack : this.attack + weaponSlot.getDamage();
-        int netDamage = attackDamage - character.getDefense();
+        int netDamage = attack - character.getDefense();
         if (netDamage > 0) {
-            character.setHp(character.getHp() - netDamage<0?0:netDamage);
+            character.setHp(character.getHp() - Math.max(0, netDamage));
         }
     }
 
@@ -79,20 +81,21 @@ public class PlayableCharacter extends Character {
         if(!inventory.contains(item)){
             throw new InventoryItemMissingException();
         }
-        if(item instanceof Armor){
+
+        if(item instanceof Eqipable){
             equipItem(item);
-        }else if (item instanceof Book){
+        }
+        if (item instanceof Book){
             Book book = (Book) item;
             gainExperience(book.getExtraPoints());
             inventory.remove(book);
-        }else if (item instanceof Potion){
+        }
+        if (item instanceof Potion){
             hp+= ((Potion) item).use();
             if(hp>maxHp){
                 hp = maxHp;
             }
             inventory.remove(item);
-        }else if (item instanceof Weapon){
-            equipItem(item);
         }
         //TODO: useItem can first be implemented after Items are implemented.
     }
@@ -206,12 +209,28 @@ public class PlayableCharacter extends Character {
         }
 
         if (item instanceof Weapon ) {
-            weaponSlot = (Weapon) item;
-        } else if (item instanceof Armor) {
-            armorSlot = (Armor) item;
-        } else {
-            throw new IllegalArgumentException("Item is equipable but not a weapon or a piece of armor");
+            equipWeapon((Weapon) item);
         }
+
+        if (item instanceof Armor) {
+            equipArmor((Armor) item);
+        }
+    }
+
+    private void equipWeapon(Weapon weapon) {
+        if(weaponSlot != null){
+            attack -= weaponSlot.getDamage();
+        }
+        attack += weapon.getDamage();
+        weaponSlot = weapon;
+    }
+
+    private void equipArmor(Armor armor) {
+        if(armorSlot != null){
+            defense -= armorSlot.getDefense();
+        }
+        defense += armor.getDefense();
+        armorSlot = armor;
     }
 
     public int getLevel() {
@@ -230,11 +249,20 @@ public class PlayableCharacter extends Character {
         return inventory;
     }
 
+    public void gainItem(Item item){
+        inventory.add(item);
+    }
+
     public Item getArmorSlot() {
         return armorSlot;
     }
 
     public Item getWeaponSlot() {
         return weaponSlot;
+    }
+
+    @Override
+    public int getEXP() {
+        return 0;
     }
 }

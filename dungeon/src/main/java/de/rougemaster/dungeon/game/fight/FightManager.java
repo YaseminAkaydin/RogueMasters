@@ -9,7 +9,6 @@ import de.rougemaster.dungeon.dungeon.Room;
 import java.util.*;
 
 public class FightManager {
-
     private List<Fight> activeFights;
     private Map<Character, Fight> activeCombatants;
 
@@ -40,55 +39,30 @@ public class FightManager {
      * @param fight fight to be ended.
      */
     public void endFight(Fight fight) {
-        Character combatantOne = fight.getCombatantOne();
-        Character combatantTwo = fight.getCombatantTwo();
-        int enemyLevel = 0;
-        //TODO: dont drop exp twice
-        if (combatantOne instanceof EnemyCharacter) {
-            if(combatantOne.getHp()<=0){
-                ((EnemyCharacter) combatantOne).dropExperience((PlayableCharacter) combatantTwo);
-                enemyLevel = ((EnemyCharacter) combatantOne).getDangerLevel();
-            }
+        //GETTER FROM FIGHT;
+        Character winner = fight.getCombatantOne().getHp() <= 0 ? fight.getCombatantTwo() : fight.getCombatantOne();
+        Character loser = fight.getCombatantOne().getHp() <= 0 ? fight.getCombatantOne() : fight.getCombatantTwo();
 
-        } else {
-            if(combatantTwo instanceof EnemyCharacter) {
-                if(combatantOne.getHp()<=0) {
-                    ((EnemyCharacter) combatantTwo).dropExperience((PlayableCharacter) combatantOne);
-                    enemyLevel = ((EnemyCharacter) combatantTwo).getDangerLevel();
-                }
-            }
-        }
-        int itemLevel = 1;
-        switch (enemyLevel) {
-            case 2:
-                itemLevel = 2;
-                break;
-            case 3, 4:
-                itemLevel = 3;
-                break;
-            case 5, 6:
-                itemLevel = 4;
-                break;
-            case 7, 8:
-                itemLevel = 5;
-                break;
-        }
-        Room room;
-        if(combatantOne.getHp()<=0){
-            room = combatantTwo.getCurrentRoom();
-            room.setItem(ItemFactory.createRandomItem(itemLevel));
-        }else if(combatantTwo.getHp()<=0){
-            room = combatantOne.getCurrentRoom();
-            room.setItem(ItemFactory.createRandomItem(itemLevel));
+        if(!(winner instanceof PlayableCharacter playerWinner)){
+            return;
         }
 
+        playerWinner.gainExperience(loser.getEXP());
 
-        this.activeCombatants.remove(combatantOne);
-        this.activeCombatants.remove(combatantTwo);
+        int itemLevel = switch (loser.getLevel()) {
+            case 2,3,4 -> 2;
+            case 5,6,7 -> 3;
+            case 8,9,10 -> 4;
+            case 11,12,13 -> 5;
+            default -> 1;
+        };
+
+        playerWinner.gainItem(ItemFactory.createRandomItem(itemLevel));
+
+        this.activeCombatants.remove(winner);
+        this.activeCombatants.remove(loser);
         this.activeFights.remove(fight);
     }
-
-
 
     /**
      * Executes the next turn for all fights. Should be called once every 5 seconds by TurnManager.

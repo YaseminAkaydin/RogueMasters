@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class Skeleton extends EnemyCharacter {
 
-    private static final int ExpDropAmount = 20;
+    private static final int ExpDropAmount = 5;
     private static final int boneAttackBonusDamage = 5;
 
     public Skeleton(int dangerLevel) {
@@ -61,7 +61,7 @@ public class Skeleton extends EnemyCharacter {
      */
     public void swordAttack(Character character){
         int netDamage = this.attack - character.getDefense();
-        character.setHp(character.getHp()-netDamage<0?0:netDamage);
+        character.setHp(character.getHp()-Math.max(0, netDamage));
     }
 
     /**
@@ -84,8 +84,8 @@ public class Skeleton extends EnemyCharacter {
      * @param character enemy character
      */
     public void boneAttack(Character character){
-        int netDamage = this.attack + boneAttackBonusDamage*(dangerLevel/2) - character.getDefense();
-        character.setHp(character.getHp()-netDamage<0?0:netDamage);
+        int netDamage = this.attack + boneAttackBonusDamage*((int)dangerLevel/3) - character.getDefense();
+        character.setHp(character.getHp()-Math.max(0, netDamage));
     }
 
     /**
@@ -94,7 +94,7 @@ public class Skeleton extends EnemyCharacter {
      */
     public void bonesplosionAttack(Character character){
         int netDamage = (int)(this.attack * 2.5) - character.getDefense();
-        character.setHp(character.getHp()-netDamage<0?0:netDamage);
+        character.setHp(character.getHp()-Math.max(0, netDamage));
         this.setHp(0);
     }
 

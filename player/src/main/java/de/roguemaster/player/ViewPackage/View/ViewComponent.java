@@ -6,7 +6,6 @@ import com.googlecode.lanterna.terminal.Terminal;
 import de.roguemaster.player.ViewPackage.DataForView.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -91,7 +90,8 @@ public abstract class ViewComponent {
                         "HP - EXP: " + gameState.getLocalPlayer().getExperience() +
                         " - Attack: " + gameState.getLocalPlayer().getAttack() +
                         " - Defense: " + gameState.getLocalPlayer().getDefense()+
-                        " - PlayerID: " + gameState.getLocalPlayer().getId());
+                        " - PlayerID: " + gameState.getLocalPlayer().getId()+
+                        " - Round: " + RoundCounter.getInstance().getRoundCounter());
     }
 
     /**

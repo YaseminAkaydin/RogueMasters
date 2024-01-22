@@ -9,6 +9,7 @@ import de.rougemaster.dungeon.dungeon.Dungeon;
 import de.rougemaster.dungeon.dungeon.ItemManager;
 import de.rougemaster.dungeon.dungeon.Room;
 import de.rougemaster.dungeon.game.fight.Fight;
+import de.rougemaster.dungeon.game.fight.FightManager;
 import de.rougemaster.dungeon.game.gameCommand.CharacterCommands.doNothingGameCommand;
 import de.rougemaster.dungeon.game.gameCommand.GameCommand;
 import de.rougemaster.dungeon.lobby.LobbyCharType;
@@ -41,7 +42,7 @@ public class Game {
         this.turnManagerThread = null;
     }
 
-    public List<PlayableCharacter> getPlayerLits(){
+    public List<PlayableCharacter> getPlayerList(){
         return playerList;
     }
     /**
@@ -90,18 +91,20 @@ public class Game {
      */
     public EnemyCharacter addEnemy(LobbyCharType enemyType) {;
         EnemyCharacterFactory enemyFactory = new EnemyCharacterFactory();
-        int playlerlevelSum =0;
-        for(Character character: playerList){
-            playlerlevelSum+= ((PlayableCharacter) character).getLevel();
-        }
-        int playlerlevelAvg = playlerlevelSum / playerList.size();
-        EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType), playlerlevelAvg);
+
+        int playerLevelSum = playerList.stream()
+                .mapToInt(PlayableCharacter::getLevel)
+                .sum();
+        
+        int playlerLevelAvg = playerLevelSum / playerList.size();
+        EnemyCharacter enemy = enemyFactory.createEnemy(convertLobbyCharTypToEnemyCharType(enemyType), playlerLevelAvg);
 
         if(enemyType ==LobbyCharType.Devil){
             enemy.teleport(findBossRoom());
         }else {
             enemy.teleport(findFreeRoom());
         }
+
         setCharacterTurn(new doNothingGameCommand(enemy), enemy);
         enemyList.add(enemy);
         return enemy;
@@ -123,15 +126,6 @@ public class Game {
         return turnManager;
     }
 
-
-
-    /**
-     * Ends the game
-     */
-    private void endGame() {
-        //TODO: Trigger everything that needs to be triggered when the game ends.
-    }
-
     /**
      * Sets the turn of a character in TurnManager
      * @param gameCommand the command that is to be executed
@@ -139,7 +133,6 @@ public class Game {
      */
     public void setCharacterTurn(GameCommand gameCommand, Character character) {
         turnManager.setCharacterTurn(character, gameCommand);
-
     }
 
     /**
@@ -159,55 +152,56 @@ public class Game {
                             , dungeon.getRoomList().stream().map(RoomMessage::new).toList()
                             , fightMap);
     }
+
     public Dungeon getDungeon() {
         return dungeon;
     }
 
 
-    //TODO: Testttttt
     /**
      * Removes a player from the game
      * @param character the player that is to be removed
      */
     public void removeCharacter(Character character) {
         //Check if char is in playerList or enemyList by class type
+        FightManager fightManager = turnManager.getFightManager();
 
-        if(turnManager.getFightManager().getAllCharactersInFights().contains(character)) {
-            //Fight beenden
-            //character aus der Commanmap vom turnmanager holen
-            Fight fight = turnManager.getFightManager().getFight(character);
-            turnManager.getFightManager().endFight(fight);
-            turnManager.getCommandMap().remove(character);
-        }else {
-            turnManager.getCommandMap().remove(character);
+        if(fightManager.getAllCharactersInFights().contains(character)) {
+            Fight fight = fightManager.getFight(character);
+            fightManager.endFight(fight);
         }
+
+        turnManager.getCommandMap().remove(character);
 
         if(character instanceof PlayableCharacter){
             playerList.remove(character);
-        } else {
-            enemyList.remove(character);
-
         }
+        if(character instanceof EnemyCharacter){
+            enemyList.remove(character);
+        }
+
     }
 
+
+    /**
+     * Searches for all dead characters in the game
+     * @return the characters that were searched for
+     */
     public List<Character> searchAndRemoveAllDeadPlayableCharacters(){
         Map<Character, GameCommand> commandMap = turnManager.getCommandMap();
         List<Character> playableCharactersToRemove = new ArrayList<>();
-        for (Map.Entry<Character, GameCommand> entry : commandMap.entrySet()) {
-            if (entry.getKey().getHp() <= 0) {
-                playableCharactersToRemove.add(entry.getKey());
+
+        for (Character character: commandMap.keySet()) {
+            if (character.getHp() <= 0) {
+                playableCharactersToRemove.add(character);
             }
         }
         return playableCharactersToRemove;
     }
 
-
-
     public void createTurnManagerThread (LobbyThread turnManagerThread) {
         this.turnManagerThread = turnManagerThread;
     }
-
-
 
     /**
      * Translates a LobbyMessage to a GameCommand

@@ -2,10 +2,10 @@ package de.rougemaster.dungeon.character;
 
 import de.rougemaster.dungeon.dungeon.Room;
 
+import java.util.Objects;
 import java.util.Random;
 
 public abstract class Character {
-
     protected static int idCounter = 0;
     protected int maxHp;
     protected int hp;
@@ -15,6 +15,19 @@ public abstract class Character {
     protected int id;
 
     protected Room currentRoom;
+
+
+    /**
+     * Returns the level of the Character
+     * @return the amount EXP that the character drops when killed
+     */
+    public abstract int getEXP();
+
+    /**
+     * Returns the level of the Character
+     * @return the level of the Character
+     */
+    public abstract int getLevel();
 
     /**
      * move u to the given adjacent Room
@@ -94,4 +107,12 @@ public abstract class Character {
     public String getName() {
         return name;
     }
+
+    @Override
+    //hashcode und equals für die LobbyMap
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
 }

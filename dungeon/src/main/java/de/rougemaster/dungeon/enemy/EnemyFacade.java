@@ -24,10 +24,14 @@ public class EnemyFacade {
         return instance;
     }
 
+    /**
+     * Creates via RESTFUL API Enemy
+     * @param lobbyId the lobby where the Enemy should be created
+     */
     public void requestEnemy(int lobbyId, LobbyCharType enemyTyp) {
         HttpClient client = HttpClient.newHttpClient();
-        /*String url = "http://localhost:8080/enemy/devil/" + lobbyId;*/
-        String url = "http://localhost:8080/enemy/" + enemyTyp.toString().toLowerCase() + "/" + lobbyId;
+        //String url = "http://localhost:8080/enemy/devil/create/" + lobbyId;
+        String url = "http://localhost:8080/enemy/" + enemyTyp.toString().toLowerCase() + "/create/" + lobbyId;
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -44,10 +48,13 @@ public class EnemyFacade {
 
     }
 
-    ///client/{clientID}"
+    /**
+     * Deletes via RESTFUL API Enemy
+     * @param clientID the id of the Enemy
+     */
     public void deleteEnemy(int clientID, LobbyCharType enemyTyp){
         HttpClient client = HttpClient.newHttpClient();
-        String url = "http://localhost:8080/enemy/" + enemyTyp.toString().toLowerCase() + "/client/" + clientID;
+        String url = "http://localhost:8080/enemy/" + enemyTyp.toString().toLowerCase() + "/delete/" + clientID;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .DELETE().build();
@@ -59,5 +66,15 @@ public class EnemyFacade {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Deletes and request a new character via RESTFUL API Enemy
+     * @param clientID the id of the Enemy
+     * @param lobbyId the lobby where the Enemy should be created
+     */
+    public void deleteAndRequestEnemy(int clientID, int lobbyId, LobbyCharType enemyTyp){
+        deleteEnemy(clientID, enemyTyp);
+        requestEnemy(lobbyId, enemyTyp);
     }
 }

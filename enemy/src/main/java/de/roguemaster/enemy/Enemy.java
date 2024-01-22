@@ -31,5 +31,9 @@ public abstract class Enemy {
         this.maxHp = maxHp;
     }
 
+    /**
+     * Returns the Typ of the Enemy
+     * @return Typ of the Enemy
+     */
     public abstract EnemyTyp getTyp();
 }

@@ -12,19 +12,18 @@ public abstract class EnemyCharacter extends Character {
         this.baseExpDropAmount = baseExpDropAmount;
     }
 
-    /**
-     * Drops the given Amount of exp to the given PlayerCharacter.
-     * @param character the PlayerCharacter that has slain the EnemyCharacter.
-     */
-    public void dropExperience(PlayableCharacter character) {
-        if(character == null){
-            throw new IllegalArgumentException("Character can't be null");
-        }
-        int amountOfExperience = (int) Math.pow(baseExpDropAmount, 1.5);
-        character.gainExperience(amountOfExperience);
+     @Override
+    public int getEXP() {
+        return (int) Math.pow(dangerLevel, 1.5)*baseExpDropAmount;
+    }
+
+    public int getLevel(){
+        return dangerLevel;
     }
 
     public int getDangerLevel() {
         return dangerLevel;
     }
+
+
 }
